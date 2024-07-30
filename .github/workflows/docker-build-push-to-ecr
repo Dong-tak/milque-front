@@ -1,0 +1,44 @@
+name: Docker build and push to AWS ECR
+
+on:
+  push:
+    branches:
+      - release # Execute on push to the main branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Cache npm modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          file: ./Dockerfile
+          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/queuefeed:latest
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+        # - name: Trigger the CodeDeploy in EC2 instance
+        #   run: aws deploy # Placeholder for your CodeDeploy command
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
