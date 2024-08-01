@@ -10,6 +10,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (
       typeof hubMode === "string" &&
       typeof hubChallenge === "string" &&
+      typeof hubVerifyToken === "string" &&
+      hubMode === "subscribe" &&
       hubVerifyToken === "queuefeed2024@"
     ) {
       // Log the verification request
@@ -20,6 +22,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     } else {
       res.status(403).send("Forbidden");
     }
+  } else if (req.method === "POST") {
+    // Handle event notifications here if needed in the future
+    res.status(200).send("Event received");
   } else {
     res.status(405).send("Method Not Allowed");
   }
