@@ -1,4 +1,4 @@
-// pages/api/callback.ts
+// src/pages/api/webhooks.ts
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -9,10 +9,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (
       typeof hubMode === "string" &&
-      typeof hubChallenge === "number" &&
+      typeof hubChallenge === "string" &&
       typeof hubVerifyToken === "string" &&
       hubMode === "subscribe" &&
-      // hubChallenge == 1158201444 &&
       hubVerifyToken === "queuefeed2024@"
     ) {
       // Log the verification request
@@ -25,6 +24,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   } else if (req.method === "POST") {
     // Handle event notifications here if needed in the future
+    console.log("Event Notification:", req.body);
     res.status(200).send("Event received");
   } else {
     res.status(405).send("Method Not Allowed");
