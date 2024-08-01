@@ -9,9 +9,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (
       typeof hubMode === "string" &&
-      typeof hubChallenge === "string" &&
+      typeof hubChallenge === "number" &&
       typeof hubVerifyToken === "string" &&
       hubMode === "subscribe" &&
+      hubChallenge == 1158201444 &&
       hubVerifyToken === "queuefeed2024@"
     ) {
       // Log the verification request
