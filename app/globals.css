@@ -13,6 +13,9 @@
 @layer components {
 }
 
+/*
+button classes
+*/
 .sm-solid-btn,
 .md-solid-btn,
 .lg-solid-btn {
@@ -38,4 +41,14 @@
 .lg-outline-btn,
 .lg-solid-btn {
   @apply h-14 px-6 py-4 text-lg;
+}
+
+/*
+side bar classes
+*/
+.sideOnTap {
+  @apply h-[51px] w-[243px] px-6 py-3 bg-primary-90 shadow-inner-yr shadow-black justify-start items-center inline-flex text-lg font-semibold text-basic-800;
+}
+.sideOffTap {
+  @apply h-[51px] w-[243px] px-6 py-3 justify-start items-center inline-flex text-lg font-normal text-basic-600;
 }

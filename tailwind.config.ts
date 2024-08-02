@@ -56,6 +56,19 @@ const config: Config = {
       },
       boxShadow: {
         inner: "inset 0 0 0 2px",
+        "inner-x": "inset 2px 0  0 0px #000000, inset -2px 0  0 0px #000000",
+        "inner-y":
+          "inset 0px 2px 0px 0px #000000, inset 0px -2px 0px 0px #000000",
+        "inner-l": "inset 2px 0  0 0px #000000",
+        "inner-r": "inset -2px 0  0 0px #000000",
+        "inner-t": "inset 0px 2px 0px 0px #000000",
+        "inner-b": "inset 0px -2px 0px 0px #000000",
+        "inner-yr":
+          "inset -2px 2px 0px 0px #000000, inset 0px -2px 0px 0px #000000",
+        "inner-br":
+          "inset 0px -2px 0px 0px #000000, inset -2px 0  0 0px #000000",
+        "inner-tr":
+          "inset 0px 2px 0px 0px #000000, inset -2px 0  0 0px #000000",
       },
     },
   },
