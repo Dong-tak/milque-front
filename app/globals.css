@@ -2,32 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+@layer base {
+}
+
+@layer components {
+}
+
+.sm-solid-btn,
+.md-solid-btn,
+.lg-solid-btn {
+  @apply bg-basic-800 rounded-md justify-center font-bold items-center inline-flex text-white hover:bg-basic-700;
+}
+
+.lg-outline-btn,
+.md-outline-btn,
+.sm-outline-btn {
+  @apply rounded-md shadow-inner shadow-basic-800 justify-center items-center inline-flex text-basic-800 hover:text-basic-600 hover:shadow-basic-600 font-bold;
+}
+
+.sm-outline-btn,
+.sm-solid-btn {
+  @apply h-10 px-3 py-2 text-sm;
+}
+
+.md-outline-btn,
+.md-solid-btn {
+  @apply h-12 px-5 py-3 text-base;
+}
+
+.lg-outline-btn,
+.lg-solid-btn {
+  @apply h-14 px-6 py-4 text-lg;
 }
