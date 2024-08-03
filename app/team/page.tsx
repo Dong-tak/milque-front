@@ -1,3 +1,9 @@
+import AlarmBar from "@/components/alarm-bar";
+
 export default function Team() {
-  return <h1>Team</h1>;
+  return (
+    <div className="flex justify-center">
+      <AlarmBar />
+    </div>
+  );
 }

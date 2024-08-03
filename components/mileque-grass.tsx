@@ -13,13 +13,13 @@ export default function Grass() {
   };
 
   return (
-    <div className="flex flex-wrap w-[196px]">
+    <div className="flex w-[196px] flex-wrap">
       {arr.map((value, index) => (
         <div
           key={index}
-          className={`w-6 h-6 rotate-90 ${getClassName(
-            value
-          )} rounded-[3px] m-[1px]`}
+          className={`h-6 w-6 rotate-90 ${getClassName(
+            value,
+          )} m-[1px] rounded-[3px]`}
         />
       ))}
     </div>
