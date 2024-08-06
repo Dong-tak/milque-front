@@ -8,16 +8,21 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { FaArrowUpRightFromSquare, FaPlus } from "react-icons/fa6";
+// import { BarBtnOutline, BarBtnSolid } from "@/styles/buttonStyle";
 
 import { IoIosArrowDown } from "react-icons/io";
 import AlarmModal from "./alarm-modal";
+import { downWrapArrow, plusWF800, shareArrow } from "@/public/svgBag";
+import colors from "@/styles/tailwindColors";
+import { BarBtnOutline, BarBtnSolid } from "@/styles/buttonStyle";
+import SvgIcon from "./svgIcon";
 
 export default function AlarmBar() {
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const clickAlarm = () => setIsAlarmOpen(!isAlarmOpen);
   const closeModal = () => setIsAlarmOpen(false);
   return (
-    <div className="inline-flex h-16 w-full items-center justify-between border-b-2 border-basic-800 bg-basic-100 px-6">
+    <div className="z-0 inline-flex h-16 w-full items-center justify-between border-b-2 border-basic-800 bg-basic-100 px-6">
       <div
         onClick={clickAlarm}
         className="relative flex gap-2 hover:cursor-pointer"
@@ -38,18 +43,33 @@ export default function AlarmBar() {
         {isAlarmOpen && <AlarmModal onClose={closeModal} />}
       </div>
       <div className="z-10 inline-flex gap-4">
-        <button className="sm-outline-btn gap-2">
-          Button
-          <FaPlus className="size-4" />
-        </button>
-        <button className="sm-outline-btn gap-2">
-          Button
-          <FaArrowUpRightFromSquare className="size-4" />
-        </button>
-        <button className="sm-solid-btn gap-2">
-          Button
-          <IoIosArrowDown className="size-4" />
-        </button>
+        <BarBtnOutline>
+          직접추가
+          <SvgIcon
+            children={downWrapArrow}
+            width={16}
+            height={16}
+            fill={colors["basic-800"]}
+          />
+        </BarBtnOutline>
+        <BarBtnOutline>
+          공유하기
+          <SvgIcon
+            width={16}
+            height={16}
+            children={shareArrow}
+            fill={colors["basic-800"]}
+          />
+        </BarBtnOutline>
+        <BarBtnSolid>
+          레이아웃
+          <SvgIcon
+            width={16}
+            height={16}
+            children={downWrapArrow}
+            fill={colors["basic-100"]}
+          />
+        </BarBtnSolid>
       </div>
     </div>
   );
