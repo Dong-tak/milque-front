@@ -75,6 +75,5 @@ export const ContentsModalInfo = styled.div`
   align-items: flex-start;
   gap: 18px;
   border-top: 2px solid var(--WF-Base-800, #2d3648);
-  background: var(--colors-common-white, #fff);
-  background: ${colors["primary-80"]};
+  background: ${colors["basic-100"]};
 `;
