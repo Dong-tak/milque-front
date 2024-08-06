@@ -55,8 +55,7 @@ export const ContentsModalImg = styled.img`
   height: 715px;
   justify-content: center;
   align-items: center;
-
-  background: ${colors["basic-500"]};
+  background: ${colors["basic-100"]};
 `;
 
 export const ContentsModalBox = styled.div`
@@ -65,7 +64,7 @@ export const ContentsModalBox = styled.div`
   height: 715px;
   flex-direction: column;
   align-items: flex-start;
-  background: ${colors["basic-700"]};
+  background: ${colors["basic-100"]};
 `;
 
 export const ContentsModalInfo = styled.div`
@@ -74,6 +73,48 @@ export const ContentsModalInfo = styled.div`
   padding: 24px;
   align-items: flex-start;
   gap: 18px;
-  border-top: 2px solid var(--WF-Base-800, #2d3648);
+  border-top: 2px solid ${colors["basic-800"]};
   background: ${colors["basic-100"]};
+`;
+
+export const ContentsModalTop = styled.div`
+  display: flex;
+  width: 500px;
+  padding: 12px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 2px solid ${colors["basic-800"]};
+  background: ${colors["basic-100"]};
+`;
+export const ContentsModalComments = styled.div`
+  display: flex;
+  width: 500px;
+  padding: 24px;
+  align-items: flex-start;
+  flex: 1 0 0;
+  color: ${colors["basic-800"]};
+  font-feature-settings: "calt" off;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 27px */
+  letter-spacing: -0.45px;
+  background: ${colors["basic-100"]};
+`;
+export const ContentsModalBottom = styled.div`
+  display: flex;
+  width: 500px;
+  padding: 0px 24px 18px 24px;
+  align-items: center;
+  gap: 12px;
+  background: ${colors["basic-100"]};
+  color: ${colors["basic-600"]};
+  font-feature-settings: "calt" off;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 18px */
+  letter-spacing: -0.3px;
 `;
