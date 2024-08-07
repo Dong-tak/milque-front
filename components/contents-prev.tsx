@@ -7,8 +7,13 @@ import {
 } from "@/styles/contentsStyle";
 import { useState } from "react";
 import ContentsModal from "./contents-modal";
+import { Post } from "@/lib/types";
 
-export default function ContentsPrev() {
+interface ContentsPrevProps {
+  post: Post;
+}
+
+export default function ContentsPrev({ post }: ContentsPrevProps) {
   const [isContentsPrev, setIsContentsPrev] = useState(false);
   const clickContentsPrev = () => setIsContentsPrev(!isContentsPrev);
   const closeModal = () => setIsContentsPrev(false);
@@ -17,15 +22,13 @@ export default function ContentsPrev() {
     <button onClick={clickContentsPrev}>
       <ContentsContainer>
         <ContentsImg
-          src={"/test.png"}
+          src={`${post.content.length > 0 ? post.content[0].contentImage : ""}`}
           alt="profile"
           className="border-b-2 border-basic-800"
         />
-        <ContentsComment>
-          한 줄이 넘어가면 말 줄임표로 점점점이 표시될 예정입니다.
-        </ContentsComment>
+        <ContentsComment>{`${post.comment}`}</ContentsComment>
       </ContentsContainer>
-      {isContentsPrev && <ContentsModal onClose={closeModal} />}
+      {isContentsPrev && <ContentsModal post={post} onClose={closeModal} />}
     </button>
   );
 }

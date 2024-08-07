@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import AlarmModal from "./alarm-modal";
 import { downWrapArrow, plusWF800, shareArrow } from "@/public/svgBag";
-import colors from "@/styles/tailwindColors";
+import colors from "@/lib/tailwindColors";
 import { BarBtnOutline, BarBtnSolid } from "@/styles/buttonStyle";
 import SvgIcon from "./svgIcon";
 

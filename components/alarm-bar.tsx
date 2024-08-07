@@ -13,7 +13,7 @@ import { FaArrowUpRightFromSquare, FaPlus } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import AlarmModal from "./alarm-modal";
 import { downWrapArrow, plusWF800, shareArrow } from "@/public/svgBag";
-import colors from "@/styles/tailwindColors";
+import colors from "@/lib/tailwindColors";
 import { BarBtnOutline, BarBtnSolid } from "@/styles/buttonStyle";
 import SvgIcon from "./svgIcon";
 
@@ -22,7 +22,7 @@ export default function AlarmBar() {
   const clickAlarm = () => setIsAlarmOpen(!isAlarmOpen);
   const closeModal = () => setIsAlarmOpen(false);
   return (
-    <div className="z-0 inline-flex h-16 w-full items-center justify-between border-b-2 border-basic-800 bg-basic-100 px-6">
+    <div className="fixed left-[243px] top-0 z-0 flex h-16 w-[calc(100%-243px)] items-center justify-between border-b-2 border-basic-800 bg-basic-100 px-6">
       <div
         onClick={clickAlarm}
         className="relative flex gap-2 hover:cursor-pointer"
@@ -42,7 +42,7 @@ export default function AlarmBar() {
         </div>
         {isAlarmOpen && <AlarmModal onClose={closeModal} />}
       </div>
-      <div className="z-10 inline-flex gap-4">
+      <div className="inline-flex gap-4">
         <BarBtnOutline>
           직접추가
           <SvgIcon

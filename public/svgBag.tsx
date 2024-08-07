@@ -1,4 +1,4 @@
-import colors from "@/styles/tailwindColors";
+import colors from "@/lib/tailwindColors";
 
 export const downWrapArrow = (
   <>

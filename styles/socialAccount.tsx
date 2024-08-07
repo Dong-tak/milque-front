@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import colors from "./tailwindColors";
+import colors from "../lib/tailwindColors";
 
 export const SocialAccount = styled.div`
   display: flex;

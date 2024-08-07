@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FiTrash2 } from "react-icons/fi";
 import SvgIcon from "./svgIcon";
 import { resetSvg, reWriteSvg, trashSvg } from "@/public/svgBag";
-import colors from "@/styles/tailwindColors";
+import colors from "@/lib/tailwindColors";
 
 export default function LinkedAccount() {
   return (

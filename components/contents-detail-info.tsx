@@ -1,6 +1,6 @@
 interface ContentsDetailInfoProps {
   label: string;
-  labelData: string;
+  labelData: any;
 }
 
 export default function ContentsDetailInfo({

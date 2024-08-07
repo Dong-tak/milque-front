@@ -1,6 +1,6 @@
 import SvgIcon from "@/components/svgIcon";
 import styled from "@emotion/styled";
-import colors from "./tailwindColors";
+import colors from "../lib/tailwindColors";
 
 export const BarBtnSolidContainer = styled.div`
   display: flex;

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import colors from "./tailwindColors";
+import colors from "../lib/tailwindColors";
 
 export const ContentsContainer = styled.div`
   display: flex;
@@ -16,6 +16,8 @@ export const ContentsImg = styled.img`
   flex: 1 0 0;
   align-self: stretch;
   overflow: hidden;
+  object-fit: fill;
+  background: black;
 `;
 
 export const ContentsComment = styled.div`

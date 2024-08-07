@@ -7,7 +7,7 @@ import { AccountBtnOutline, AccountBtnSolid } from "@/styles/buttonStyle";
 import { linkSvg, returnArrow } from "@/public/svgBag";
 import SvgIcon from "./svgIcon";
 import { SocialAccount } from "@/styles/socialAccount";
-import colors from "@/styles/tailwindColors";
+import colors from "@/lib/tailwindColors";
 
 interface AccountPlusModalProps {
   onClose: () => void;
