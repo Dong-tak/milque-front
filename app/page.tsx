@@ -1,18 +1,14 @@
-import AlarmBar from "@/components/alarm-bar";
-import ContentsPrev from "@/components/contents-prev";
+import { OurAccordion } from "@/components/our-accordion";
 import { getData } from "./action";
 import { Post } from "@/lib/types";
+import { OurAlert } from "@/components/our-alert";
 
 export default async function Home() {
   const posts = await getData();
   return (
-    <div className="flex flex-col">
-      <AlarmBar />
-      <div className="grid grid-cols-1 gap-x-8 gap-y-8 px-12 pb-12 pt-[112px] md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post: Post) => (
-          <ContentsPrev key={post.postId} post={post} />
-        ))}
-      </div>
+    <div className="flex flex-col gap-10 p-8">
+      <OurAccordion />
+      <OurAlert />
     </div>
   );
 }
