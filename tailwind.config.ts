@@ -102,6 +102,7 @@ const config = {
         foreground: "var(--foreground)",
         primary: {
           DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
           foreground: "var(--primary-foreground)",
         },
         secondary: {
@@ -110,6 +111,7 @@ const config = {
         },
         destructive: {
           DEFAULT: "var(--destructive)",
+          hover: "var(--destructive-hover)",
           foreground: "var(--destructive-foreground)",
         },
         muted: {

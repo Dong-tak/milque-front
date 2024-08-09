@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="kr">
       <body className={pretnedard.className}>
-        <div className="pl-[243px]">{children}</div>
+        <div className="p-4">{children}</div>
       </body>
     </html>
   );
