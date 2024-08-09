@@ -31,6 +31,17 @@ import { OurMenubar } from "@/components/our-menubar";
 import { OurNavigationMenu } from "@/components/our-navigationmenu";
 import { OurPagination } from "@/components/our-pagination";
 import { Progress } from "@/components/ui/progress";
+import { OurRadioGroup } from "@/components/our-radiogroup";
+import { OurSelect } from "@/components/our-select";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { OurSkeleton } from "@/components/our-skeleton";
+import { Slider } from "@/components/ui/slider";
+import { OurSwitch } from "@/components/our-switch";
+import { OurTabs, TabsDemo } from "@/components/our-tabs";
+import { OurToggle } from "@/components/our-toggle";
+import { OurToggleGroup } from "@/components/our-togglegroup";
+import { OurTooltip } from "@/components/our-tooltip";
 
 export default async function Home() {
   const posts = await getData();
@@ -109,7 +120,18 @@ export default async function Home() {
       <OurNavigationMenu />
       <OurPagination />
       <Progress value={70} />
-      <div className="h-[700px]"></div>
+      <OurRadioGroup />
+      <OurRadioGroup className="flex" />
+      <OurSelect />
+      <Separator />
+      <OurSkeleton />
+      <Slider disabled defaultValue={[33]} max={100} step={1} />
+      <OurSwitch />
+      <TabsDemo />
+      <OurTabs />
+      <OurToggle />
+      <OurToggleGroup />
+      <OurTooltip />
     </div>
   );
 }

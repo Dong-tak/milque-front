@@ -16,7 +16,7 @@ export function OurCheckbox({
       <Checkbox id="terms" disabled={disabled} />
       <label
         htmlFor="terms"
-        className={`text-${size} font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
+        className={`text-${size} font-medium leading-none text-accent-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
       >
         Accept terms and conditions
       </label>
