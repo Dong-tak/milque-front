@@ -8,14 +8,34 @@ import { Badge } from "@/components/ui/badge";
 import { OurBreadcrumb } from "@/components/our-breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Loader2, PlusIcon } from "lucide-react";
-import { OurCalendar } from "@/components/our-calender";
+import {
+  OurMultipleCalendar,
+  OurRangeCalendar,
+  OurSingleCalendar,
+} from "@/components/our-calender";
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { OurCarousel } from "@/components/our-carousel";
+import { OurCheckbox } from "@/components/our-checkbox";
+import { OurCombobox } from "@/components/our-combobox";
+import { Label } from "@/components/ui/label";
+import { OurCommand } from "@/components/our-command";
+import {
+  OurRangeDatePicker,
+  OurSingleDatePicker,
+} from "@/components/our-datepicker";
+import { OurHoverCard } from "@/components/our-hovercard";
+import { OurInputForm } from "@/components/our-input";
+import { OurDropdownMenu } from "@/components/our-dropdownmenu";
+import { OurMenubar } from "@/components/our-menubar";
+import { OurNavigationMenu } from "@/components/our-navigationmenu";
+import { OurPagination } from "@/components/our-pagination";
+import { Progress } from "@/components/ui/progress";
 
 export default async function Home() {
   const posts = await getData();
   return (
-    <div className="flex flex-col items-start gap-10 p-8">
+    <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
       <OurAlert />
       <OurAlertDialog />
@@ -73,7 +93,23 @@ export default async function Home() {
           Button Label
         </Button>
       </div>
-      <OurCalendar />
+      <OurSingleCalendar />
+      <OurRangeCalendar />
+      <OurCarousel />
+      <OurCheckbox />
+      <OurCombobox />
+      <Label htmlFor="terms">Accept terms and conditions</Label>
+      <OurCommand />
+      <OurSingleDatePicker />
+      <OurRangeDatePicker />
+      <OurHoverCard />
+      <OurInputForm />
+      <OurDropdownMenu />
+      <OurMenubar />
+      <OurNavigationMenu />
+      <OurPagination />
+      <Progress value={70} />
+      <div className="h-[700px]"></div>
     </div>
   );
 }

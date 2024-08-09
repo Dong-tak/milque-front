@@ -107,6 +107,7 @@ const config = {
         },
         secondary: {
           DEFAULT: "var(--secondary)",
+          gray: "var(--secondary-gray)",
           foreground: "var(--secondary-foreground)",
         },
         destructive: {
