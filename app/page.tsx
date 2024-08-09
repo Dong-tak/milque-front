@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { OurBreadcrumb } from "@/components/our-breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Loader2, PlusIcon } from "lucide-react";
+import { OurCalendar } from "@/components/our-calender";
+import React, { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
 
 export default async function Home() {
   const posts = await getData();
@@ -70,6 +73,7 @@ export default async function Home() {
           Button Label
         </Button>
       </div>
+      <OurCalendar />
     </div>
   );
 }
