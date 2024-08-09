@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SideBar from "@/components/side-bar";
 import localFont from "next/font/local";
 
 const pretnedard = localFont({
@@ -23,8 +22,7 @@ export default function RootLayout({
   return (
     <html lang="kr">
       <body className={pretnedard.className}>
-        <div className="pl-[243px]">{children}</div>
-        <SideBar />
+        <div className="p-4">{children}</div>
       </body>
     </html>
   );

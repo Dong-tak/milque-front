@@ -1,56 +1,24 @@
-/** @type {import('tailwindcss').Config} */ module.exports = {
+import type { Config } from "tailwindcss";
+
+const config = {
+  darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
+  prefix: "",
   theme: {
-    extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
       },
+    },
+    extend: {
       colors: {
-        "primary-0": "#000000",
-        "primary-5": "#160041",
-        "primary-10": "#22005D",
-        "primary-15": "#2D1067",
-        "primary-20": "#381E71",
-        "primary-25": "#432B7E",
-        "primary-30": "#4F378A",
-        "primary-35": "#5B4397",
-        "primary-40": "#6750A4",
-        "primary-50": "#8069BF",
-        "primary-60": "#9A83DB",
-        "primary-70": "#B69DF7",
-        "primary-80": "#CFBCFF",
-        "primary-90": "#E9DDFF",
-        "primary-95": "#F6EEFF",
-        "primary-98": "#FDF7FF",
-        "primary-99": "#FFFBFF",
-        "primary-100": "#FFFFFF",
-        "basic-100": "#F7F9FC",
-        "basic-200": "#EDF0F7",
-        "basic-300": "#E2E7F0",
-        "basic-400": "#CBD2E0",
-        "basic-500": "#A0ABC0",
-        "basic-600": "#717D96",
-        "basic-700": "#4A5468",
-        "basic-800": "#2D3648",
-        "basic-900": "#1A202C",
-        "que-red": "#FF5252",
-        "que-purple": "#F134F7",
-        "que-blue": "#34AFF7",
-        "que-green": "#2EDB4B",
-        "que-yellow": "#FFD43A",
-        "que-orange": "#FE9D35",
-        "que-lred": "#FFB8B8",
-        "que-lpurple": "#F6D1FF",
-        "que-lblue": "#B0DCFF",
-        "que-lgreen": "#D1FFD9",
-        "que-lyellow": "#FFEDAD",
-        "que-lorange": "#FED7AD",
         "Slate/50": "#f8fafc",
         "Slate/100": "#f1f5f9",
         "Slate/200": "#e2e8f0",
@@ -127,24 +95,122 @@
         "Blue/A200": "#448aff",
         "Blue/A400": "#2979ff",
         "Blue/A700": "#2962ff",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
+          foreground: "var(--primary-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          hover: "var(--destructive-hover)",
+          foreground: "var(--destructive-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       boxShadow: {
-        inner: "inset 0 0 0 2px",
-        "inner-x": "inset 2px 0  0 0px #000000, inset -2px 0  0 0px #000000",
-        "inner-y":
-          "inset 0px 2px 0px 0px #000000, inset 0px -2px 0px 0px #000000",
-        "inner-l": "inset 2px 0  0 0px #000000",
-        "inner-r": "inset -2px 0  0 0px #000000",
-        "inner-t": "inset 0px 2px 0px 0px #000000",
-        "inner-b": "inset 0px -2px 0px 0px #000000",
-        "inner-yr":
-          "inset -2px 2px 0px 0px #000000, inset 0px -2px 0px 0px #000000",
-        "inner-br":
-          "inset 0px -2px 0px 0px #000000, inset -2px 0  0 0px #000000",
-        "inner-tr":
-          "inset 0px 2px 0px 0px #000000, inset -2px 0  0 0px #000000",
+        "shadow/sm": "0px 1px 2px 0px rgba(0,0,0,0.05)",
+        "shadow/base":
+          "0px 1px 2px 0px rgba(0,0,0,0.06), 0px 1px 3px 0px rgba(0,0,0,0.1)",
+        "shadow/md":
+          "0px 2px 4px -1px rgba(0,0,0,0.06), 0px 4px 6px 1px rgba(0,0,0,0.1)",
+        "shadow/lg":
+          "0px 4px 6px -2px rgba(0,0,0,0.05), 0px 10px 15px -3px rgba(0,0,0,0.1)",
+        "shadow/xl":
+          "0px 10px 10px -5px rgba(0,0,0,0.04), 0px 20px 25px -5px rgba(0,0,0,0.1)",
+        "shadow/2xl": "0px 25px 50px -12px rgba(0,0,0,0.25)",
+        "shadow/inner": "inset 0px 2px 4px 0px rgba(0,0,0,0.06)",
+      },
+      fontSize: {
+        xs: "12px",
+        sm: "14px",
+        base: "16px",
+        lg: "18px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "30px",
+        "4xl": "36px",
+        "5xl": "48px",
+        "6xl": "60px",
+        "7xl": "72px",
+        "8xl": "96px",
+        "9xl": "128px",
+      },
+      fontWeight: {
+        thin: "100",
+        extralight: "200",
+        light: "300",
+        normal: "400",
+        medium: "500",
+        semibold: "600",
+        bold: "700",
+        extrabold: "800",
+        black: "900",
+      },
+      lineHeight: {
+        tighter: "-2.5%",
+        tight: "-1%",
+        normal: "0%",
+        wide: "1%",
+        wider: "2.5%",
+        widest: "5%",
+      },
+      letterSpacing: {
+        3: "12px",
+        4: "16px",
+        5: "20px",
+        6: "24px",
+        7: "28px",
+        8: "32px",
+        9: "36px",
+        10: "40px",
+        none: "0",
       },
     },
   },
-  plugins: [],
-};
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;
+
+export default config;
