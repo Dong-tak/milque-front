@@ -1,5 +1,4 @@
 import { OurAccordion } from "@/components/our-accordion";
-import { getData } from "./action";
 
 import { OurAlert } from "@/components/our-alert";
 import { OurAlertDialog } from "@/components/our-alert-dialog";
