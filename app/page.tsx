@@ -44,7 +44,6 @@ import { OurToggleGroup } from "@/components/our-togglegroup";
 import { OurTooltip } from "@/components/our-tooltip";
 
 export default async function Home() {
-  const posts = await getData();
   return (
     <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
