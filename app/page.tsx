@@ -16,7 +16,7 @@ import {
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { OurCarousel } from "@/components/our-carousel";
-import { OurCheckbox } from "@/components/our-checkbox";
+import { OurCheckbox, OurColorCheckbox } from "@/components/our-checkbox";
 import { OurCombobox } from "@/components/our-combobox";
 import { Label } from "@/components/ui/label";
 import { OurCommand } from "@/components/our-command";
@@ -48,7 +48,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
-      <OurAlert />
+      <OurAlert variant={"destructive"} />
       <OurAlertDialog />
       <div className="flex items-center gap-4">
         <OurAvatar className="size-20" />
@@ -108,6 +108,7 @@ export default async function Home() {
       <OurRangeCalendar />
       <OurCarousel />
       <OurCheckbox />
+      <OurColorCheckbox />
       <OurCombobox />
       <Label htmlFor="terms">Accept terms and conditions</Label>
       <OurCommand />
