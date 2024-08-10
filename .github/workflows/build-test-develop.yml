@@ -20,18 +20,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Cache dependencies and build
-        id: cache-dependencies
+      - name: Cache Node modules
+        id: cache-node-modules
         uses: actions/cache@v2
         with:
-          path: |
-            **/node_modules
-            .next/cache
-          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-node-modules-
+      - name: Cache Next.js build cache
+        id: cache-nextjs
+        uses: actions/cache@v2
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-cache-
       - name: Install dependencies
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Extract branch name
@@ -46,5 +52,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
-          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front
-          
+          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:${{ env.branch_name }}
+          build-args: |
+            NEXT_PUBLIC_URI=${{ secrets.NEXT_PUBLIC_URI }}
+      - name: Post job cleanup
+        run: |
+          echo "Cleaning up caches"
+          rm -rf .next/cache
+          rm -rf **/node_modules
