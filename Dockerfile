@@ -1,29 +1,32 @@
-# Base image
-FROM node:20-alpine AS base
-WORKDIR /app
-COPY package.json package-lock.json ./
+# Use the official Node.js 20 image
+FROM node:20-alpine
+
+# Create and set the working directory
+WORKDIR /deploy
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Builder stage
-FROM base AS builder
+# Copy the rest of the application code
 COPY . .
+
+# # Build arguments
+# ARG NEXT_PUBLIC_URI
+
+# # Environment variables
+# ENV NEXT_PUBLIC_URI=$NEXT_PUBLIC_URI
+
+# Build the Next.js application
 RUN npm run build
 
-# Pruning stage to remove development dependencies
-FROM base AS pruner
-COPY --from=builder /app ./
-RUN npm prune --production
+# Set the user to 'node' for better security practices
+USER node
 
-# Runner stage, copy only necessary files for production
-FROM node:lts-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-COPY --from=pruner /app ./
-
-# Ensure to copy any other directories/files like public, if needed
-COPY --from=builder /app/public ./public
-
+# Expose the port that the Next.js app will run on
 EXPOSE 3000
 
-# Run the server
-CMD ["npm", "start"]
+# Command to start the application
+CMD ["npm", "run", "start"]
