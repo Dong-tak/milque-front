@@ -1,5 +1,4 @@
 import { OurAccordion } from "@/components/our-accordion";
-import { getData } from "./action";
 
 import { OurAlert } from "@/components/our-alert";
 import { OurAlertDialog } from "@/components/our-alert-dialog";
@@ -44,7 +43,6 @@ import { OurToggleGroup } from "@/components/our-togglegroup";
 import { OurTooltip } from "@/components/our-tooltip";
 
 export default async function Home() {
-  const posts = await getData();
   return (
     <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
