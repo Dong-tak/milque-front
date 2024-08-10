@@ -46,6 +46,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
-          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:${{ env.branch_name }}
-          build-args: |
-            NEXT_PUBLIC_URI=${{ secrets.NEXT_PUBLIC_URI }}
+          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front
+          
