@@ -121,7 +121,7 @@ export default async function Home() {
       <OurNavigationMenu />
       <OurPagination />
       <Progress value={70} />
-      <OurRadioGroup />
+      <OurRadioGroup className="body-normal-body-01" />
       <OurRadioGroup className="flex" />
       <OurSelect />
       <Separator />
@@ -130,7 +130,6 @@ export default async function Home() {
       <OurSwitch />
       <TabsDemo />
       <OurTabs />
-      <div className="head-bold-headline">안녕하세요</div>
       <OurToggle />
       <OurToggleGroup />
       <OurTooltip />
