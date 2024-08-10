@@ -129,6 +129,7 @@ export default async function Home() {
       <OurSwitch />
       <TabsDemo />
       <OurTabs />
+      <div className="head-bold-headline">안녕하세요</div>
       <OurToggle />
       <OurToggleGroup />
       <OurTooltip />
