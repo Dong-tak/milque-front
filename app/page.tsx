@@ -42,6 +42,9 @@ import { OurTabs, TabsDemo } from "@/components/our-tabs";
 import { OurToggle } from "@/components/our-toggle";
 import { OurToggleGroup } from "@/components/our-togglegroup";
 import { OurTooltip } from "@/components/our-tooltip";
+import { OurSidebar } from "@/components/our-sidebar";
+import { OurFooter } from "@/components/our-footer";
+import { OurDateDialog } from "@/components/our-datedialog";
 
 export default async function Home() {
   const posts = await getData();
@@ -133,6 +136,9 @@ export default async function Home() {
       <OurToggle />
       <OurToggleGroup />
       <OurTooltip />
+      <OurSidebar />
+      <OurFooter />
+      <OurDateDialog />
     </div>
   );
 }
