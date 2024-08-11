@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { addDays, differenceInDays, format } from "date-fns";
+import { addDays, differenceInDays, format, startOfDay } from "date-fns";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -18,20 +18,20 @@ import {
 } from "@/components/ui/popover";
 
 export function OurDateDialog() {
-  let day = new Date();
+  let day = startOfDay(new Date());
   const [date, setDate] = React.useState<Date | undefined>(day);
   const handleSelect = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
+    setDate(selectedDate ? startOfDay(selectedDate) : undefined);
   };
   const handlePreviousDay = () => {
     if (date) {
-      setDate(addDays(date, -1));
+      setDate(startOfDay(addDays(date, -1)));
     }
   };
 
   const handleNextDay = () => {
     if (date) {
-      setDate(addDays(date, 1));
+      setDate(startOfDay(addDays(date, 1)));
     }
   };
   const renderDateLabel = () => {
@@ -43,7 +43,7 @@ export function OurDateDialog() {
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex justify-between">
       <div
         className="rounded-md p-3 hover:bg-popover"
         onClick={handlePreviousDay}
@@ -55,7 +55,7 @@ export function OurDateDialog() {
           <Button
             variant={"foreground"}
             className={cn(
-              "justify-center border-none others-medium-button",
+              "border-none others-medium-button",
               !date && "text-muted-foreground",
             )}
           >
