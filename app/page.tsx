@@ -15,7 +15,7 @@ import {
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { OurCarousel } from "@/components/our-carousel";
-import { OurCheckbox } from "@/components/our-checkbox";
+import { OurCheckbox, OurColorCheckbox } from "@/components/our-checkbox";
 import { OurCombobox } from "@/components/our-combobox";
 import { Label } from "@/components/ui/label";
 import { OurCommand } from "@/components/our-command";
@@ -41,12 +41,15 @@ import { OurTabs, TabsDemo } from "@/components/our-tabs";
 import { OurToggle } from "@/components/our-toggle";
 import { OurToggleGroup } from "@/components/our-togglegroup";
 import { OurTooltip } from "@/components/our-tooltip";
+import { OurSidebar } from "@/components/our-sidebar";
+import { OurFooter } from "@/components/our-footer";
+import { OurDateDialog } from "@/components/our-datedialog";
 
 export default async function Home() {
   return (
     <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
-      <OurAlert />
+      <OurAlert variant={"destructive"} />
       <OurAlertDialog />
       <div className="flex items-center gap-4">
         <OurAvatar className="size-20" />
@@ -106,6 +109,7 @@ export default async function Home() {
       <OurRangeCalendar />
       <OurCarousel />
       <OurCheckbox />
+      <OurColorCheckbox />
       <OurCombobox />
       <Label htmlFor="terms">Accept terms and conditions</Label>
       <OurCommand />
@@ -118,7 +122,7 @@ export default async function Home() {
       <OurNavigationMenu />
       <OurPagination />
       <Progress value={70} />
-      <OurRadioGroup />
+      <OurRadioGroup className="body-normal-body-01" />
       <OurRadioGroup className="flex" />
       <OurSelect />
       <Separator />
@@ -130,6 +134,9 @@ export default async function Home() {
       <OurToggle />
       <OurToggleGroup />
       <OurTooltip />
+      <OurSidebar />
+      <OurFooter />
+      <OurDateDialog />
     </div>
   );
 }

@@ -50,9 +50,9 @@ export function OurInputForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel className="body-normal-body-01">Username</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Field Name or Example" {...field} />
               </FormControl>
               <FormDescription>
                 This is your public display name.
