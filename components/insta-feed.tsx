@@ -30,35 +30,12 @@ const InstagramFeedEmbed: React.FC<InstagramFeedEmbedProps> = ({ url }) => {
 
   return (
     <blockquote
-      className="instagram-media"
+      className="instagram-media custom-instagram-embed"
       data-instgrm-captioned
       data-instgrm-permalink={url}
       data-instgrm-version="14"
-      style={{
-        background: "#FFF",
-        border: "0",
-        borderRadius: "3px",
-        boxShadow: "0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15)",
-        margin: "1px",
-        maxWidth: "540px",
-        minWidth: "326px",
-        padding: "0",
-        width: "99.375%",
-      }}
     >
-      <a
-        href={url}
-        style={{
-          background: "#FFFFFF",
-          lineHeight: "0",
-          padding: "0 0",
-          textAlign: "center",
-          textDecoration: "none",
-          width: "100%",
-        }}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href={url} target="_blank" rel="noopener noreferrer">
         Instagram Post
       </a>
     </blockquote>

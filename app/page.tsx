@@ -53,7 +53,6 @@ import InstagramReelsEmbed from "@/components/insta-reels";
 import InstagramFeedEmbed from "@/components/insta-feed";
 
 export default async function Home() {
-  const tiktokContent = `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@tarankaaa/video/7399985738428730632" data-video-id="7399985738428730632" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@tarankaaa" href="https://www.tiktok.com/@tarankaaa?refer=embed">@tarankaaa</a> <p>escalator trend 💓☀️</p> <a target="_blank" title="♬ nhạc nền  - Soăn Troai +86 🌟" href="https://www.tiktok.com/music/nhạc-nền-Soăn-Troai-86-🌟-7383658226136435472?refer=embed">♬ nhạc nền  - Soăn Troai +86 🌟</a> </section> </blockquote> <script async src="https://www.tiktok.com/embed.js"></script>`;
   return (
     <div className="flex flex-col items-center gap-10 p-8">
       <OurAccordion />
@@ -146,15 +145,6 @@ export default async function Home() {
       <OurFooter />
       <OurDateDialog />
       <OurLogIn />
-      <InstagramFeedEmbed url={"https://www.instagram.com/p/C-dNdiKMYfY/"} />
-      <InstagramReelsEmbed
-        url={
-          "https://www.instagram.com/reel/C9mPBPSJwGt/?utm_source=ig_web_copy_link/"
-        }
-      />
-      <TiktokEmbed content={tiktokContent} />
-      <YouTubeEmbed url={"5JafqFjBnBU"} />
-      <YouTubeShortsEmbed url={"q4IkcMIk70M"} />
     </div>
   );
 }

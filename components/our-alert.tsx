@@ -9,14 +9,12 @@ interface OurAlertProps {
 export function OurAlert({ variant }: OurAlertProps) {
   return (
     <Alert variant={variant} className="w-[634px]">
-      <div className="flex gap-2">
-        <CircleAlert className="m-1 size-4" />
-        <div>
-          <AlertTitle>Heads up!</AlertTitle>
-          <AlertDescription>
-            You can add components to your app using the cli.
-          </AlertDescription>
-        </div>
+      <CircleAlert className="mt-[1px] size-4" />
+      <div>
+        <AlertTitle>Heads up!</AlertTitle>
+        <AlertDescription>
+          You can add components to your app using the cli.
+        </AlertDescription>
       </div>
     </Alert>
   );
