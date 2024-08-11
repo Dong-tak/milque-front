@@ -55,7 +55,7 @@ export function OurDateDialog() {
           <Button
             variant={"foreground"}
             className={cn(
-              "others-medium-button justify-center border-none",
+              "justify-center border-none others-medium-button",
               !date && "text-muted-foreground",
             )}
           >
