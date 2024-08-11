@@ -38,7 +38,7 @@ const AlertTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h5
     ref={ref}
-    className={cn("others-medium-title mb-1", className)}
+    className={cn("mb-1 others-medium-title", className)}
     {...props}
   />
 ));
@@ -48,7 +48,7 @@ const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("body-normal-body-01", className)} {...props} />
+  <div ref={ref} className={cn("body-normal-body-02", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";
 

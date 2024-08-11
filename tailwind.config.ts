@@ -224,7 +224,7 @@ const config = {
     }) {
       const newUtilities = {
         ".body-normal-body-02": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "24px",
           fontSize: "16px",
@@ -234,7 +234,7 @@ const config = {
           textDecoration: "none",
         },
         ".body-normal-body-long-02": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "28px",
           fontSize: "16px",
@@ -244,7 +244,7 @@ const config = {
           textDecoration: "none",
         },
         ".body-normal-body-01": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "20px",
           fontSize: "14px",
@@ -254,7 +254,7 @@ const config = {
           textDecoration: "none",
         },
         ".body-normal-body-line-01": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "20px",
           fontSize: "14px",
@@ -264,7 +264,7 @@ const config = {
           textDecoration: "underline",
         },
         ".body-normal-body-long-01": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "24px",
           fontSize: "14px",
@@ -274,7 +274,7 @@ const config = {
           textDecoration: "none",
         },
         ".body-normal-caption": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "16px",
           fontSize: "12px",
@@ -284,7 +284,7 @@ const config = {
           textDecoration: "none",
         },
         ".body-normal-caption-line": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "400", // Regular
           lineHeight: "16px",
           fontSize: "12px",
@@ -294,8 +294,8 @@ const config = {
           textDecoration: "underline",
         },
         ".others-medium-title": {
-          fontFamily: "Pretendard",
-          fontWeight: "500",
+          fontFamily: "--var(--font-suit)",
+          fontWeight: "600",
           lineHeight: "24px",
           fontSize: "16px",
           letterSpacing: "0",
@@ -304,8 +304,8 @@ const config = {
           textDecoration: "none",
         },
         ".others-medium-title-long": {
-          fontFamily: "Pretendard",
-          fontWeight: "500",
+          fontFamily: "--var(--font-suit)",
+          fontWeight: "600",
           lineHeight: "28px",
           fontSize: "16px",
           letterSpacing: "0",
@@ -314,8 +314,8 @@ const config = {
           textDecoration: "none",
         },
         ".others-medium-button": {
-          fontFamily: "Pretendard",
-          fontWeight: "500",
+          fontFamily: "--var(--font-suit)",
+          fontWeight: "600",
           lineHeight: "20px",
           fontSize: "14px",
           letterSpacing: "0",
@@ -324,7 +324,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-headline": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "28px",
           fontSize: "20px",
@@ -334,7 +334,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-subhead-03": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "24px",
           fontSize: "16px",
@@ -344,7 +344,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-subhead-long-03": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "28px",
           fontSize: "16px",
@@ -354,7 +354,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-subhead-02": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "20px",
           fontSize: "14px",
@@ -364,7 +364,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-subhead-long-02": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "24px",
           fontSize: "14px",
@@ -374,7 +374,7 @@ const config = {
           textDecoration: "none",
         },
         ".head-bold-subhead-01": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "18px",
           fontSize: "12px",
@@ -384,7 +384,7 @@ const config = {
           textDecoration: "none",
         },
         ".display-undefine-display-04": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "64px",
           fontSize: "48px",
@@ -394,7 +394,7 @@ const config = {
           textDecoration: "none",
         },
         ".display-undefine-display-03": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "48px",
           fontSize: "36px",
@@ -404,7 +404,7 @@ const config = {
           textDecoration: "none",
         },
         ".display-undefine-display-02": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "44px",
           fontSize: "30px",
@@ -414,7 +414,7 @@ const config = {
           textDecoration: "none",
         },
         ".display-undefine-display-01": {
-          fontFamily: "Pretendard",
+          fontFamily: "--var(--font-suit)",
           fontWeight: "700",
           lineHeight: "36px",
           fontSize: "24px",
