@@ -137,7 +137,7 @@ export default async function Home() {
       <OurSelect />
       <Separator />
       <OurSkeleton />
-      <Slider disabled defaultValue={[33]} max={100} step={1} />
+      <Slider defaultValue={[33]} max={100} step={1} />
       <OurSwitch />
       <TabsDemo />
       <OurTabs />
