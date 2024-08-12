@@ -51,6 +51,9 @@ import YouTubeEmbed from "@/components/youtube-video";
 import YouTubeShortsEmbed from "@/components/youtube-shorts";
 import InstagramReelsEmbed from "@/components/insta-reels";
 import InstagramFeedEmbed from "@/components/insta-feed";
+import { OurSignUp } from "@/components/our-signup";
+import { OurVerify } from "@/components/our-verify";
+import { OurSocialLink } from "@/components/our-social-link";
 
 export default async function Home() {
   return (
@@ -115,7 +118,7 @@ export default async function Home() {
       <OurSingleCalendar />
       <OurRangeCalendar />
       <OurCarousel />
-      <OurCheckbox />
+      <OurCheckbox children={"Hi!!!!!!!"} />
       <OurColorCheckbox />
       <OurCombobox />
       <Label htmlFor="terms">Accept terms and conditions</Label>
@@ -140,11 +143,18 @@ export default async function Home() {
       <OurTabs />
       <OurToggle />
       <OurToggleGroup />
-      <OurTooltip />
+      <OurTooltip
+        children={"tooltip"}
+        description="tolekd"
+        variant={"default"}
+      />
       <OurSidebar />
       <OurFooter />
       <OurDateDialog />
       <OurLogIn />
+      <OurSignUp />
+      <OurVerify />
+      <OurSocialLink />
     </div>
   );
 }

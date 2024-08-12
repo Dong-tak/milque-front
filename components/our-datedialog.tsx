@@ -53,7 +53,7 @@ export function OurDateDialog() {
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant={"foreground"}
+            variant={"background"}
             className={cn(
               "border-none others-medium-button",
               !date && "text-muted-foreground",

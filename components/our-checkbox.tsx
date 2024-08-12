@@ -5,20 +5,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface OurCheckboxProps {
   disabled?: boolean;
   size?: string;
+  children?: React.ReactNode;
 }
 
 export function OurCheckbox({
   disabled = false,
   size = "sm",
+  children,
 }: OurCheckboxProps) {
   return (
     <div className="flex items-center space-x-2">
       <Checkbox id="terms" disabled={disabled} />
       <label
         htmlFor="terms"
-        className="body-normal-body-01 text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
-        Accept terms and conditions
+        {children}
       </label>
     </div>
   );
@@ -27,15 +29,16 @@ export function OurCheckbox({
 export function OurColorCheckbox({
   disabled = false,
   size = "sm",
+  children,
 }: OurCheckboxProps) {
   return (
     <div className="flex items-center space-x-2">
       <Checkbox id="terms1" disabled={disabled} />
       <label
         htmlFor="terms1"
-        className="body-normal-body-01 text-accent-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-accent-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
-        Accept
+        {children}
       </label>
     </div>
   );
