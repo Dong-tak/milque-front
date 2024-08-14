@@ -44,6 +44,15 @@ import { OurTooltip } from "@/components/our-tooltip";
 import { OurSidebar } from "@/components/our-sidebar";
 import { OurFooter } from "@/components/our-footer";
 import { OurDateDialog } from "@/components/our-datedialog";
+import { OurLogIn } from "@/components/our-login";
+import TiktokEmbed from "@/components/tiktok-embed";
+import YouTubeEmbed from "@/components/youtube-video";
+import YouTubeShortsEmbed from "@/components/youtube-shorts";
+import InstagramReelsEmbed from "@/components/insta-reels";
+import InstagramFeedEmbed from "@/components/insta-feed";
+import { OurSignUp } from "@/components/our-signup";
+import { OurVerify } from "@/components/our-verify";
+import { OurSocialLink } from "@/components/our-social-link";
 
 export default async function Home() {
   return (
@@ -108,7 +117,7 @@ export default async function Home() {
       <OurSingleCalendar />
       <OurRangeCalendar />
       <OurCarousel />
-      <OurCheckbox />
+      <OurCheckbox>{"Hi!!!!!!!"}</OurCheckbox>
       <OurColorCheckbox />
       <OurCombobox />
       <Label htmlFor="terms">Accept terms and conditions</Label>
@@ -127,16 +136,22 @@ export default async function Home() {
       <OurSelect />
       <Separator />
       <OurSkeleton />
-      <Slider disabled defaultValue={[33]} max={100} step={1} />
+      <Slider defaultValue={[33]} max={100} step={1} />
       <OurSwitch />
       <TabsDemo />
       <OurTabs />
       <OurToggle />
       <OurToggleGroup />
-      <OurTooltip />
+      <OurTooltip description="tolekd" variant={"default"}>
+        {"tooltip"}
+      </OurTooltip>
       <OurSidebar />
       <OurFooter />
       <OurDateDialog />
+      <OurLogIn />
+      <OurSignUp />
+      <OurVerify />
+      <OurSocialLink />
     </div>
   );
 }

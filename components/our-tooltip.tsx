@@ -6,15 +6,36 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export function OurTooltip() {
+interface OurTooltipProps {
+  children: React.ReactNode;
+  description: string;
+  variant?:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "background"
+    | "link"
+    | "default"
+    | "outline"
+    | "ghost"
+    | "foreground"
+    | null
+    | undefined;
+}
+
+export function OurTooltip({
+  children,
+  description,
+  variant,
+}: OurTooltipProps) {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline">This is a tooltip example</Button>
+          <Button variant={variant}>{children}</Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Add to library</p>
+          <p>{description}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
