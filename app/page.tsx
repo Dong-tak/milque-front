@@ -118,7 +118,7 @@ export default async function Home() {
       <OurSingleCalendar />
       <OurRangeCalendar />
       <OurCarousel />
-      <OurCheckbox children={"Hi!!!!!!!"} />
+      <OurCheckbox>{"Hi!!!!!!!"}</OurCheckbox>
       <OurColorCheckbox />
       <OurCombobox />
       <Label htmlFor="terms">Accept terms and conditions</Label>
@@ -143,11 +143,9 @@ export default async function Home() {
       <OurTabs />
       <OurToggle />
       <OurToggleGroup />
-      <OurTooltip
-        children={"tooltip"}
-        description="tolekd"
-        variant={"default"}
-      />
+      <OurTooltip description="tolekd" variant={"default"}>
+        {"tooltip"}
+      </OurTooltip>
       <OurSidebar />
       <OurFooter />
       <OurDateDialog />
