@@ -22,19 +22,14 @@ import {
 
 export function OurVerify() {
   return (
-    <Card className="relative h-[982px] w-[756px] space-y-6 bg-background px-[166px] py-[382px]">
+    <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
-        <div>
-          <Button variant={"ghost"} className="absolute left-16 top-16 gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            뒤로가기
-          </Button>
-          <Button variant={"ghost"} className="absolute right-16 top-16">
-            로그인
-          </Button>
-        </div>
         <CardTitle>인증하기</CardTitle>
-        <CardDescription>인증번호를 입력하세요!</CardDescription>
+        <Link href="">
+          <CardDescription className="underline underline-offset-1">
+            인증번호를 입력하세요!
+          </CardDescription>
+        </Link>
       </CardHeader>
       <CardContent className="space-y-4 p-0">
         <div className="space-y-[6px]">

@@ -15,7 +15,7 @@ import Link from "next/link";
 
 export function OurLogIn() {
   return (
-    <Card className="max-h-[540px] min-w-[343px] max-w-[400px] flex-grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:px-4 xl:w-[400px]">
+    <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
         <CardTitle className="h-auto w-full text-center">로그인</CardTitle>
         <CardDescription className="text-center">
@@ -55,10 +55,10 @@ export function OurLogIn() {
         </Button>
       </CardContent>
       <CardContent className="flex h-auto w-full items-center justify-center py-6">
-        <div>Don&apos;t have an account?</div>
+        <div>Don&apos;t have an account?&nbsp;&nbsp;</div>
         <Link
-          href={"/signup"}
-          className="underline underline-offset-2 hover:opacity-60"
+          href={"/auth/signup"}
+          className="flex underline underline-offset-2 hover:scale-105 hover:opacity-60"
         >
           Sign up
         </Link>

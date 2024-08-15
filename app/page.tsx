@@ -53,6 +53,7 @@ import InstagramFeedEmbed from "@/components/insta-feed";
 import { OurSignUp } from "@/components/our-signup";
 import { OurVerify } from "@/components/our-verify";
 import { OurSocialLink } from "@/components/our-social-link";
+import { OurOption } from "@/components/our-option";
 
 export default async function Home() {
   return (
@@ -152,6 +153,7 @@ export default async function Home() {
       <OurSignUp />
       <OurVerify />
       <OurSocialLink />
+      <OurOption />
     </div>
   );
 }
