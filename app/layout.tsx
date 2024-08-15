@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="kr">
       <body className={suit.className}>
-        <div className="p-4">{children}</div>
+        <div>{children}</div>
       </body>
     </html>
   );

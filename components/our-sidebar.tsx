@@ -1,10 +1,18 @@
+"use client";
+
 import {
+  Bell,
+  Bookmark,
   Calculator,
   Calendar,
   ChevronRight,
+  Compass,
   CreditCard,
   FileDown,
+  Ghost,
+  HeartHandshake,
   History,
+  Instagram,
   Link,
   LogIn,
   LogOut,
@@ -12,136 +20,230 @@ import {
   Scan,
   Settings,
   Smile,
+  SquarePlus,
+  Star,
   User,
   UserPlus,
   Users,
 } from "lucide-react";
-import { Command as CommandPrimitive } from "cmdk";
 
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
-import { OurAvatar } from "./our-avatar";
 
-// const SidebarItem = React.forwardRef<
-//   React.ElementRef<typeof CommandPrimitive.Item>,
-//   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
-// >(({ className, ...props }, ref) => (
-//   <CommandPrimitive.Item
-//     ref={ref}
-//     className={cn(
-//       "body-normal-body-01 relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 outline-none data-[disabled=true]:pointer-events-none data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50",
-//       className,
-//     )}
-//     {...props}
-//   />
-// ));
+import { usePathname, useRouter } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "./ui/button";
+import { SqBadge, Badge } from "./ui/badge";
+import { Label } from "./ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Slot } from "@radix-ui/react-slot";
 
-interface SidebarItemProps {
+interface SidebarBtnProps {
   children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
   disabled?: boolean;
+  isActive?: boolean;
 }
 
-function SidebarItem({ children, disabled }: SidebarItemProps) {
+export function SidebarBtn({
+  children,
+  onClick,
+  className,
+  disabled,
+  asChild = false,
+  isActive = false,
+}: SidebarBtnProps & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : Button;
   return (
-    <CommandItem disabled={disabled} className="others-medium-button px-4 py-2">
+    <Comp
+      variant="sidebar"
+      size="sidebar"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "sidebar-item flex items-center justify-start",
+        isActive && "text-accent-foreground",
+        className,
+      )}
+    >
       {children}
-    </CommandItem>
+    </Comp>
   );
 }
 
-function SidebarList({ children }: { children: React.ReactNode }) {
-  return <CommandList className="max-h-none">{children}</CommandList>;
+function SidebarDropdownBtn() {
+  const router = useRouter();
+  const navToLink = () => {
+    router.push("/link");
+  };
+  const navToInvite = () => {
+    router.push("/invite");
+  };
+  const navToDownload = () => {
+    router.push("/download");
+  };
+  const navToMark = () => {
+    router.push("/bookmark");
+  };
+  return (
+    <div className="dropdown flex">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
+          <SidebarBtn asChild>
+            <div className="flex items-center">
+              <Star className="icon mr-2 size-4" />
+              <span>모음집</span>
+            </div>
+          </SidebarBtn>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="mt-1 flex flex-col">
+          <DropdownMenuItem onSelect={navToLink}>
+            <Link className="icon mr-2 h-4 w-4" />
+            <span>계정연동</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToInvite}>
+            <UserPlus className="icon mr-2 h-4 w-4" />
+            <span>초대하기</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToDownload}>
+            <FileDown className="icon mr-2 h-4 w-4" />
+            <span>다운로드</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToMark}>
+            <Bookmark className="icon mr-2 h-4 w-4" />
+            <span>북마크</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 }
 
 export function OurSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const navToHome = () => {
+    router.push("/");
+    console.log("click!!!");
+  };
+  const navToAdd = () => {
+    router.push("/add");
+  };
+  const navToGroup = () => {
+    router.push("/group");
+  };
+  const navToProfile = () => {
+    router.push("/profile");
+  };
+  const navToSetting = () => {
+    router.push("/setting");
+  };
+  const navToLink = () => {
+    router.push("/link");
+  };
+  const navToInvite = () => {
+    router.push("/invite");
+  };
+  const navToDownload = () => {
+    router.push("/download");
+  };
+  const navToMark = () => {
+    router.push("/bookmark");
+  };
+
   return (
-    <Command className="w-[200px] border">
-      <SidebarList>
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">마이</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
-            <Scan className="mr-2 h-4 w-4" />
+    <div className="sidebar fixed left-0 top-0 z-50 flex h-full w-[250px] flex-col justify-between border-r">
+      <div>
+        <div className="p-2">
+          <SidebarBtn
+            onClick={navToHome}
+            className="hover:bg-background hover:text-popover-foreground"
+          >
+            <Instagram className="mr-2 h-4 w-[51.5px]" />
+          </SidebarBtn>
+        </div>
+        <div className="flex flex-col p-2">
+          <SidebarBtn onClick={navToHome} isActive={pathname === "/"}>
+            <Calendar className="icon mr-2 size-4" />
+            <span>홈</span>
+          </SidebarBtn>
+          <SidebarBtn
+            disabled
+            onClick={navToHome}
+            className="flex justify-between"
+          >
+            <div className="flex items-center">
+              <Compass className="icon mr-2 size-4" />
+              <span>탐색</span>
+            </div>
+            <SqBadge variant={"gray"}>준비중</SqBadge>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome} isActive={pathname === "/add"}>
+            <SquarePlus className="icon mr-2 size-4" />
             <span>스크랩</span>
-          </SidebarItem>
-          <SidebarItem>
-            <History className="mr-2 h-4 w-4" />
-            <span>히스토리</span>
-            <CommandShortcut>999+</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem disabled>
-            <Users className="mr-2 h-4 w-4" />
-            <span>트렌드</span>
-            <CommandShortcut>준비중</CommandShortcut>
-          </SidebarItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">그룹</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
-            <OurAvatar className="mr-2 size-4" />
-            <span>VLAD</span>
-            <CommandShortcut>6</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem>
-            <OurAvatar className="mr-2 h-4 w-4" />
-            <span>한예종 광고 19학번</span>
-            <CommandShortcut>21</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem>
-            <UserPlus className="mr-2 h-4 w-4" />
-            <span>그룹 추가하기</span>
-            <CommandShortcut>
-              <Plus className="h-4 w-4 text-popover-foreground" />
-            </CommandShortcut>
-          </SidebarItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">바로가기</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
+          </SidebarBtn>
+          <SidebarBtn
+            onClick={navToHome}
+            className="flex justify-between"
+            isActive={pathname === "/group"}
+          >
+            <div className="flex items-center">
+              <HeartHandshake className="icon mr-2 size-4" />
+              <span>그룹</span>
+            </div>
+            <SqBadge variant={"outlineDefault"}>NEW</SqBadge>
+          </SidebarBtn>
+          <SidebarDropdownBtn />
+        </div>
+        <div className="direct flex flex-col p-2">
+          <Label className="sidebar-label px-4 py-2 others-medium-button">
+            바로가기
+          </Label>
+          <SidebarBtn onClick={navToHome}>
             <Link className="mr-2 size-4" />
-            <span>계정 연결하기</span>
-          </SidebarItem>
-          <SidebarItem>
-            <UserPlus className="mr-2 h-4 w-4" />
+            <span>계정 연동</span>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
-          </SidebarItem>
-          <SidebarItem>
-            <FileDown className="mr-2 h-4 w-4" />
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <FileDown className="mr-2 size-4" />
             <span>다운로드</span>
-          </SidebarItem>
-          <SidebarItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>환경설정</span>
-          </SidebarItem>
-          <SidebarItem>
-            <LogIn className="mr-2 h-4 w-4" />
-            <span>로그인</span>
-          </SidebarItem>
-          <SidebarItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>로그아웃</span>
-          </SidebarItem>
-        </CommandGroup>
-      </SidebarList>
-    </Command>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <Bookmark className="mr-2 size-4" />
+            <span>북마크</span>
+          </SidebarBtn>
+        </div>
+      </div>
+      <div>
+        <Separator />
+        <div className="flex flex-col p-2">
+          <SidebarBtn onClick={navToHome}>
+            <Ghost className="icon mr-2 size-4" />
+            <span>프로필</span>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome} className="flex justify-between">
+            <div className="flex items-center">
+              <Bell className="icon mr-2 size-4" />
+              <span>알림</span>
+            </div>
+            <Badge variant={"default"}>24</Badge>
+          </SidebarBtn>
+          <SidebarBtn>
+            <Settings className="icon mr-2 size-4" />
+            <span>설정</span>
+          </SidebarBtn>
+        </div>
+      </div>
+    </div>
   );
 }
