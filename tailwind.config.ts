@@ -19,6 +19,12 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        sm: "375px",
+        md: "764px",
+        lg: "960px",
+        xl: "1100px",
+      },
       colors: {
         "Slate/50": "#f8fafc",
         "Slate/100": "#f1f5f9",

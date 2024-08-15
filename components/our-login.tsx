@@ -15,14 +15,14 @@ import Link from "next/link";
 
 export function OurLogIn() {
   return (
-    <Card className="h-[982px] w-[756px] space-y-6 bg-background px-[166px] py-[221px]">
+    <Card className="max-h-[540px] min-w-[343px] max-w-[400px] flex-grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:px-4 xl:w-[400px]">
       <CardHeader className="p-0">
-        <CardTitle className="text-center">로그인</CardTitle>
+        <CardTitle className="h-auto w-full text-center">로그인</CardTitle>
         <CardDescription className="text-center">
           Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 p-0">
+      <CardContent className="h-auto w-full space-y-4 p-0">
         <div className="space-y-[6px]">
           <Label htmlFor="email" className="h-10">
             Email
@@ -37,14 +37,14 @@ export function OurLogIn() {
         </div>
         <Button size={"long"}>Save changes</Button>
       </CardContent>
-      <CardContent className="flex items-center p-0">
+      <CardContent className="flex h-auto w-full items-center p-0">
         <Separator />
         <div className="w-full text-center text-muted-foreground body-normal-body-01">
           OR Login WITH
         </div>
         <Separator />
       </CardContent>
-      <CardContent className="space-y-2 p-0">
+      <CardContent className="h-auto w-full space-y-2 p-0">
         <Button variant={"background"} size={"long"} className="gap-2">
           <Github className="h-4 w-4" />
           GitHub
@@ -54,10 +54,10 @@ export function OurLogIn() {
           Instagram
         </Button>
       </CardContent>
-      <CardContent className="flex items-center justify-center py-6">
+      <CardContent className="flex h-auto w-full items-center justify-center py-6">
         <div>Don&apos;t have an account?</div>
         <Link
-          href={""}
+          href={"/signup"}
           className="underline underline-offset-2 hover:opacity-60"
         >
           Sign up
