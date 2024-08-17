@@ -78,7 +78,7 @@
   }
 }
 
-.custom-instagram-embed {
+.instagram-media {
   background: #fff;
   border: 0;
   border-radius: 3px;
@@ -86,30 +86,13 @@
     0 0 1px 0 rgba(0, 0, 0, 0.5),
     0 1px 10px 0 rgba(0, 0, 0, 0.15);
   margin: 1px;
-  max-width: 540px;
-  min-width: 326px;
+  width: 100%;
+  height: 100%;
   max-height: 729px;
   padding: 0;
   width: 99.375%;
+  overflow: hidden;
   position: relative;
-}
-
-/* Hiding feed information */
-.custom-instagram-embed .eebRC,
-.custom-instagram-embed .eo2As,
-.custom-instagram-embed .k2uA6 {
-  display: none !important;
-}
-
-/* Ensuring only the photo and account information are displayed */
-.custom-instagram-embed a {
-  background: #ffffff;
-  line-height: 0;
-  padding: 0 0;
-  text-align: center;
-  text-decoration: none;
-  width: 100%;
-  display: block;
 }
 
 .accordhead {
@@ -165,6 +148,9 @@
   .accordion {
     padding-top: 48px;
     padding-left: 0px;
+  }
+  .detail {
+    height: 100vh;
   }
 }
 
