@@ -29,11 +29,10 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command";
+} from "@/components/ui/optioncommand";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
-import { OurAvatar } from "./our-avatar";
 
 // const SidebarItem = React.forwardRef<
 //   React.ElementRef<typeof CommandPrimitive.Item>,
@@ -56,32 +55,38 @@ interface SidebarItemProps {
 
 function SidebarItem({ children, disabled }: SidebarItemProps) {
   return (
-    <CommandItem disabled={disabled} className="px-4 py-2 others-medium-button">
+    <CommandItem
+      disabled={disabled}
+      className="w-full px-4 py-2 others-medium-button"
+    >
       {children}
     </CommandItem>
   );
 }
 
 function SidebarList({ children }: { children: React.ReactNode }) {
-  return <CommandList className="max-h-none">{children}</CommandList>;
+  return (
+    <CommandList className="max-h-none items-start justify-center">
+      {children}
+    </CommandList>
+  );
 }
 
 export function OurOptionSidebar() {
   return (
-    <Command className="flex h-[743px] min-w-[250px] items-center justify-center">
+    <Command className="right-0 flex h-full max-h-[743px] w-[234px] min-w-[234px] max-w-[250px] grow flex-col items-center justify-center p-0 md:left-0 md:w-[250px]">
       <SidebarList>
-        <SelectGroup className="flex h-full w-full items-center justify-center p-2">
-          <div className="flex h-auto w-full items-center justify-start px-4 py-2">
+        <SelectGroup className="hidden h-full w-full items-start justify-center p-2 md:block">
+          <div className="flex h-auto w-full min-w-[234px] items-center justify-between px-4 py-2">
             <SelectLabel className="font-['SUIT Variable'] items-start text-left text-xl font-bold leading-7 text-black">
               마일퀘 설정하기
             </SelectLabel>
-            <div className="h-auto w-auto"></div>
             <div className="p-3">
-              <PanelLeftClose className="relative h-5 w-5 items-end" />
+              <PanelLeftClose className="relative ml-auto h-5 w-5 items-end" />
             </div>
           </div>
         </SelectGroup>
-        <CommandGroup>
+        <CommandGroup className="w-full">
           <SidebarItem>
             <Ghost className="mr-2 h-4 w-4" />
             <span>프로필 설정</span>
@@ -99,7 +104,6 @@ export function OurOptionSidebar() {
             <span>알림 설정</span>
           </SidebarItem>
         </CommandGroup>
-        <SelectGroup className="pl-5 pt-4"></SelectGroup>
         <CommandGroup>
           <SidebarItem>
             <User className="mr-2 size-4" />
@@ -143,8 +147,7 @@ export function OurOptionSidebar() {
             <span>불편/건의 사항</span>
           </SidebarItem>
         </CommandGroup>
-        <CommandSeparator />
-        <CommandGroup>
+        <CommandGroup className="border-t">
           <SidebarItem>
             <Info className="mr-2 size-4" />
             <span>도움말</span>
