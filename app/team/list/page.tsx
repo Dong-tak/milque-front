@@ -3,7 +3,7 @@ import DetailPage from "@/app/detail/page";
 export default function Team() {
   return (
     <div>
-      <DetailPage form="instagram" />
+      <DetailPage form="tiktok" />
     </div>
   );
 }

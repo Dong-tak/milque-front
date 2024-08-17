@@ -45,11 +45,11 @@ export default function DetailPage({ form }: DetailPageProps) {
           className={`hidden h-screen max-h-[785px] ${width} max-w-[514px] py-6 md:block`}
         >
           <div
-            className={`flex h-full w-auto ${backgroundColor} ${itemsArray} ${justifyArray} overflow-hidden`}
+            className={`flex h-full w-auto rounded-l-md ${backgroundColor} ${itemsArray} ${justifyArray} overflow-hidden`}
           >
-            <InstagramFeedEmbed
+            {/* <InstagramFeedEmbed
               url={"https://www.instagram.com/p/C-dNdiKMYfY/"}
-            />
+            /> */}
             {/* <InstagramReelsEmbed
               url={
                 "https://www.instagram.com/reel/C9mPBPSJwGt/?utm_source=ig_web_copy_link/"
@@ -60,7 +60,7 @@ export default function DetailPage({ form }: DetailPageProps) {
                 "https://www.instagram.com/p/C8333eatFmY/?utm_source=ig_web_copy_link"
               }
             /> */}
-            {/* <TiktokEmbed content={tiktokContent} /> */}
+            <TiktokEmbed content={tiktokContent} />
             {/* <YouTubeEmbed url={"5JafqFjBnBU"} /> */}
             {/* <YouTubeShortsEmbed url={"q4IkcMIk70M"} /> */}
           </div>
