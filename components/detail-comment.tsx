@@ -12,10 +12,19 @@ import { DetailTopNav } from "./detail-top-nav";
 import DetailBtmNav from "./detail-btm-nav";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/drawer";
+import InstagramFeedEmbed from "./insta-feed";
 
 export default function DetailComment() {
   return (
-    <div className="relative flex h-screen min-h-[310px] justify-between py-6 md:max-h-[729px] md:min-w-[310px] md:max-w-[500px]">
+    <div className="relative flex h-screen min-h-[310px] justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
       <div className="flex bg-card">
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
@@ -51,13 +60,30 @@ export default function DetailComment() {
                 <Ellipsis className="size-4" />
               </Button>
             </div>
-            <Button
-              variant={"ghost"}
-              size={"icon"}
-              className="rounded-none md:hidden"
-            >
-              <Eye className="size-6" />
-            </Button>
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"icon"}
+                  className="rounded-none md:hidden"
+                >
+                  <Eye className="size-6" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Move Goal</DrawerTitle>
+                  <DrawerDescription>
+                    Set your daily activity goal.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="h-[785px] p-3">
+                  <InstagramFeedEmbed
+                    url={"https://www.instagram.com/p/C-dNdiKMYfY/"}
+                  />
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
         {/* comment nav */}

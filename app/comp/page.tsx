@@ -52,6 +52,7 @@ import InstagramFeedEmbed from "@/components/insta-feed";
 import { OurSignUp } from "@/components/our-signup";
 import { OurVerify } from "@/components/our-verify";
 import { OurSocialLink } from "@/components/our-social-link";
+import { DrawerDemo } from "@/components/our-drawer";
 
 export default async function Comp() {
   return (
@@ -151,6 +152,7 @@ export default async function Comp() {
       <OurSignUp />
       <OurVerify />
       <OurSocialLink />
+      <DrawerDemo />
     </div>
   );
 }
