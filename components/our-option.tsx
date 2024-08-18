@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { OurOptionSidebar } from "./our-optionsidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X, Menu, ChevronLeft } from "lucide-react";
+import { OurCheckbox } from "./our-checkbox";
+import { OurAccordion } from "./our-accordion";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -33,26 +35,28 @@ export function OurOption() {
       </DialogTrigger>
       {isOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
-          <DialogContent className="flex max-h-[90vh] w-full max-w-[90%] flex-shrink-0 flex-col overflow-y-auto bg-white shadow-lg">
+          <DialogContent className="flex h-full w-full max-w-[1136px] flex-shrink-0 flex-col overflow-hidden bg-white shadow-lg">
             {/* 상단바 (작은 화면에서만 보임) */}
-            <div className="flex w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
-              <ChevronLeft className="h-6 w-6" />
+            <div className="z-40 flex w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
+              <DialogPrimitive.Close>
+                <ChevronLeft className="h-6 w-6" />
+              </DialogPrimitive.Close>
               <span className="text-center text-xl font-bold">프로필 설정</span>
               <Menu className="h-6 w-6" onClick={toggleSidebar} />
             </div>
 
-            <div className="flex w-full flex-grow">
+            <div className="flex h-full w-full">
               {/* 사이드바 */}
               <div
                 className={`${
-                  isSidebarOpen || window.innerWidth >= 764 ? "block" : "hidden"
-                } right-0 z-30 flex-shrink-0 border-r bg-white md:left-0`}
+                  isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
+                } fixed right-0 top-0 z-30 h-full w-[250px] flex-shrink-0 border-b border-l bg-white md:relative md:left-0 md:top-auto md:border-r md:border-none`}
               >
                 <OurOptionSidebar />
               </div>
 
               {/* Content view */}
-              <div className="flex flex-grow flex-col p-8">
+              <div className="flex h-full w-full max-w-[636px] flex-grow flex-col space-y-6 overflow-auto p-8">
                 <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
                   <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
                     프로필 설정
@@ -78,13 +82,33 @@ export function OurOption() {
                     </Label>
                     <Input id="username" value="@peduarte" className="w-full" />
                   </div>
+
+                  {/* 체크박스 */}
+                  <div className="space-y-1">
+                    <Label className="flex items-center gap-1">
+                      <OurCheckbox />
+                      전체 동의
+                    </Label>
+                    <Label className="ml-4 flex items-center gap-1">
+                      <OurCheckbox />
+                      이용약관에 동의하지 아니하지 않습니다.
+                    </Label>
+                    <Label className="ml-4 flex items-center gap-1">
+                      <OurCheckbox />
+                      유정 하위
+                    </Label>
+                    <Label className="ml-4 flex items-center gap-1">
+                      <OurCheckbox />
+                      이용약관에 동의하지 아니하지 않습니다.
+                    </Label>
+                  </div>
                 </div>
-                <DialogFooter className="flex">
+                <DialogFooter className="z-10 flex">
                   <Button type="submit">초기화</Button>
                   <Button type="submit">수정하기</Button>
                 </DialogFooter>
               </div>
-              <div className="hidden h-full xl:block xl:w-[250px]">
+              <div className="hidden h-full w-[250px] xl:block">
                 {/* 우측 빈공간 - 브레이크 포인트 1100px 보다 작으면 없어짐 */}
               </div>
             </div>

@@ -119,7 +119,7 @@ export function OurOptionSidebar() {
             <span>공유 설정</span>
           </SidebarItem>
         </CommandGroup>
-        <CommandGroup>
+        <CommandGroup className="h-max-[295px] h-full">
           <SidebarItem>
             <Sidebar className="mr-2 size-4" />
             <span>화면 설정</span>
@@ -145,6 +145,9 @@ export function OurOptionSidebar() {
           <SidebarItem>
             <MessageSquare className="mr-2 h-4 w-4" />
             <span>불편/건의 사항</span>
+          </SidebarItem>
+          <SidebarItem>
+            <div className="block h-full md:hidden">왜 안돼</div>
           </SidebarItem>
         </CommandGroup>
         <CommandGroup className="border-t">
