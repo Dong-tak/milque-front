@@ -14,6 +14,7 @@ export interface Post {
   comments: number;
   shares: number;
   date: string;
+  thumbnail: string;
 }
 
 export interface ApiResponse {

@@ -63,14 +63,14 @@ export default function DetailPage({ form }: DetailPageProps) {
           <div
             className={`flex h-full w-auto rounded-l-md ${backgroundColor} ${itemsArray} ${justifyArray} overflow-hidden`}
           >
-            <InstagramFeedEmbed
+            {/* <InstagramFeedEmbed
               url={"https://www.instagram.com/p/C-dNdiKMYfY/"}
-            />
-            {/* <InstagramReelsEmbed
+            /> */}
+            <InstagramReelsEmbed
               url={
                 "https://www.instagram.com/reel/C9mPBPSJwGt/?utm_source=ig_web_copy_link/"
               }
-            /> */}
+            />
             {/* <InstagramFeedEmbed
               url={
                 "https://www.instagram.com/p/C8333eatFmY/?utm_source=ig_web_copy_link"
