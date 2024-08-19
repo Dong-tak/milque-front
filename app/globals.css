@@ -78,7 +78,7 @@
   }
 }
 
-.custom-instagram-embed {
+.instagram-media {
   background: #fff;
   border: 0;
   border-radius: 3px;
@@ -86,28 +86,85 @@
     0 0 1px 0 rgba(0, 0, 0, 0.5),
     0 1px 10px 0 rgba(0, 0, 0, 0.15);
   margin: 1px;
-  max-width: 540px;
-  min-width: 326px;
-  max-height: 729px;
+  width: auto;
+  height: 100%;
   padding: 0;
   width: 99.375%;
+  overflow: hidden;
   position: relative;
 }
 
-/* Hiding feed information */
-.custom-instagram-embed .eebRC,
-.custom-instagram-embed .eo2As,
-.custom-instagram-embed .k2uA6 {
-  display: none !important;
+.accordhead {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 줄 수 제한: 4줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Ensuring only the photo and account information are displayed */
-.custom-instagram-embed a {
-  background: #ffffff;
-  line-height: 0;
-  padding: 0 0;
-  text-align: center;
-  text-decoration: none;
-  width: 100%;
-  display: block;
+.accordbody {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 줄 수 제한: 4줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-self: stretch;
+}
+
+@media (min-width: 1100px) {
+  .dropdown {
+    display: none;
+  }
+}
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 70px;
+  }
+
+  .sidebar-item {
+    justify-content: center;
+    padding: 15px;
+  }
+  .sidebar-item .icon {
+    width: 24px; /* size-6 */
+    height: 24px; /* size-6 */
+    margin-right: 0;
+  }
+
+  .sidebar-item .badge,
+  .sidebar-item .sq-badge,
+  .direct,
+  .sidebar-item span,
+  .sidebar-label {
+    display: none;
+  }
+}
+
+@media (max-width: 764px) {
+  .sidebar {
+    display: none;
+  }
+  .accordion {
+    padding-top: 48px;
+    padding-left: 0px;
+  }
+  .detail {
+    height: 100vh;
+  }
+}
+
+@media (min-width: 764px) {
+  .top-bar {
+    display: none;
+  }
+  .btm-bar {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 764px) {
+  .accordion {
+    padding-top: 44px; /* Different padding-top for this range */
+    padding-left: 70px; /* Different padding-left for this range */
+  }
 }

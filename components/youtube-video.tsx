@@ -9,8 +9,8 @@ interface YouTubeEmbedProps {
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ url }) => {
   const opts: YouTubeProps["opts"] = {
-    height: "390",
-    width: "640",
+    height: "300",
+    width: "490",
     //iframeClassName: { autoplay: 1 },
     // playerVars: {
     //   autoplay: 1,

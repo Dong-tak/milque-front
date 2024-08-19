@@ -329,6 +329,16 @@ const config = {
           textTransform: "none",
           textDecoration: "none",
         },
+        ".others-medium-tag": {
+          fontFamily: "--var(--font-suit)",
+          fontWeight: "600",
+          lineHeight: "16px",
+          fontSize: "12px",
+          letterSpacing: "0",
+          textIndent: "0px",
+          textTransform: "none",
+          textDecoration: "none",
+        },
         ".head-bold-headline": {
           fontFamily: "--var(--font-suit)",
           fontWeight: "700",
