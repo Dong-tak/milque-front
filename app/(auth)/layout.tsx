@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {/* 1100px 이하일 때 */}
       <div className="relative flex w-full items-center justify-center xl:w-1/2">
-        {/* 현재 경로가 /auth로 시작하는 경우에만 버튼을 표시 */}
+        {/* 현재 경로가 로 시작하는 경우에만 버튼을 표시 */}
         <div className="sm:px-4">
           {/* 헤더 */}
           <div
@@ -26,9 +26,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             style={{ padding: "16px 32px 0px 32px" }}
           >
             {/* 현재 경로가 signup,login 아닌 경우 뒤로가기 버튼을 표시 */}
-            {pathname !== "/auth/signup" && pathname !== "/auth/login" && (
+            {pathname !== "/signup" && pathname !== "/login" && (
               <div className="flex h-[40px] w-full items-end justify-start">
-                <Link href="/auth/login">
+                <Link href="/login">
                   <Button variant={"ghost"}>
                     <ArrowLeft className="h-4 w-4" />
                     뒤로가기
@@ -37,16 +37,16 @@ export default function Layout({ children }: { children: ReactNode }) {
               </div>
             )}
             {/* 현재 경로가 /auth/login이 아닌 경우 로그인 버튼을 표시 */}
-            {pathname !== "/auth/login" && (
+            {pathname !== "/login" && (
               <div className="flex h-[40px] w-full items-end justify-end">
-                <Link href="/auth/login">
+                <Link href="/login">
                   <Button variant={"ghost"}>로그인</Button>
                 </Link>
               </div>
             )}
           </div>
           {/* 헤더 끝 */}
-          {pathname.startsWith("/auth") && (
+          {pathname.startsWith("/") && (
             <div className="flex w-full items-center justify-center">
               {/* 자식 컴포넌트를 렌더링 */}
               {children}
