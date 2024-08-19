@@ -19,6 +19,12 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        sm: "375px",
+        md: "764px",
+        lg: "960px",
+        xl: "1100px",
+      },
       colors: {
         "Slate/50": "#f8fafc",
         "Slate/100": "#f1f5f9",
@@ -318,6 +324,16 @@ const config = {
           fontWeight: "600",
           lineHeight: "20px",
           fontSize: "14px",
+          letterSpacing: "0",
+          textIndent: "0px",
+          textTransform: "none",
+          textDecoration: "none",
+        },
+        ".others-medium-tag": {
+          fontFamily: "--var(--font-suit)",
+          fontWeight: "600",
+          lineHeight: "16px",
+          fontSize: "12px",
           letterSpacing: "0",
           textIndent: "0px",
           textTransform: "none",
