@@ -118,7 +118,7 @@ export default function DetailComment({ post }: { post: Post }) {
                 <DrawerHeader>
                   <DrawerTitle>{post.title}</DrawerTitle>
                 </DrawerHeader>
-                <div className="h-[785px] p-3">
+                <div className="h-[550px] p-3">
                   <SnsEmbed
                     form={post.media + post.type}
                     contentUrl={post.contentUrl}

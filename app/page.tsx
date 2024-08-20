@@ -13,7 +13,7 @@ export default async function Page() {
 
   return (
     <div>
-      <OurSidebar noti={noti} />
+      <OurSidebar noti={noti} user_id={"1"} />
       <OurBtmBar />
       <OurTopBar />
       <OurAccordion posts={posts} />

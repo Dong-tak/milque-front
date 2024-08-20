@@ -29,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -137,9 +137,49 @@ function SidebarDropdownBtn() {
   );
 }
 
-export function OurSidebar({ noti }: { noti: number }) {
+export function OurSidebar({
+  noti,
+  user_id,
+}: {
+  noti: number;
+  user_id: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
+  const [contentUrl, setContentUrl] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentUrl(e.target.value);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([
+            {
+              content_url: contentUrl,
+              comment: "Comment를 입력하세요.",
+            },
+          ]),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
   const navToHome = () => {
     router.push("/");
@@ -216,6 +256,8 @@ export function OurSidebar({ noti }: { noti: number }) {
               <div className="items-center gap-4">
                 <Input
                   id="url"
+                  value={contentUrl}
+                  onChange={handleInputChange}
                   className="w-full"
                   placeholder="링크를 입력하세요"
                 />
@@ -225,7 +267,7 @@ export function OurSidebar({ noti }: { noti: number }) {
                   <ArrowLeft className="icon mr-2 size-4" />
                   뒤로가기
                 </Button>
-                <Button type="submit">
+                <Button type="submit" onClick={handleSaveClick}>
                   저장하기
                   <Pin className="icon ml-2 size-4" />
                 </Button>
