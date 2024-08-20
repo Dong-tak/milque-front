@@ -29,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -54,6 +54,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -218,7 +219,12 @@ export function OurSidebar({
             onClick={navToHome}
             className="hover:bg-background hover:text-popover-foreground"
           >
-            <Instagram className="mr-2 h-4 w-[51.5px]" />
+            <div className="xl:hidden">
+              <MilequeSmallLogo />
+            </div>
+            <div className="hidden xl:block">
+              <MilequeFullLogo />
+            </div>
           </SidebarBtn>
         </div>
         <div className="flex flex-col p-2">
