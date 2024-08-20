@@ -14,6 +14,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 import { SqBadge } from "./ui/badge";
 import { Post } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 interface AccordionBtnProps {
   children: React.ReactNode;
@@ -110,7 +111,11 @@ export function OurAccordion({ posts }: { posts: Post[] }) {
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
   );
 
-  console.log(sortedDateKeys);
+  const router = useRouter();
+
+  const handlePostClick = (postId: number) => {
+    router.push(`/detail/${postId}`);
+  };
 
   return (
     <Accordion type="multiple" className="accordion w-full pl-[250px] pt-12">
@@ -134,11 +139,15 @@ export function OurAccordion({ posts }: { posts: Post[] }) {
             </div>
           </div>
           <AccordionContent>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
               {groupedPosts[dateKey].map((post) => (
-                <div key={post.postId} className="flex gap-4">
+                <div
+                  key={post.postId}
+                  className="flex gap-4 rounded-md p-2 hover:cursor-pointer hover:bg-card"
+                  onClick={() => handlePostClick(post.postId)}
+                >
                   <Image
-                    src={post.thumbnail}
+                    src={post.thumbnail || "/netflex.jpg"}
                     alt={`${post.media} thumbnail`}
                     width={128}
                     height={128}
@@ -152,12 +161,13 @@ export function OurAccordion({ posts }: { posts: Post[] }) {
                   <div className="flex flex-col items-start gap-2">
                     <div className="flex gap-2">
                       <div className="accordhead others-medium-title">
-                        {post.media}
+                        {post.title || "제목 없음"}
                       </div>
-                      <SqBadge variant={"secondary"}>NEW</SqBadge>
+                      {/* <SqBadge variant={"secondary"}>NEW</SqBadge> */}
                     </div>
                     <div className="accordbody body-normal-body-long-01">
-                      {post.comment}
+                      {post.comments[0].comment ||
+                        "이 콘텐츠에 대한 설명이 없습니다."}
                     </div>
                   </div>
                 </div>

@@ -1,19 +1,18 @@
 interface getDataProps {
-  user_id: string;
+  data: string;
 }
 
-export const getData = async ({ user_id }: getDataProps) => {
-  const baseurl = process.env.POST_API_URL;
-
+export const getData = async ({ data }: getDataProps) => {
+  const baseurl = process.env.NEXT_PUBLIC_POST_API_URL;
   if (typeof baseurl === "undefined") {
     console.error("API URL is not defined");
     return;
   }
 
-  const url = `${baseurl}/feed/${user_id}/`;
-
+  const url = `${baseurl}/feed/${data}/`;
+  console.log("Fetching data from:", url);
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

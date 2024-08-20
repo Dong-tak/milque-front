@@ -25,27 +25,51 @@ import {
 } from "./ui/drawer";
 import InstagramFeedEmbed from "./insta-feed";
 import { useRef, useState } from "react";
+import { Comment, Post } from "@/lib/types";
+import { DateCalc } from "./date-calc";
+import { useRouter } from "next/navigation";
+import SnsEmbed from "./sns-embed";
 
-export default function DetailComment() {
+export default function DetailComment({ post }: { post: Post }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [content, setContent] =
-    useState(`The first is goal setting and time management. 
-    This is personal achievement and professional lays the foundation for growth. 
-    The second habit is through positive thinking.`);
   const contentEditableRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  const handleBlur = () => {
-    setContent(contentEditableRef.current?.innerText || "");
+  const handleBlur = async () => {
+    const updatedContent = contentEditableRef.current?.innerText;
     setIsEditing(false);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            comment: updatedContent,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update the comment");
+      }
+
+      // Optionally, you can reload the page or update the state to reflect the new comment
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update the comment:", error);
+    }
   };
 
   return (
-    <div className="relative flex h-screen min-h-[310px] justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
-      <div className="flex bg-card">
+    <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
+      <div className="flex w-full bg-card">
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
           <div className="flex items-center">
@@ -53,7 +77,7 @@ export default function DetailComment() {
               <ChevronLeft className="size-6" />
             </div>
             <span className="accordhead others-medium-title">
-              프리랜서의 성공 비결:시간 관리와 wkrlrhkdfsdfdsfdsfdsfd
+              {post.title || "제목이 없습니다."}
             </span>
           </div>
           <div className="flex">
@@ -92,14 +116,12 @@ export default function DetailComment() {
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle>Move Goal</DrawerTitle>
-                  <DrawerDescription>
-                    Set your daily activity goal.
-                  </DrawerDescription>
+                  <DrawerTitle>{post.title}</DrawerTitle>
                 </DrawerHeader>
                 <div className="h-[785px] p-3">
-                  <InstagramFeedEmbed
-                    url={"https://www.instagram.com/p/C-dNdiKMYfY/"}
+                  <SnsEmbed
+                    form={post.media + post.type}
+                    contentUrl={post.contentUrl}
                   />
                 </div>
               </DrawerContent>
@@ -107,131 +129,46 @@ export default function DetailComment() {
           </div>
         </div>
         {/* comment nav */}
-        <div className="flex flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
-          <div className="flex flex-col gap-2 border-b-2 border-card bg-background p-4">
-            <div className="flex justify-between">
-              <div className="flex items-center text-muted-foreground others-medium-tag">
-                <div>@velory</div>
-                <Dot className="size-3" />
-                <div>5분전</div>
-              </div>
-              <div className="flex gap-2 text-secondary-foreground">
-                <Copy className="size-4 hover:text-muted-foreground" />
-                <SquarePen
-                  onClick={handleEditClick}
-                  className="size-4 hover:text-muted-foreground"
-                />
-                <Ellipsis className="size-4 hover:text-muted-foreground" />
-              </div>
-            </div>
-            <div className="body-normal-body-long-01">
-              {isEditing ? (
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  ref={contentEditableRef}
-                  onBlur={handleBlur}
-                  className="w-full rounded border border-gray-300 p-2"
-                >
-                  {content}
+        <div className="flex w-full flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
+          {post.comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="flex flex-col gap-2 border-b-2 border-card bg-background p-4"
+            >
+              <div className="flex justify-between">
+                <div className="flex items-center text-muted-foreground others-medium-tag">
+                  <div>@velory</div>
+                  <Dot className="size-3" />
+                  <div>
+                    <DateCalc dateString={comment.updated_at} />
+                  </div>
                 </div>
-              ) : (
-                <span onClick={handleEditClick}>{content}</span>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 border-b-2 border-card bg-background p-4">
-            <div className="flex justify-between">
-              <div className="flex items-center text-muted-foreground others-medium-tag">
-                <div>@velory</div>
-                <Dot className="size-3" />
-                <div>5분전</div>
+                <div className="flex gap-2 text-secondary-foreground">
+                  <Copy className="size-4 hover:text-muted-foreground" />
+                  <SquarePen
+                    onClick={handleEditClick}
+                    className="size-4 hover:text-muted-foreground"
+                  />
+                  <Ellipsis className="size-4 hover:text-muted-foreground" />
+                </div>
               </div>
-              <div className="flex gap-2 text-secondary-foreground">
-                <Copy className="size-4 hover:text-muted-foreground" />
-                <SquarePen className="size-4 hover:text-muted-foreground" />
-                <Ellipsis className="size-4 hover:text-muted-foreground" />
-              </div>
-            </div>
-            <div className="body-normal-body-long-01">
-              식단입니다. 건강한 몸은 능률적인 마음의 기초입니다. 네 번째는
-              지속적인 학습과 자기 계발입니다. 새로운 기술과 지식은 경쟁력을
-              높이고 삶의 질을 향상시킵니다. 마지막으로 다섯 번째 습관은 일상
-              속에서의 작은 목표 달성을 통해 성취감을 느끼는 것입니다.
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 border-b-2 border-card bg-background p-4">
-            <div className="flex justify-between">
-              <div className="flex items-center text-muted-foreground others-medium-tag">
-                <div>@velory</div>
-                <Dot className="size-3" />
-                <div>5분전</div>
-              </div>
-              <div className="flex gap-2 text-secondary-foreground">
-                <Copy className="size-4 hover:text-muted-foreground" />
-                <SquarePen className="size-4 hover:text-muted-foreground" />
-                <Ellipsis className="size-4 hover:text-muted-foreground" />
+              <div className="body-normal-body-long-01">
+                {isEditing ? (
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    ref={contentEditableRef}
+                    onBlur={handleBlur}
+                    className="w-full rounded border border-gray-300 p-2"
+                  >
+                    {comment.comment}
+                  </div>
+                ) : (
+                  <span onClick={handleEditClick}>{comment.comment}</span>
+                )}
               </div>
             </div>
-            <div className="body-normal-body-long-01">
-              첫 번째는 목표 설정과 시간 관리입니다. 이는 개인적 성취와 전문적
-              성장을 위한 기초를 마련합니다. 두 번째 습관은 긍정적 사고를 통한
-              자기 격려입니다. 이는 도전을 극복하고 성공으로 나아가는 데
-              중요합니다. 세 번째는 건강 유지를 위한 일상적인 운동과 균형 잡힌
-              식단입니다. 건강한 몸은 능률적인 마음의 기초입니다. 네 번째는
-              지속적인 학습과 자기 계발입니다. 새로운 기술과 지식은 경쟁력을
-              높이고 삶의 질을 향상시킵니다. 마지막으로 다섯 번째 습관은 일상
-              속에서의 작은 목표 달성을 통해 성취감을 느끼는 것입니다.
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 border-b-2 border-card bg-background p-4">
-            <div className="flex justify-between">
-              <div className="flex items-center text-muted-foreground others-medium-tag">
-                <div>@velory</div>
-                <Dot className="size-3" />
-                <div>5분전</div>
-              </div>
-              <div className="flex gap-2 text-secondary-foreground">
-                <Copy className="size-4 hover:text-muted-foreground" />
-                <SquarePen className="size-4 hover:text-muted-foreground" />
-                <Ellipsis className="size-4 hover:text-muted-foreground" />
-              </div>
-            </div>
-            <div className="body-normal-body-long-01">
-              첫 번째는 목표 설정과 시간 관리입니다. 이는 개인적 성취와 전문적
-              성장을 위한 기초를 마련합니다. 두 번째 습관은 긍정적 사고를 통한
-              자기 격려입니다. 이는 도전을 극복하고 성공으로 나아가는 데
-              중요합니다. 세 번째는 건강 유지를 위한 일상적인 운동과 균형 잡힌
-              식단입니다. 건강한 몸은 능률적인 마음의 기초입니다. 네 번째는
-              지속적인 학습과 자기 계발입니다. 새로운 기술과 지식은 경쟁력을
-              높이고 삶의 질을 향상시킵니다. 마지막으로 다섯 번째 습관은 일상
-              속에서의 작은 목표 달성을 통해 성취감을 느끼는 것입니다.
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 border-b-2 border-card bg-background p-4">
-            <div className="flex justify-between">
-              <div className="flex items-center text-muted-foreground others-medium-tag">
-                <div>@velory</div>
-                <Dot className="size-3" />
-                <div>5분전</div>
-              </div>
-              <div className="flex gap-2 text-secondary-foreground">
-                <Copy className="size-4 hover:text-muted-foreground" />
-                <SquarePen className="size-4 hover:text-muted-foreground" />
-                <Ellipsis className="size-4 hover:text-muted-foreground" />
-              </div>
-            </div>
-            <div className="body-normal-body-long-01">
-              첫 번째는 목표 설정과 시간 관리입니다. 이는 개인적 성취와 전문적
-              성장을 위한 기초를 마련합니다. 두 번째 습관은 긍정적 사고를 통한
-              자기 격려입니다. 이는 도전을 극복하고 성공으로 나아가는 데
-              중요합니다. 세 번째는 건강 유지를 위한 일상적인 운동과 균형 잡힌
-              식단입니다. 건강한 몸은 능률적인 마음의 기초입니다. 네 번째는
-              지속적인 학습과 자기 계발입니다. 새로운 기술과 지식은 경쟁력을
-              높이고 삶의 질을 향상시킵니다. 마지막으로 다섯 번째 습관은 일상
-              속에서의 작은 목표 달성을 통해 성취감을 느끼는 것입니다.
-            </div>
-          </div>
+          ))}
         </div>
         {/* btm nav */}
         <div className="absolute bottom-0 flex h-[48px] w-full items-center justify-between bg-background md:bottom-6 md:min-w-[310px] md:max-w-[500px]">

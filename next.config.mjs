@@ -18,6 +18,27 @@ const nextConfig = {
         protocol: "https",
         hostname: "github.com",
       },
+      {
+        protocol: "https",
+        hostname: "blogthumb.pstatic.net",
+      },
+
+      {
+        protocol: "https",
+        hostname: "velog.velcdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.sstatic.net",
+      },
+      {
+        protocol: "https",
+        hostname: "static.toss.im",
+      },
+      {
+        protocol: "https",
+        hostname: "img1.daumcdn.net",
+      },
     ],
   },
 };
