@@ -83,12 +83,9 @@ export default function Verify() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Label
-                      htmlFor="verify"
-                      className="underline underline-offset-2"
-                    >
+                    <span className="underline underline-offset-2">
                       혹시 인증메일이 오지 않았나요?
-                    </Label>
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>다시 보내세요!</p>

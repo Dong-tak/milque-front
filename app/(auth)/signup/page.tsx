@@ -40,6 +40,7 @@ export default function Signup() {
       } else {
         // 회원가입 실패 시 오류 메시지 표시
         setState({ fieldErrors: { email: result.error } });
+        console.log("회원가입 실패");
       }
     } finally {
       setIsLoading(false);

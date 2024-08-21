@@ -1,11 +1,15 @@
+import { cookies } from "next/headers";
 import { getCsrfToken } from "./csrf";
+import { getCookie } from "@/components/cookie";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 // Register function
 export async function registerUser(
   email: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const csrfToken = getCsrfToken();
+    const csrfToken = "o7XMibme54PGYFbn6z16UhrzQnrK9dkG";
     console.log(csrfToken);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
@@ -48,21 +52,17 @@ export async function verifyEmail(code: string): Promise<{
   message: string;
 }> {
   try {
-    const csrfToken = getCsrfToken(); // Get the CSRF token from the cookie
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
         },
         body: JSON.stringify({ code }),
         credentials: "include", // Important: to send cookies (CSRF cookie)
       },
     );
-
     if (response.ok) {
       const data = await response.json();
       return {
@@ -85,4 +85,12 @@ export async function verifyEmail(code: string): Promise<{
       error: (error as Error).message || "Unknown error", // error가 없으면 기본값 설정
     };
   }
+}
+
+export async function getCsrfToken22() {
+  const response = await fetch("http://192.168.219.225:8000/v1/user/csrf/", {
+    credentials: "include", // This will include cookies in the request
+  });
+  const data = await response.json();
+  return data.csrfToken;
 }

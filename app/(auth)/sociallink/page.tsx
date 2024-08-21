@@ -84,7 +84,7 @@ export default function Verify() {
             type="text"
             placeholder="Username"
             required
-            errors={state?.fieldErrors.username}
+            // errors={state?.fieldErrors.username}
             minLength={3}
             maxLength={10}
           />
@@ -97,7 +97,7 @@ export default function Verify() {
             placeholder="password"
             required
             minLength={PASSWORD_MIN_LENGTH}
-            errors={state?.fieldErrors.password}
+            // errors={state?.fieldErrors.password}
           />
         </div>
         <div className="space-y-[6px]">
@@ -108,7 +108,7 @@ export default function Verify() {
             placeholder="Confirm password"
             required
             minLength={PASSWORD_MIN_LENGTH}
-            errors={state?.fieldErrors.confirm_password}
+            // errors={state?.fieldErrors.confirm_password}
           />
         </div>
         <div className="space-y-2">
