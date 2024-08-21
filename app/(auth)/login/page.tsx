@@ -38,7 +38,7 @@ export default function Login() {
               name="email"
               type="email"
               required
-              errors={state?.fieldErrors?.email}
+              // errors={state?.fieldErrors?.email}
               id="email"
               placeholder="name@example.com"
             />
@@ -53,7 +53,7 @@ export default function Login() {
               placeholder="Password"
               required
               minLength={PASSWORD_MIN_LENGTH}
-              errors={state?.fieldErrors?.password}
+              // errors={state?.fieldErrors?.password}
             />
           </div>
           <Button size={"long"}>Login</Button>

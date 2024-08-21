@@ -4,7 +4,7 @@ import { registerUser, verifyEmail } from "@/app/api/utils/api";
 
 dotenv.config();
 
-const POST_API_URL = process.env.POST_API_URL;
+const POST_API_URL = process.env.NEXT_PUBLIC_POST_API_URL;
 
 export async function handleVerifyEmail(code: string) {
   try {
