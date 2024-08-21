@@ -15,12 +15,20 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Github, Instagram } from "lucide-react";
 import Link from "next/link";
-import { login } from "./action";
+import { onLogIn } from "./action";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
+import { LoginData } from "./action";
+
+const convertFormDataToLoginData = (formData: FormData): LoginData => {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  return { email, password };
+};
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // 오류 메시지 상태 추가
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +37,14 @@ export default function Login() {
     formData.append("email", email);
     formData.append("password", password);
 
+    const loginData: LoginData = convertFormDataToLoginData(formData);
+
     try {
-      await login(formData);
-    } catch (error) {
-      console.error("Login failed", error);
+      await onLogIn(loginData);
+    } catch (err) {
+      const errorMessage = (err as Error).message; // 명시적 형변환
+      setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
+      console.error("Login failed", errorMessage);
     }
   };
 
@@ -67,13 +79,15 @@ export default function Login() {
             <Input
               name="password"
               type="password"
-              placeholder="Password"
               required
-              minLength={PASSWORD_MIN_LENGTH}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              id="password"
+              placeholder="Enter your password"
             />
           </div>
+          {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+          {/* 오류 메시지 표시 */}
           <Button size={"long"} type="submit">
             Login
           </Button>

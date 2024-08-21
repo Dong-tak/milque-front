@@ -1,13 +1,7 @@
-"use server";
+import { AxiosResponse, AxiosError } from "axios";
+import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
 
-import axios from "axios";
-import Cookies from "js-cookie";
-import dotenv from "dotenv";
-
-dotenv.config();
-const POST_API_URL = process.env.POST_API_URL;
-
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
 }
@@ -29,36 +23,37 @@ interface LoginResponse {
   token: Token;
 }
 
-export async function login(formData: FormData | null): Promise<void> {
-  if (!formData) {
-    throw new Error("Form data is null or undefined");
-  }
+export const onLogInSuccess = (response: AxiosResponse) => {
+  const { access } = response.data.token;
+  // AccessToken을 기본 헤더에 설정
+  httpClientForCredentials.defaults.headers.common["Authorization"] =
+    `Bearer ${access}`;
+};
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    throw new Error("Email or password is missing");
-  }
-
-  const loginData: LoginData = { email, password };
-
+export const onLogIn = async (params: LoginData) => {
   try {
-    const response = await axios.post<LoginResponse>(
-      "/v1/user/auth/",
-      loginData,
-    );
-
-    const { token } = response.data;
-
-    // 토큰을 쿠키에 저장 (HttpOnly 쿠키를 사용하면 보안이 강화됨)
-    Cookies.set("access_token", token.access, { expires: 1 });
-    Cookies.set("refresh_token", token.refresh, { expires: 7 });
-
-    // 로그인 성공 후 다른 페이지로 리디렉션
-    window.location.href = "/dashboard"; // 예시로 대시보드 페이지로 이동
+    const response = await httpClientForCredentials.post("/user/auth/", params);
+    if (response.status === 200) {
+      onLogInSuccess(response);
+    }
   } catch (error) {
-    console.error("로그인 실패:", error);
-    alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    const axiosError = error as AxiosError;
+    console.error("로그인 실패:", axiosError.response?.data);
   }
-}
+};
+
+export const onSilentRefresh = async () => {
+  try {
+    const response = await httpClientForCredentials.post("/user/auth/refresh/");
+    if (response.status === 200) {
+      // AccessToken을 변수로 저장
+      onLogInSuccess(response);
+    }
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    if (axiosError.response?.status === 401) {
+      // RefreshToken 만료 - 로그인 페이지로 이동
+      window.location.href = "/login";
+    }
+  }
+};

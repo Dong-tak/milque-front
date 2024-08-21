@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, FieldValues } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,90 +12,107 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Github, Instagram } from "lucide-react";
-import { registerUser } from "./action";
+import Link from "next/link";
+import { onLogIn, onSilentRefresh } from "@/app/(auth)/login/action";
+import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 
-interface FormState {
-  fieldErrors?: {
-    email?: string;
-  };
-}
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // 오류 메시지 상태 추가
 
-export default function Signup() {
-  const [state, setState] = useState<FormState>({ fieldErrors: {} });
-  const [isLoading, setIsLoading] = useState(false); // isLoading 상태 변수 추가
-  const { register, handleSubmit } = useForm();
-  const router = useRouter();
+  useEffect(() => {
+    onSilentRefresh();
+  }, []);
 
-  const onSubmitRegister = async (data: FieldValues) => {
-    setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
     try {
-      const result = await registerUser(data.email as string);
-      if (result.success) {
-        // 회원가입 성공 시 인증 페이지로 이동
-        router.push("/verify");
-      } else {
-        // 회원가입 실패 시 오류 메시지 표시
-        setState({ fieldErrors: { email: result.error } });
-      }
-    } finally {
-      setIsLoading(false);
+      await onLogIn({ email, password });
+    } catch (err) {
+      const errorMessage = (err as Error).message; // 명시적 형변환
+      setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
+      console.error("Login failed", errorMessage);
     }
   };
 
   return (
     <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
-        <CardTitle className="text-center">
-          회원가입{isLoading && <span> 로딩 중...</span>}
-        </CardTitle>
+        <CardTitle className="h-auto w-full text-center">로그인</CardTitle>
         <CardDescription className="text-center">
-          바로 계정을 연결하세요!
+          Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 p-0">
-        <form
-          className="space-y-[6px]"
-          onSubmit={handleSubmit(onSubmitRegister)}
-        >
+      <CardContent className="h-auto w-full space-y-4 p-0">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-[6px]">
-            <Label htmlFor="register-email" className="h-10">
+            <Label htmlFor="email" className="h-10">
               Email
             </Label>
             <Input
+              name="email"
               type="email"
               required
-              // errors={
-              //   state.fieldErrors?.email ? [state.fieldErrors.email] : undefined
-              // }
-              id="register-email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              id="email"
               placeholder="name@example.com"
-              {...register("email")}
             />
           </div>
-          <Button size={"long"} type="submit" disabled={isLoading}>
-            이메일로 회원가입
+          <div className="space-y-[6px]">
+            <Label htmlFor="password" className="h-10">
+              Password
+            </Label>
+            <Input
+              name="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              id="password"
+              placeholder="Enter your password"
+            />
+          </div>
+          {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+          {/* 오류 메시지 표시 */}
+          <Button size={"long"} type="submit">
+            Login
           </Button>
         </form>
       </CardContent>
-      <CardContent className="flex items-center p-0">
+      <CardContent className="flex h-auto w-full items-center p-0">
         <Separator />
         <div className="w-full text-center text-muted-foreground body-normal-body-01">
           OR Login WITH
         </div>
         <Separator />
       </CardContent>
-      <CardContent className="space-y-2 p-0">
+      <CardContent className="h-auto w-full space-y-2 p-0">
         <Button variant={"background"} size={"long"} className="gap-2">
           <Github className="h-4 w-4" />
-          Github
+          GitHub
         </Button>
         <Button variant={"background"} size={"long"} className="gap-2">
           <Instagram className="h-4 w-4" />
           Instagram
         </Button>
+      </CardContent>
+      <CardContent className="flex h-auto w-full items-center justify-center py-6">
+        <div>Don&apos;t have an account?&nbsp;&nbsp;</div>
+        <Link
+          href={"/signup"}
+          className="flex underline underline-offset-2 hover:scale-105 hover:opacity-60"
+        >
+          Sign up
+        </Link>
       </CardContent>
     </Card>
   );
