@@ -1,9 +1,11 @@
 // utils/csrf.ts
 export function getCsrfToken() {
   if (typeof document !== "undefined") {
+    console.log(document.cookie);
     const csrfCookie = document.cookie
-      .split(";")
+      .split("; ")
       .find((cookie) => cookie.trim().startsWith("csrftoken="));
+    console.log(csrfCookie);
     if (csrfCookie) {
       return csrfCookie.split("=")[1];
     } else {

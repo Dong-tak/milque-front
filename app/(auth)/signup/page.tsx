@@ -18,28 +18,26 @@ import Link from "next/link";
 import { onLogIn, onSilentRefresh } from "@/app/(auth)/login/action";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // 오류 메시지 상태 추가
+export default function Signup() {
+  const [state, setState] = useState<FormState>({ fieldErrors: {} });
+  const [isLoading, setIsLoading] = useState(false); // isLoading 상태 변수 추가
+  const { register, handleSubmit } = useForm();
+  const router = useRouter();
 
-  useEffect(() => {
-    onSilentRefresh();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
+  const onSubmitRegister = async (data: FieldValues) => {
+    setIsLoading(true);
     try {
-      await onLogIn({ email, password });
-    } catch (err) {
-      const errorMessage = (err as Error).message; // 명시적 형변환
-      setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
-      console.error("Login failed", errorMessage);
+      const result = await registerUser(data.email as string);
+      if (result.success) {
+        // 회원가입 성공 시 인증 페이지로 이동
+        router.push("/verify");
+      } else {
+        // 회원가입 실패 시 오류 메시지 표시
+        setState({ fieldErrors: { email: result.error } });
+        console.log("회원가입 실패");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
