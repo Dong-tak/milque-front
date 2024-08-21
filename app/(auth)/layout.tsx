@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-
+  const router = useRouter();
   return (
     <div className="flex h-screen w-full">
       {/* 1100px 이상일 때 */}
@@ -29,7 +30,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {pathname !== "/signup" && pathname !== "/login" && (
               <div className="flex h-[40px] w-full items-end justify-start">
                 <Link href="/login">
-                  <Button variant={"ghost"}>
+                  <Button variant={"ghost"} onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     뒤로가기
                   </Button>
