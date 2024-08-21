@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,12 +15,27 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Github, Instagram } from "lucide-react";
 import Link from "next/link";
-import { useFormState } from "react-dom";
 import { login } from "./action";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 
 export default function Login() {
-  const [state, dispatch] = useFormState(login, null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    try {
+      await login(formData);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
   return (
     <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
@@ -29,7 +45,7 @@ export default function Login() {
         </CardDescription>
       </CardHeader>
       <CardContent className="h-auto w-full space-y-4 p-0">
-        <form action={dispatch} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-[6px]">
             <Label htmlFor="email" className="h-10">
               Email
@@ -38,7 +54,8 @@ export default function Login() {
               name="email"
               type="email"
               required
-              errors={state?.fieldErrors?.email}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               id="email"
               placeholder="name@example.com"
             />
@@ -53,10 +70,13 @@ export default function Login() {
               placeholder="Password"
               required
               minLength={PASSWORD_MIN_LENGTH}
-              errors={state?.fieldErrors?.password}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button size={"long"}>Login</Button>
+          <Button size={"long"} type="submit">
+            Login
+          </Button>
         </form>
       </CardContent>
       <CardContent className="flex h-auto w-full items-center p-0">

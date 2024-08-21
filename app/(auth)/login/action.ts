@@ -1,96 +1,64 @@
 "use server";
 
+import axios from "axios";
+import Cookies from "js-cookie";
 import dotenv from "dotenv";
-import { z } from "zod";
-import bcrypt from "bcryptjs";
 
 dotenv.config();
-
 const POST_API_URL = process.env.POST_API_URL;
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .email()
-    .toLowerCase()
-    .refine(async (email) => {
-      const response = await fetch(`${POST_API_URL}/user/auth/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+interface LoginData {
+  email: string;
+  password: string;
+}
 
-      const contentType = response.headers.get("Content-Type");
-      if (contentType && contentType.includes("application/json")) {
-        const data = await response.json();
-        if (
-          response.status === 400 &&
-          data.error === "This email is already registered."
-        ) {
-          return false;
-        }
-        return true;
-      } else if (contentType && contentType.includes("text/html")) {
-        console.error(
-          "Received HTML response instead of JSON:",
-          await response.text(),
-        );
-        return false;
-      } else {
-        console.error("Unexpected response format:", contentType);
-        return false;
-      }
-    }, "이 이메일을 사용하는 계정이 존재하지 않습니다."),
-  password: z.string({
-    required_error: "비밀번호를 입력하세요.",
-  }),
-});
+interface Token {
+  access: string;
+  refresh: string;
+}
 
-export async function login(prevState: any, formData: FormData) {
-  const data = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
-  const result = await formSchema.safeParseAsync(data);
-  if (!result.success) {
-    return result.error.flatten();
-  } else {
-    const response = await fetch(`${POST_API_URL}/user/auth/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+interface User {
+  id: number;
+  email: string;
+  nickname: string;
+}
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        error:
-          errorData.message ||
-          "로그인 실패. 이메일 또는 비밀번호를 확인하세요.",
-      };
-    }
+interface LoginResponse {
+  user: User;
+  message: string;
+  token: Token;
+}
 
-    const user = await response.json();
-    const ok = await bcrypt.compare(
-      result.data.password,
-      user.password ?? "xxxx",
+export async function login(formData: FormData | null): Promise<void> {
+  if (!formData) {
+    throw new Error("Form data is null or undefined");
+  }
+
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    throw new Error("Email or password is missing");
+  }
+
+  const loginData: LoginData = { email, password };
+
+  try {
+    const response = await axios.post<LoginResponse>(
+      "/v1/user/auth/",
+      loginData,
     );
 
-    if (!ok) {
-      return {
-        error: "비밀번호가 일치하지 않습니다.",
-        fieldErrors: {
-          password: ["Wrong password."],
-          email: [],
-        },
-      };
-    }
+    const { token } = response.data;
 
-    // 로그인 성공 처리
-    return { success: true, user };
+    // 토큰을 쿠키에 저장 (HttpOnly 쿠키를 사용하면 보안이 강화됨)
+    Cookies.set("access_token", token.access, { expires: 1 });
+    Cookies.set("refresh_token", token.refresh, { expires: 7 });
+
+    // 로그인 성공 후 다른 페이지로 리디렉션
+    window.location.href = "/dashboard"; // 예시로 대시보드 페이지로 이동
+  } catch (error) {
+    console.error("로그인 실패:", error);
+    alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
   }
 }
