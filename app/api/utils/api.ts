@@ -7,15 +7,18 @@ export async function registerUser(
   try {
     const csrfToken = getCsrfToken();
     console.log(csrfToken);
-    const response = await fetch("/v1/user/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
+        },
+        body: JSON.stringify({ email }),
+        credentials: "include", // Important: to send cookies (CSRF cookie)
       },
-      body: JSON.stringify({ email }),
-      credentials: "include", // Important: to send cookies (CSRF cookie)
-    });
+    );
 
     if (response.ok) {
       const data = await response.json();
@@ -45,17 +48,20 @@ export async function verifyEmail(code: string): Promise<{
   message: string;
 }> {
   try {
-    const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken(); // Get the CSRF token from the cookie
 
-    const response = await fetch("/v1/user/verify_email/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
+        },
+        body: JSON.stringify({ code }),
+        credentials: "include", // Important: to send cookies (CSRF cookie)
       },
-      body: JSON.stringify({ code }),
-      credentials: "include", // Important: to send cookies (CSRF cookie)
-    });
+    );
 
     if (response.ok) {
       const data = await response.json();

@@ -101,9 +101,9 @@ export default function Verify() {
             <Input
               id="verifyCode"
               {...register("verifyCode")}
-              errors={
-                state.fieldErrors?.code ? [state.fieldErrors.code] : undefined
-              }
+              // errors={
+              //   state.fieldErrors?.code ? [state.fieldErrors.code] : undefined
+              // }
             />
             <Button
               variant={"default"}

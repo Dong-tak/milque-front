@@ -68,9 +68,9 @@ export default function Signup() {
             <Input
               type="email"
               required
-              errors={
-                state.fieldErrors?.email ? [state.fieldErrors.email] : undefined
-              }
+              // errors={
+              //   state.fieldErrors?.email ? [state.fieldErrors.email] : undefined
+              // }
               id="register-email"
               placeholder="name@example.com"
               {...register("email")}

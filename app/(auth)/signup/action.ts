@@ -32,11 +32,11 @@ import { getCsrfToken } from "@/app/api/utils/csrf";
 
 dotenv.config();
 
-const POST_API_URL = process.env.POST_API_URL;
+const POST_API_URL = process.env.NEXT_PUBLIC_POST_API_URL;
 
 export async function registerUser(email: string) {
   try {
-    const csrfToken = getCsrfToken(); // Get the CSRF token from the cookie
+    const csrfToken = "o7XMibme54PGYFbn6z16UhrzQnrK9dkG"; // Get the CSRF token from the cookie
 
     if (!csrfToken) {
       throw new Error("CSRF token not found");
