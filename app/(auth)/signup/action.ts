@@ -2,7 +2,6 @@
 
 import dotenv from "dotenv";
 import { getCsrfToken } from "@/app/api/utils/csrf";
-import { getCsrfToken22 } from "@/app/api/utils/api";
 
 dotenv.config();
 

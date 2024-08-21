@@ -1,20 +1,18 @@
-import { getCsrfToken } from "./csrf";
 import axios from "axios";
-import Cookies from "js-cookie";
 // Register function
 export async function registerUser(
   email: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const csrfToken = getCsrfToken();
-    console.log(csrfToken);
+    // const csrfToken = getCsrfToken();
+    // console.log(csrfToken);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
+          // "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
         },
         body: JSON.stringify({ email }),
         credentials: "include", // Important: to send cookies (CSRF cookie)
@@ -49,7 +47,7 @@ export async function verifyEmail(code: string): Promise<{
   message: string;
 }> {
   try {
-    const csrfToken = getCsrfToken(); // Get the CSRF token from the cookie
+    // Get the CSRF token from the cookie
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/verify_email/`,
@@ -57,7 +55,6 @@ export async function verifyEmail(code: string): Promise<{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken || "", // Include the CSRF token in the headers
         },
         body: JSON.stringify({ code }),
         credentials: "include", // Important: to send cookies (CSRF cookie)

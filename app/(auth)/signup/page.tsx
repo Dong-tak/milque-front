@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useForm, FieldValues } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -12,11 +13,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Github, Instagram } from "lucide-react";
-import Link from "next/link";
-import { onLogIn, onSilentRefresh } from "@/app/(auth)/login/action";
-import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
+import { registerUser } from "./action";
+
+interface FormState {
+  fieldErrors?: {
+    email?: string;
+  };
+}
 
 export default function Signup() {
   const [state, setState] = useState<FormState>({ fieldErrors: {} });
@@ -44,73 +50,54 @@ export default function Signup() {
   return (
     <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
-        <CardTitle className="h-auto w-full text-center">로그인</CardTitle>
+        <CardTitle className="text-center">
+          회원가입{isLoading && <span> 로딩 중...</span>}
+        </CardTitle>
         <CardDescription className="text-center">
-          Enter your email below to login to your account
+          바로 계정을 연결하세요!
         </CardDescription>
       </CardHeader>
-      <CardContent className="h-auto w-full space-y-4 p-0">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <CardContent className="space-y-4 p-0">
+        <form
+          className="space-y-[6px]"
+          onSubmit={handleSubmit(onSubmitRegister)}
+        >
           <div className="space-y-[6px]">
-            <Label htmlFor="email" className="h-10">
+            <Label htmlFor="register-email" className="h-10">
               Email
             </Label>
             <Input
-              name="email"
               type="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              id="email"
+              // errors={
+              //   state.fieldErrors?.email ? [state.fieldErrors.email] : undefined
+              // }
+              id="register-email"
               placeholder="name@example.com"
+              {...register("email")}
             />
           </div>
-          <div className="space-y-[6px]">
-            <Label htmlFor="password" className="h-10">
-              Password
-            </Label>
-            <Input
-              name="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              id="password"
-              placeholder="Enter your password"
-            />
-          </div>
-          {error && <p style={{ color: "red" }}>{error}</p>}{" "}
-          {/* 오류 메시지 표시 */}
-          <Button size={"long"} type="submit">
-            Login
+          <Button size={"long"} type="submit" disabled={isLoading}>
+            이메일로 회원가입
           </Button>
         </form>
       </CardContent>
-      <CardContent className="flex h-auto w-full items-center p-0">
+      <CardContent className="flex items-center p-0">
         <Separator />
         <div className="w-full text-center text-muted-foreground body-normal-body-01">
           OR Login WITH
         </div>
         <Separator />
       </CardContent>
-      <CardContent className="h-auto w-full space-y-2 p-0">
+      <CardContent className="space-y-2 p-0">
         <Button variant={"background"} size={"long"} className="gap-2">
           <Github className="h-4 w-4" />
-          GitHub
+          Github
         </Button>
         <Button variant={"background"} size={"long"} className="gap-2">
           <Instagram className="h-4 w-4" />
           Instagram
         </Button>
-      </CardContent>
-      <CardContent className="flex h-auto w-full items-center justify-center py-6">
-        <div>Don&apos;t have an account?&nbsp;&nbsp;</div>
-        <Link
-          href={"/signup"}
-          className="flex underline underline-offset-2 hover:scale-105 hover:opacity-60"
-        >
-          Sign up
-        </Link>
       </CardContent>
     </Card>
   );
