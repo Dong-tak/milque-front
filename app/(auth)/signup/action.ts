@@ -1,7 +1,6 @@
 "use client"; // Ensure this runs in the client-side environment
 
 import dotenv from "dotenv";
-import { getCsrfToken } from "@/app/api/utils/csrf";
 
 dotenv.config();
 
