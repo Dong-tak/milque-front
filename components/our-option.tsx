@@ -50,7 +50,7 @@ export function OurOption() {
               <div
                 className={`${
                   isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
-                } fixed right-0 top-0 z-30 h-full w-[250px] flex-shrink-0 border-b border-l bg-white md:relative md:left-0 md:top-auto md:border-r md:border-none`}
+                } fixed right-0 top-[30px] z-30 h-full w-[250px] flex-shrink-0 border-b border-l bg-white md:relative md:left-0 md:top-auto md:border-r md:border-none`}
               >
                 <OurOptionSidebar />
               </div>

@@ -57,7 +57,7 @@ export function OurLogIn() {
       <CardContent className="flex h-auto w-full items-center justify-center py-6">
         <div>Don&apos;t have an account?&nbsp;&nbsp;</div>
         <Link
-          href={"/auth/signup"}
+          href={"/signup"}
           className="flex underline underline-offset-2 hover:scale-105 hover:opacity-60"
         >
           Sign up
