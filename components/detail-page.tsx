@@ -1,57 +1,68 @@
-import DetailBtmNav from "@/components/detail-btm-nav";
+"use client";
+
 import DetailComment from "@/components/detail-comment";
-import { DetailTopNav } from "@/components/detail-top-nav";
-import InstagramFeedEmbed from "@/components/insta-feed";
-import InstagramReelsEmbed from "@/components/insta-reels";
-import TiktokEmbed from "@/components/tiktok-embed";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
-import YouTubeEmbed from "@/components/youtube-video";
-import YouTubeShortsEmbed from "@/components/youtube-shorts";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { redirect, useParams, useRouter } from "next/navigation";
+import { getData } from "@/app/api/feed-api";
+import { ApiResponse, Post } from "@/lib/types";
+import SnsEmbed from "./sns-embed";
 
-interface DetailPageProps {
-  form: "instagram" | "youtubeVid" | "youtubeSht" | "tiktok";
-}
+export default function DetailPage({ user_id }: { user_id: string }) {
+  const router = useRouter();
+  const { id } = useParams();
+  const [posts, setPosts] = useState<ApiResponse | null>(null);
+  console.log("The ID is:", id);
+  useEffect(() => {
+    const fetchPostData = async () => {
+      if (id) {
+        try {
+          const data = await getData({ data: `${user_id}/${id}` });
+          setPosts(data);
+        } catch (error) {
+          console.error("Failed to fetch post data:", error);
+        }
+      }
+    };
 
-export const tiktokContent = `<blockquote
-  class="tiktok-embed"
-  cite="https://www.tiktok.com/@tarankaaa/video/7399985738428730632"
-  data-video-id="7399985738428730632"
-  style="max-width: 605px; min-width: 325px;"
->
-  <section>
-    <a
-      target="_blank"
-      title="@tarankaaa"
-      href="https://www.tiktok.com/@tarankaaa?refer=embed"
-      >@tarankaaa</a
-    >
-  </section>
-</blockquote>
-<script async src="https://www.tiktok.com/embed.js"></script>`;
+    fetchPostData();
+  }, [id]);
 
-export default function DetailPage({ form }: DetailPageProps) {
+  const post = posts?.data?.posts[0] || null;
+  const comment = post?.comments || null;
+
+  if (!post) return <div>Loading...</div>;
+
   let backgroundColor = "";
   let itemsArray = "items-start";
   let justifyArray = "justify-end";
   let width = "w-full";
 
-  if (form === "youtubeVid") {
+  const form = post.media + post.type;
+
+  if (form === "youtubevideo") {
     backgroundColor = "bg-card";
     itemsArray = "items-center";
     justifyArray = "justify-center";
-  } else if (form === "tiktok") {
+  } else if (form === "tiktokshorts") {
     backgroundColor = "bg-none";
     itemsArray = "items-center";
     justifyArray = "";
     width = "w-auto";
   }
 
+  const goHome = () => {
+    router.back();
+  };
+
   return (
     <div className="flex h-screen items-center justify-center bg-neutral-500 py-6">
       <div className="hidden md:block">
+        <X
+          className="fixed right-8 top-6 size-8 text-background hover:cursor-pointer hover:text-gray-400"
+          onClick={goHome}
+        />
         <Button variant="outline" size={"icon"} className="mx-5">
           <ChevronLeft className="size-4" />
         </Button>
@@ -63,26 +74,11 @@ export default function DetailPage({ form }: DetailPageProps) {
           <div
             className={`flex h-full w-auto rounded-l-md ${backgroundColor} ${itemsArray} ${justifyArray} overflow-hidden`}
           >
-            <InstagramFeedEmbed
-              url={"https://www.instagram.com/p/C-dNdiKMYfY/"}
-            />
-            {/* <InstagramReelsEmbed
-              url={
-                "https://www.instagram.com/reel/C9mPBPSJwGt/?utm_source=ig_web_copy_link/"
-              }
-            /> */}
-            {/* <InstagramFeedEmbed
-              url={
-                "https://www.instagram.com/p/C8333eatFmY/?utm_source=ig_web_copy_link"
-              }
-            /> */}
-            {/* <TiktokEmbed content={tiktokContent} /> */}
-            {/* <YouTubeEmbed url={"5JafqFjBnBU"} /> */}
-            {/* <YouTubeShortsEmbed url={"q4IkcMIk70M"} /> */}
+            <SnsEmbed form={form} contentUrl={post.contentUrl} />
           </div>
         </div>
         <div className="flex w-auto md:min-w-0">
-          <DetailComment />
+          <DetailComment post={post} />
         </div>
       </div>
       <div className="hidden md:block">
