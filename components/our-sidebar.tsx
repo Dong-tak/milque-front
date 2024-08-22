@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Bell,
   Bookmark,
   Calculator,
@@ -16,6 +17,7 @@ import {
   Link,
   LogIn,
   LogOut,
+  Pin,
   Plus,
   Scan,
   Settings,
@@ -27,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -42,6 +44,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Slot } from "@radix-ui/react-slot";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -125,9 +138,49 @@ function SidebarDropdownBtn() {
   );
 }
 
-export function OurSidebar() {
+export function OurSidebar({
+  noti,
+  user_id,
+}: {
+  noti: number;
+  user_id: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
+  const [contentUrl, setContentUrl] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentUrl(e.target.value);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([
+            {
+              content_url: contentUrl,
+              comment: "Comment를 입력하세요.",
+            },
+          ]),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
   const navToHome = () => {
     router.push("/");
@@ -166,7 +219,12 @@ export function OurSidebar() {
             onClick={navToHome}
             className="hover:bg-background hover:text-popover-foreground"
           >
-            <Instagram className="mr-2 h-4 w-[51.5px]" />
+            <div className="xl:hidden">
+              <MilequeSmallLogo />
+            </div>
+            <div className="hidden xl:block">
+              <MilequeFullLogo />
+            </div>
           </SidebarBtn>
         </div>
         <div className="flex flex-col p-2">
@@ -185,10 +243,44 @@ export function OurSidebar() {
             </div>
             <SqBadge variant={"gray"}>준비중</SqBadge>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome} isActive={pathname === "/add"}>
-            <SquarePlus className="icon mr-2 size-4" />
-            <span>스크랩</span>
-          </SidebarBtn>
+          <Dialog>
+            <DialogTrigger asChild>
+              <SidebarBtn onClick={navToHome} isActive={pathname === "/add"}>
+                <SquarePlus className="icon mr-2 size-4" />
+                <span>스크랩</span>
+              </SidebarBtn>
+            </DialogTrigger>
+            <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+              <DialogHeader>
+                <DialogTitle className="w-full pb-2 display-undefine-display-01">
+                  스크랩할 페이지를 입력하세요
+                </DialogTitle>
+                <DialogDescription className="w-full body-normal-body-02">
+                  링크를 입력하고 바로 저장하세요!
+                </DialogDescription>
+              </DialogHeader>
+              <div className="items-center gap-4">
+                <Input
+                  id="url"
+                  value={contentUrl}
+                  onChange={handleInputChange}
+                  className="w-full"
+                  placeholder="링크를 입력하세요"
+                />
+              </div>
+              <DialogFooter className="flex items-end justify-end gap-2">
+                <Button variant={"outline"}>
+                  <ArrowLeft className="icon mr-2 size-4" />
+                  뒤로가기
+                </Button>
+                <Button type="submit" onClick={handleSaveClick}>
+                  저장하기
+                  <Pin className="icon ml-2 size-4" />
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <SidebarBtn
             onClick={navToHome}
             className="flex justify-between"
@@ -236,7 +328,7 @@ export function OurSidebar() {
               <Bell className="icon mr-2 size-4" />
               <span>알림</span>
             </div>
-            <Badge variant={"default"}>24</Badge>
+            {noti ? <Badge variant={"default"}>{noti}</Badge> : null}
           </SidebarBtn>
           <SidebarBtn>
             <Settings className="icon mr-2 size-4" />

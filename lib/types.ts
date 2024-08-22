@@ -7,21 +7,28 @@ export interface Post {
   postId: number;
   media: string;
   type: string;
-  comment: string;
-  content: Content[];
+  comments: Comment[];
   contentUrl: string;
-  likes: number;
-  comments: number;
-  shares: number;
   date: string;
+  thumbnail: string;
+  title: string;
+  description: string;
 }
 
 export interface ApiResponse {
   data: {
-    alarms: any[];
     posts: Post[];
+    notifications: number;
   };
   success: boolean;
   message: string;
   status: number;
+}
+
+export interface Comment {
+  id: number;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+  is_deleted: boolean;
 }

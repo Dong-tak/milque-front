@@ -1,9 +1,9 @@
 import DetailPage from "@/components/detail-page";
 
-export default function Team() {
+export default function DetailView() {
   return (
     <div>
-      <DetailPage form="instagram" />
+      <DetailPage user_id="1" />
     </div>
   );
 }

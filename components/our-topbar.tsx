@@ -53,6 +53,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { SidebarBtn } from "./our-sidebar";
+import { MilequeSmallLogo } from "@/public/svgBag";
 
 interface SidebarItemProps {
   children: React.ReactNode;
@@ -171,7 +172,7 @@ export function OurTopBar() {
           onClick={navToHome}
           className="p-3 hover:bg-background hover:text-current hover:opacity-100 focus:outline-none"
         >
-          <DraftingCompass className="size-6" />
+          <MilequeSmallLogo />
         </NavButton>
         <SidebarDropdownBtn />
       </div>
