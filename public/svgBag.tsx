@@ -124,3 +124,47 @@ export const updateSvg16px = (
     </defs>
   </>
 );
+
+export const MilequeFullLogo = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="53"
+    height="18"
+    viewBox="0 0 53 18"
+    fill="none"
+  >
+    <path d="M28 1H35V17H28V1Z" stroke="#0F172A" strokeLinejoin="round" />
+    <path
+      d="M19 1H26V8M19 1V17H26V8M19 1L26 8"
+      stroke="#0F172A"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M17 17L0.999992 1V17L17 17ZM17 17L17 1L9 9"
+      stroke="#0F172A"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M44.5 17C40.0817 17 36.5 13.4183 36.5 9C36.5 6.79086 37.3954 4.79086 38.8431 3.34315C40.4052 1.78105 42.4526 1 44.5 1C46.5474 1 48.5948 1.78105 50.1568 3.34315C51.7189 4.90524 52.5 6.95262 52.5 9C52.5 11.0474 51.7189 13.0948 50.1568 14.6569L44.5 9L52.5 17H44.5Z"
+      stroke="#0F172A"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const MilequeSmallLogo = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M21.3827 2.07615C21.7564 2.23093 22 2.59557 22 3.00003L22 21C22 21.5523 21.5523 22 21 22L3 22C2.44772 22 2 21.5523 2 21V3.00003C2 2.59557 2.24364 2.23093 2.61732 2.07615C2.99099 1.92137 3.42111 2.00693 3.70711 2.29292L12 10.5858L20.2929 2.29292C20.5789 2.00692 21.009 1.92137 21.3827 2.07615ZM13.4142 12L20 18.5858L20 5.41424L13.4142 12ZM18.5858 20L4 5.41424V20L18.5858 20Z"
+      fill="#1E293B"
+    />
+  </svg>
+);

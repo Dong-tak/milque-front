@@ -1,147 +1,356 @@
+"use client";
+
 import {
+  ArrowLeft,
+  Bell,
+  Bookmark,
   Calculator,
   Calendar,
   ChevronRight,
+  Compass,
   CreditCard,
   FileDown,
+  Ghost,
+  HeartHandshake,
   History,
+  Instagram,
   Link,
   LogIn,
   LogOut,
+  Pin,
   Plus,
   Scan,
   Settings,
   Smile,
+  SquarePlus,
+  Star,
   User,
   UserPlus,
   Users,
 } from "lucide-react";
-import { Command as CommandPrimitive } from "cmdk";
 
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
-import React from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
-import { OurAvatar } from "./our-avatar";
 
-// const SidebarItem = React.forwardRef<
-//   React.ElementRef<typeof CommandPrimitive.Item>,
-//   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
-// >(({ className, ...props }, ref) => (
-//   <CommandPrimitive.Item
-//     ref={ref}
-//     className={cn(
-//       "body-normal-body-01 relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 outline-none data-[disabled=true]:pointer-events-none data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50",
-//       className,
-//     )}
-//     {...props}
-//   />
-// ));
+import { usePathname, useRouter } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "./ui/button";
+import { SqBadge, Badge } from "./ui/badge";
+import { Label } from "./ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Slot } from "@radix-ui/react-slot";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 
-interface SidebarItemProps {
+interface SidebarBtnProps {
   children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
   disabled?: boolean;
+  isActive?: boolean;
+  asChild?: boolean;
 }
 
-function SidebarItem({ children, disabled }: SidebarItemProps) {
+export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
+  (
+    {
+      children,
+      onClick,
+      className,
+      disabled,
+      asChild = false,
+      isActive = false,
+    },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : Button;
+    return (
+      <Comp
+        variant="sidebar"
+        size="sidebar"
+        onClick={onClick}
+        disabled={disabled}
+        ref={ref}
+        className={cn(
+          "sidebar-item flex items-center justify-start",
+          isActive && "text-accent-foreground",
+          className,
+        )}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+
+SidebarBtn.displayName = "SidebarBtn"; // for better debugging experience
+
+function SidebarDropdownBtn() {
+  const router = useRouter();
+  const navToLink = () => {
+    router.push("/link");
+  };
+  const navToInvite = () => {
+    router.push("/invite");
+  };
+  const navToDownload = () => {
+    router.push("/download");
+  };
+  const navToMark = () => {
+    router.push("/bookmark");
+  };
   return (
-    <CommandItem disabled={disabled} className="others-medium-button px-4 py-2">
-      {children}
-    </CommandItem>
+    <div className="dropdown flex">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
+          <SidebarBtn asChild>
+            <div className="flex items-center">
+              <Star className="icon mr-2 size-4" />
+              <span>모음집</span>
+            </div>
+          </SidebarBtn>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="mt-1 flex flex-col">
+          <DropdownMenuItem onSelect={navToLink}>
+            <Link className="icon mr-2 h-4 w-4" />
+            <span>계정연동</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToInvite}>
+            <UserPlus className="icon mr-2 h-4 w-4" />
+            <span>초대하기</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToDownload}>
+            <FileDown className="icon mr-2 h-4 w-4" />
+            <span>다운로드</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={navToMark}>
+            <Bookmark className="icon mr-2 h-4 w-4" />
+            <span>북마크</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 
-function SidebarList({ children }: { children: React.ReactNode }) {
-  return <CommandList className="max-h-none">{children}</CommandList>;
-}
+export function OurSidebar({
+  noti,
+  user_id,
+}: {
+  noti?: number;
+  user_id?: string;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [contentUrl, setContentUrl] = useState("");
 
-export function OurSidebar() {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentUrl(e.target.value);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([
+            {
+              content_url: contentUrl,
+              comment: "Comment를 입력하세요.",
+            },
+          ]),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const navToHome = () => {
+    router.push("/");
+    console.log("click!!!");
+  };
+  const navToAdd = () => {
+    router.push("/add");
+  };
+  const navToGroup = () => {
+    router.push("/group");
+  };
+  const navToProfile = () => {
+    router.push("/profile");
+  };
+  const navToSetting = () => {
+    router.push("/setting");
+  };
+  const navToLink = () => {
+    router.push("/link");
+  };
+  const navToInvite = () => {
+    router.push("/invite");
+  };
+  const navToDownload = () => {
+    router.push("/download");
+  };
+  const navToMark = () => {
+    router.push("/bookmark");
+  };
+
   return (
-    <Command className="w-[200px] border">
-      <SidebarList>
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">마이</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
-            <Scan className="mr-2 h-4 w-4" />
-            <span>스크랩</span>
-          </SidebarItem>
-          <SidebarItem>
-            <History className="mr-2 h-4 w-4" />
-            <span>히스토리</span>
-            <CommandShortcut>999+</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem disabled>
-            <Users className="mr-2 h-4 w-4" />
-            <span>트렌드</span>
-            <CommandShortcut>준비중</CommandShortcut>
-          </SidebarItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">그룹</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
-            <OurAvatar className="mr-2 size-4" />
-            <span>VLAD</span>
-            <CommandShortcut>6</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem>
-            <OurAvatar className="mr-2 h-4 w-4" />
-            <span>한예종 광고 19학번</span>
-            <CommandShortcut>21</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem>
-            <UserPlus className="mr-2 h-4 w-4" />
-            <span>그룹 추가하기</span>
-            <CommandShortcut>
-              <Plus className="h-4 w-4 text-popover-foreground" />
-            </CommandShortcut>
-          </SidebarItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <SelectGroup className="pl-5 pt-4">
-          <SelectLabel className="others-medium-button">바로가기</SelectLabel>
-        </SelectGroup>
-        <CommandGroup>
-          <SidebarItem>
+    <div className="sidebar fixed left-0 top-0 z-50 flex h-full w-[250px] flex-col justify-between border-r">
+      <div>
+        <div className="p-2">
+          <SidebarBtn
+            onClick={navToHome}
+            className="hover:bg-background hover:text-popover-foreground"
+          >
+            <div className="xl:hidden">
+              <MilequeSmallLogo />
+            </div>
+            <div className="hidden xl:block">
+              <MilequeFullLogo />
+            </div>
+          </SidebarBtn>
+        </div>
+        <div className="flex flex-col p-2">
+          <SidebarBtn onClick={navToHome} isActive={pathname === "/"}>
+            <Calendar className="icon mr-2 size-4" />
+            <span>홈</span>
+          </SidebarBtn>
+          <SidebarBtn
+            disabled
+            onClick={navToHome}
+            className="flex justify-between"
+          >
+            <div className="flex items-center">
+              <Compass className="icon mr-2 size-4" />
+              <span>탐색</span>
+            </div>
+            <SqBadge variant={"gray"}>준비중</SqBadge>
+          </SidebarBtn>
+          <Dialog>
+            <DialogTrigger asChild>
+              {user_id ? (
+                <SidebarBtn isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              ) : (
+                <SidebarBtn disabled isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              )}
+            </DialogTrigger>
+            <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+              <DialogHeader>
+                <DialogTitle className="w-full pb-2 display-undefine-display-01">
+                  스크랩할 페이지를 입력하세요
+                </DialogTitle>
+                <DialogDescription className="w-full body-normal-body-02">
+                  링크를 입력하고 바로 저장하세요!
+                </DialogDescription>
+              </DialogHeader>
+              <div className="items-center gap-4">
+                <Input
+                  id="url"
+                  value={contentUrl}
+                  onChange={handleInputChange}
+                  className="w-full"
+                  placeholder="링크를 입력하세요"
+                />
+              </div>
+              <DialogFooter className="flex items-end justify-end gap-2">
+                <Button variant={"outline"}>
+                  <ArrowLeft className="icon mr-2 size-4" />
+                  뒤로가기
+                </Button>
+                <Button type="submit" onClick={handleSaveClick}>
+                  저장하기
+                  <Pin className="icon ml-2 size-4" />
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <SidebarBtn
+            onClick={navToHome}
+            className="flex justify-between"
+            isActive={pathname === "/group"}
+          >
+            <div className="flex items-center">
+              <HeartHandshake className="icon mr-2 size-4" />
+              <span>그룹</span>
+            </div>
+            <SqBadge variant={"outlineDefault"}>NEW</SqBadge>
+          </SidebarBtn>
+          <SidebarDropdownBtn />
+        </div>
+        <div className="direct flex flex-col p-2">
+          <Label className="sidebar-label px-4 py-2 others-medium-button">
+            바로가기
+          </Label>
+          <SidebarBtn onClick={navToHome}>
             <Link className="mr-2 size-4" />
-            <span>계정 연결하기</span>
-          </SidebarItem>
-          <SidebarItem>
-            <UserPlus className="mr-2 h-4 w-4" />
+            <span>계정 연동</span>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
-          </SidebarItem>
-          <SidebarItem>
-            <FileDown className="mr-2 h-4 w-4" />
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <FileDown className="mr-2 size-4" />
             <span>다운로드</span>
-          </SidebarItem>
-          <SidebarItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>환경설정</span>
-          </SidebarItem>
-          <SidebarItem>
-            <LogIn className="mr-2 h-4 w-4" />
-            <span>로그인</span>
-          </SidebarItem>
-          <SidebarItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>로그아웃</span>
-          </SidebarItem>
-        </CommandGroup>
-      </SidebarList>
-    </Command>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome}>
+            <Bookmark className="mr-2 size-4" />
+            <span>북마크</span>
+          </SidebarBtn>
+        </div>
+      </div>
+      <div>
+        <Separator />
+        <div className="flex flex-col p-2">
+          <SidebarBtn onClick={navToHome}>
+            <Ghost className="icon mr-2 size-4" />
+            <span>프로필</span>
+          </SidebarBtn>
+          <SidebarBtn onClick={navToHome} className="flex justify-between">
+            <div className="flex items-center">
+              <Bell className="icon mr-2 size-4" />
+              <span>알림</span>
+            </div>
+            {noti ? <Badge variant={"default"}>{noti}</Badge> : null}
+          </SidebarBtn>
+          <SidebarBtn>
+            <Settings className="icon mr-2 size-4" />
+            <span>설정</span>
+          </SidebarBtn>
+        </div>
+      </div>
+    </div>
   );
 }

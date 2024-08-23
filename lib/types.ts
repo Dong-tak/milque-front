@@ -3,25 +3,49 @@ export interface Content {
   contentImage: string;
 }
 
-export interface Post {
+export interface PostDetail {
+  data: {
+    postId: number;
+    media: string;
+    type: string;
+    comments: Comment[];
+    title: string;
+    date: string;
+    description: string;
+    thumbnail: string;
+    contentUrl: string;
+    success: boolean;
+    message: string;
+  };
+}
+
+export interface PostFeed {
   postId: number;
   media: string;
   type: string;
-  comment: string;
-  content: Content[];
-  contentUrl: string;
-  likes: number;
-  comments: number;
-  shares: number;
+  comments: Comment[];
+  title: string;
   date: string;
+  description: string;
+  thumbnail: string;
+  contentUrl: string;
+  success: boolean;
+  message: string;
 }
 
 export interface ApiResponse {
   data: {
-    alarms: any[];
-    posts: Post[];
+    posts: PostFeed[];
+    notifications: number;
   };
   success: boolean;
   message: string;
-  status: number;
+}
+
+export interface Comment {
+  id: number;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+  is_deleted: boolean;
 }

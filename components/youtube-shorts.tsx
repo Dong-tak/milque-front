@@ -17,9 +17,8 @@ const YouTubeShortsEmbed: React.FC<YouTubeShortsEmbedProps> = ({ url }) => {
     >
       <iframe
         style={{
-          position: "absolute",
-          width: "315px",
-          height: "560px",
+          width: "510px",
+          height: "785px",
           border: "0",
           borderRadius: "3px",
           boxShadow: "0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15)",
@@ -31,7 +30,6 @@ const YouTubeShortsEmbed: React.FC<YouTubeShortsEmbedProps> = ({ url }) => {
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
       ></iframe>
-      ㅅ
     </div>
   );
 };

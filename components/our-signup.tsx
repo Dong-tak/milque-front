@@ -16,10 +16,7 @@ import { OurFooter } from "./our-footer";
 
 export function OurSignUp() {
   return (
-    <Card className="relative h-[982px] w-[756px] space-y-6 bg-background px-[166px] py-[221px]">
-      <Button variant={"ghost"} className="absolute right-16 top-16">
-        로그인
-      </Button>
+    <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
       <CardHeader className="p-0">
         <CardTitle className="text-center">회원가입</CardTitle>
         <CardDescription className="text-center">
