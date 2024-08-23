@@ -12,7 +12,6 @@ export default async function Page() {
   console.log(posts);
   const noti = data?.data?.notifications || 0;
 
-
   return (
     <div>
       <OurSidebar noti={noti} user_id={"1"} />
