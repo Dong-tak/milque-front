@@ -151,8 +151,8 @@ export function OurSidebar({
   noti,
   user_id,
 }: {
-  noti: number;
-  user_id: string;
+  noti?: number;
+  user_id?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -254,10 +254,17 @@ export function OurSidebar({
           </SidebarBtn>
           <Dialog>
             <DialogTrigger asChild>
-              <SidebarBtn onClick={navToHome} isActive={pathname === "/add"}>
-                <SquarePlus className="icon mr-2 size-4" />
-                <span>스크랩</span>
-              </SidebarBtn>
+              {user_id ? (
+                <SidebarBtn isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              ) : (
+                <SidebarBtn disabled isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              )}
             </DialogTrigger>
             <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
@@ -289,7 +296,6 @@ export function OurSidebar({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
           <SidebarBtn
             onClick={navToHome}
             className="flex justify-between"

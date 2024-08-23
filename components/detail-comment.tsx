@@ -25,12 +25,12 @@ import {
 } from "./ui/drawer";
 import InstagramFeedEmbed from "./insta-feed";
 import { useRef, useState } from "react";
-import { Comment, Post } from "@/lib/types";
+import { Comment, PostFeed } from "@/lib/types";
 import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
 
-export default function DetailComment({ post }: { post: Post }) {
+export default function DetailComment({ post }: { post: PostFeed }) {
   const [isEditing, setIsEditing] = useState(false);
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -129,47 +129,49 @@ export default function DetailComment({ post }: { post: Post }) {
           </div>
         </div>
         {/* comment nav */}
-        <div className="flex w-full flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
-          {post.comments.map((comment) => (
-            <div
-              key={comment.id}
-              className="flex flex-col gap-2 border-b-2 border-card bg-background p-4"
-            >
-              <div className="flex justify-between">
-                <div className="flex items-center text-muted-foreground others-medium-tag">
-                  <div>@velory</div>
-                  <Dot className="size-3" />
-                  <div>
-                    <DateCalc dateString={comment.updated_at} />
+        {post.comments ? (
+          <div className="flex w-full flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
+            {post.comments.map((comment) => (
+              <div
+                key={comment.id}
+                className="flex flex-col gap-2 border-b-2 border-card bg-background p-4"
+              >
+                <div className="flex justify-between">
+                  <div className="flex items-center text-muted-foreground others-medium-tag">
+                    <div>@velory</div>
+                    <Dot className="size-3" />
+                    <div>
+                      <DateCalc dateString={comment.updated_at} />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 text-secondary-foreground">
+                    <Copy className="size-4 hover:text-muted-foreground" />
+                    <SquarePen
+                      onClick={handleEditClick}
+                      className="size-4 hover:text-muted-foreground"
+                    />
+                    <Ellipsis className="size-4 hover:text-muted-foreground" />
                   </div>
                 </div>
-                <div className="flex gap-2 text-secondary-foreground">
-                  <Copy className="size-4 hover:text-muted-foreground" />
-                  <SquarePen
-                    onClick={handleEditClick}
-                    className="size-4 hover:text-muted-foreground"
-                  />
-                  <Ellipsis className="size-4 hover:text-muted-foreground" />
+                <div className="body-normal-body-long-01">
+                  {isEditing ? (
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      ref={contentEditableRef}
+                      onBlur={handleBlur}
+                      className="w-full rounded border border-gray-300 p-2"
+                    >
+                      {comment.comment}
+                    </div>
+                  ) : (
+                    <span onClick={handleEditClick}>{comment.comment}</span>
+                  )}
                 </div>
               </div>
-              <div className="body-normal-body-long-01">
-                {isEditing ? (
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    ref={contentEditableRef}
-                    onBlur={handleBlur}
-                    className="w-full rounded border border-gray-300 p-2"
-                  >
-                    {comment.comment}
-                  </div>
-                ) : (
-                  <span onClick={handleEditClick}>{comment.comment}</span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : null}
         {/* btm nav */}
         <div className="absolute bottom-0 flex h-[48px] w-full items-center justify-between bg-background md:bottom-6 md:min-w-[310px] md:max-w-[500px]">
           <div className="flex w-full gap-4 px-4">
