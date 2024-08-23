@@ -8,11 +8,13 @@ export interface Post {
   media: string;
   type: string;
   comments: Comment[];
-  contentUrl: string;
-  date: string;
-  thumbnail: string;
   title: string;
+  date: string;
   description: string;
+  thumbnail: string;
+  contentUrl: string;
+  success: boolean;
+  message: string;
 }
 
 export interface ApiResponse {
@@ -22,7 +24,6 @@ export interface ApiResponse {
   };
   success: boolean;
   message: string;
-  status: number;
 }
 
 export interface Comment {

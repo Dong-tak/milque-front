@@ -36,7 +36,7 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
     `Bearer ${access}`;
 
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
-  window.location.href = `/detail?id=${id}`;
+  window.location.href = `/`;
 };
 
 export const onLogIn = async (params: LoginData) => {

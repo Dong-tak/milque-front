@@ -18,6 +18,8 @@ import Link from "next/link";
 import { onLogIn } from "./action";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { LoginData } from "./action";
+import { useRouter } from "next/navigation";
+import { getCookie } from "@/components/cookie";
 
 const convertFormDataToLoginData = (formData: FormData): LoginData => {
   const email = formData.get("email") as string;
@@ -29,6 +31,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 오류 메시지 상태 추가
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +44,7 @@ export default function Login() {
 
     try {
       await onLogIn(loginData);
+      // router.push("/"); // 로그인 성공 시 홈 페이지로 이동
     } catch (err) {
       const errorMessage = (err as Error).message; // 명시적 형변환
       setError("로그인 실패: " + errorMessage); // 오류 메시지 설정

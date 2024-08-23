@@ -29,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -62,33 +62,42 @@ interface SidebarBtnProps {
   className?: string;
   disabled?: boolean;
   isActive?: boolean;
+  asChild?: boolean;
 }
 
-export function SidebarBtn({
-  children,
-  onClick,
-  className,
-  disabled,
-  asChild = false,
-  isActive = false,
-}: SidebarBtnProps & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : Button;
-  return (
-    <Comp
-      variant="sidebar"
-      size="sidebar"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "sidebar-item flex items-center justify-start",
-        isActive && "text-accent-foreground",
-        className,
-      )}
-    >
-      {children}
-    </Comp>
-  );
-}
+export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
+  (
+    {
+      children,
+      onClick,
+      className,
+      disabled,
+      asChild = false,
+      isActive = false,
+    },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : Button;
+    return (
+      <Comp
+        variant="sidebar"
+        size="sidebar"
+        onClick={onClick}
+        disabled={disabled}
+        ref={ref}
+        className={cn(
+          "sidebar-item flex items-center justify-start",
+          isActive && "text-accent-foreground",
+          className,
+        )}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+
+SidebarBtn.displayName = "SidebarBtn"; // for better debugging experience
 
 function SidebarDropdownBtn() {
   const router = useRouter();

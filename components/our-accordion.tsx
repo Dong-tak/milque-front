@@ -99,7 +99,13 @@ const sortPostsByTime = (groupedPosts: Record<string, Post[]>) => {
   return groupedPosts;
 };
 
-export function OurAccordion({ posts }: { posts: Post[] }) {
+export function OurAccordion({
+  posts,
+  user_id,
+}: {
+  posts: Post[];
+  user_id: string;
+}) {
   const [isShared, setIsShared] = useState(false);
   const handleShare = () => {
     setIsShared(!isShared);

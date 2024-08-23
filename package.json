@@ -5,7 +5,7 @@
   "scripts": {
     "secure": "node server.js",
     "init-https": "sh init-https.sh",
-    "dev": "next dev",
+    "dev": "next dev -H 192.168.219.129",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

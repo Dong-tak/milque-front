@@ -12,7 +12,10 @@ export const getData = async ({ data }: getDataProps) => {
   const url = `${baseurl}/feed/${data}/`;
   console.log("Fetching data from:", url);
   try {
-    const response = await fetch(url, { cache: "no-store" });
+    const response = await fetch(url, {
+      cache: "no-store",
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

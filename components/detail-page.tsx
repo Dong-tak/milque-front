@@ -12,7 +12,7 @@ import SnsEmbed from "./sns-embed";
 export default function DetailPage({ user_id }: { user_id: string }) {
   const router = useRouter();
   const { id } = useParams();
-  const [posts, setPosts] = useState<ApiResponse | null>(null);
+  const [posts, setPosts] = useState<Post | null>(null);
   console.log("The ID is:", id);
   useEffect(() => {
     const fetchPostData = async () => {
@@ -28,18 +28,16 @@ export default function DetailPage({ user_id }: { user_id: string }) {
 
     fetchPostData();
   }, [id]);
+  const comment = posts?.comments || null;
 
-  const post = posts?.data?.posts[0] || null;
-  const comment = post?.comments || null;
-
-  if (!post) return <div>Loading...</div>;
+  if (!posts) return <div>Loading...</div>;
 
   let backgroundColor = "";
   let itemsArray = "items-start";
   let justifyArray = "justify-end";
   let width = "w-full";
 
-  const form = post.media + post.type;
+  const form = posts.media + posts.type;
 
   if (form === "youtubevideo") {
     backgroundColor = "bg-card";
@@ -74,11 +72,11 @@ export default function DetailPage({ user_id }: { user_id: string }) {
           <div
             className={`flex h-full w-auto rounded-l-md ${backgroundColor} ${itemsArray} ${justifyArray} overflow-hidden`}
           >
-            <SnsEmbed form={form} contentUrl={post.contentUrl} />
+            <SnsEmbed form={form} contentUrl={posts.contentUrl} />
           </div>
         </div>
         <div className="flex w-auto md:min-w-0">
-          <DetailComment post={post} />
+          <DetailComment post={posts} />
         </div>
       </div>
       <div className="hidden md:block">

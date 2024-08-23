@@ -1,9 +1,8 @@
+import { getData } from "@/app/api/feed-api";
 import { OurAccordion } from "@/components/our-accordion";
 import { OurBtmBar } from "@/components/our-btmbar";
 import { OurSidebar } from "@/components/our-sidebar";
 import { OurTopBar } from "@/components/our-topbar";
-
-import { getData } from "./api/feed-api";
 
 export default async function Page() {
   const data = await getData({ data: "1" });
@@ -15,6 +14,7 @@ export default async function Page() {
       <OurSidebar noti={noti} user_id={"1"} />
       <OurBtmBar />
       <OurTopBar />
+      <OurAccordion posts={posts} user_id={"1"} />
     </div>
   );
 }
