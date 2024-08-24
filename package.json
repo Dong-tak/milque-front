@@ -7,7 +7,7 @@
     "init-https": "sh init-https.sh",
     "dev": "next dev -H 192.168.219.129",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 192.168.219.129",
     "lint": "next lint"
   },
   "dependencies": {

@@ -25,10 +25,6 @@ export default async function DetailPage({
   let width = "w-full";
 
   const form = post.media + post.type;
-  console.log(post);
-  console.log("post.media", post.media);
-  console.log("post.type", post.type);
-  console.log("form", form);
 
   if (form === "youtubevideo") {
     backgroundColor = "bg-card";
@@ -62,7 +58,7 @@ export default async function DetailPage({
           </div>
         </div>
         <div className="flex w-auto md:min-w-0">
-          <DetailComment post={post} />
+          <DetailComment post={post} params={{ userId, postId }} />
         </div>
       </div>
       <div className="hidden md:block">

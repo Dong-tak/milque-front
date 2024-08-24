@@ -30,12 +30,19 @@ import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
 
-export default function DetailComment({ post }: { post: PostFeed }) {
+export default function DetailComment({
+  params,
+  post,
+}: {
+  post: PostFeed;
+  params: { userId: string; postId: string };
+}) {
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const [newComment, setnewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>(post.comments || []);
   const router = useRouter();
+  const { userId, postId } = params;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setnewComment(e.target.value);
@@ -43,6 +50,59 @@ export default function DetailComment({ post }: { post: PostFeed }) {
 
   const handleEditClick = (commentId: number) => {
     setIsEditing(commentId);
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      // window.location.reload();
+      router.refresh();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the comment");
+      }
+
+      const data = await response.json();
+      console.log("Comment deleted successfully:", data);
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleDeletePost = async ({
+    userId,
+    postId,
+  }: {
+    userId: string;
+    postId: string;
+  }) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the post");
+      }
+      window.location.href = `/home/${userId}`;
+      const data = await response.json();
+      console.log("post deleted successfully:", data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
   };
 
   const handleSaveClick = async () => {
@@ -68,10 +128,6 @@ export default function DetailComment({ post }: { post: PostFeed }) {
       const data = await response.json();
       console.log("Data saved successfully:", data);
 
-      // setComments((prevComments) => [...prevComments, data]);
-
-      // // Clear the input field after successful submission
-      // setnewComment("");
       window.location.reload();
     } catch (error) {
       console.error("Error saving data:", error);
@@ -115,6 +171,17 @@ export default function DetailComment({ post }: { post: PostFeed }) {
     }
   };
 
+  const handleCopyClick = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        alert("Comment copied to clipboard!"); // You can customize this alert or use a toast notification instead
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
+
   return (
     <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
       <div className="flex w-full bg-card">
@@ -134,6 +201,7 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 variant={"ghost"}
                 size={"icon"}
                 className="hidden p-1 md:block"
+                disabled
               >
                 <CloudDownload className="size-4" />
               </Button>
@@ -141,6 +209,7 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 variant={"ghost"}
                 size={"icon"}
                 className="rounded-none md:rounded-md md:p-1"
+                disabled
               >
                 <Share2 className="size-6 md:size-4" />
               </Button>
@@ -149,7 +218,10 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 size={"icon"}
                 className="hidden p-1 md:block"
               >
-                <Trash2 className="size-4" />
+                <Trash2
+                  className="size-4"
+                  onClick={() => handleDeletePost({ userId, postId })}
+                />
               </Button>
             </div>
             <Drawer>
@@ -193,12 +265,18 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                     </div>
                   </div>
                   <div className="flex gap-2 text-secondary-foreground">
-                    <Copy className="size-4 hover:text-muted-foreground" />
+                    <Copy
+                      className="size-4 hover:text-muted-foreground"
+                      onClick={() => handleCopyClick(comment.comment)}
+                    />
                     <SquarePen
                       onClick={() => handleEditClick(comment.id)}
                       className="size-4 hover:text-muted-foreground"
                     />
-                    <Ellipsis className="size-4 hover:text-muted-foreground" />
+                    <Trash2
+                      className="size-4 hover:text-muted-foreground"
+                      onClick={() => handleDeleteComment(comment.id)}
+                    />
                   </div>
                 </div>
                 <div className="body-normal-body-long-01">
