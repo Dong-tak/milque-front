@@ -172,8 +172,9 @@ export function OurAccordion({
                       {/* <SqBadge variant={"secondary"}>NEW</SqBadge> */}
                     </div>
                     <div className="accordbody body-normal-body-long-01">
-                      {post.comments[0].comment ||
-                        "이 콘텐츠에 대한 설명이 없습니다."}
+                      {post.comments.length > 0
+                        ? post.comments[0].comment
+                        : "이 콘텐츠에 대한 설명이 없습니다."}
                     </div>
                   </div>
                 </div>

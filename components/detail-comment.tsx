@@ -55,7 +55,10 @@ export default function DetailComment({
   const handleDeleteComment = async (commentId: number) => {
     try {
       // window.location.reload();
-      router.refresh();
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId),
+      );
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
         {
@@ -108,6 +111,22 @@ export default function DetailComment({
   const handleSaveClick = async () => {
     console.log("newComment:", newComment);
     try {
+      const newCommentObject = {
+        id: Date.now(), // 임시 ID (DB 저장 후 실제 ID로 대체 가능)
+        comment: newComment,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_deleted: false,
+      };
+
+      // 새로운 댓글을 UI에 즉시 추가
+      setComments((prevComments) => [...prevComments, newCommentObject]);
+      setnewComment("");
+
+      if (comments[0].comment === "Comment를 입력하세요.") {
+        handleDeleteComment(comments[0].id);
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
@@ -127,8 +146,6 @@ export default function DetailComment({
 
       const data = await response.json();
       console.log("Data saved successfully:", data);
-
-      window.location.reload();
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -305,6 +322,7 @@ export default function DetailComment({
           <div className="flex w-full gap-4 px-4">
             <Input
               placeholder="새로운 커멘트 남기기"
+              value={newComment}
               className="w-full border-none"
               onChange={handleInputChange}
             />
