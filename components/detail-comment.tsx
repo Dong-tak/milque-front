@@ -31,22 +31,64 @@ import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
 
 export default function DetailComment({ post }: { post: PostFeed }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState<number | null>(null);
   const contentEditableRef = useRef<HTMLDivElement>(null);
+  const [newComment, setnewComment] = useState("");
+  const [comments, setComments] = useState<Comment[]>(post.comments || []);
   const router = useRouter();
 
-  const handleEditClick = () => {
-    setIsEditing(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setnewComment(e.target.value);
   };
 
-  const handleBlur = async () => {
-    const updatedContent = contentEditableRef.current?.innerText;
-    setIsEditing(false);
+  const handleEditClick = (commentId: number) => {
+    setIsEditing(commentId);
+  };
+
+  const handleSaveClick = async () => {
+    console.log("newComment:", newComment);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            comment: newComment,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+
+      // setComments((prevComments) => [...prevComments, data]);
+
+      // // Clear the input field after successful submission
+      // setnewComment("");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleBlur = async (commentId: number) => {
+    const updatedContent = contentEditableRef.current?.innerText;
+    setIsEditing(null);
+
+    if (!updatedContent) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
+        {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -61,7 +103,13 @@ export default function DetailComment({ post }: { post: PostFeed }) {
       }
 
       // Optionally, you can reload the page or update the state to reflect the new comment
-      router.refresh();
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, comment: updatedContent }
+            : comment,
+        ),
+      );
     } catch (error) {
       console.error("Failed to update the comment:", error);
     }
@@ -129,9 +177,9 @@ export default function DetailComment({ post }: { post: PostFeed }) {
           </div>
         </div>
         {/* comment nav */}
-        {post.comments ? (
+        {comments.length > 0 ? (
           <div className="flex w-full flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
-            {post.comments.map((comment) => (
+            {comments.map((comment) => (
               <div
                 key={comment.id}
                 className="flex flex-col gap-2 border-b-2 border-card bg-background p-4"
@@ -147,25 +195,27 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                   <div className="flex gap-2 text-secondary-foreground">
                     <Copy className="size-4 hover:text-muted-foreground" />
                     <SquarePen
-                      onClick={handleEditClick}
+                      onClick={() => handleEditClick(comment.id)}
                       className="size-4 hover:text-muted-foreground"
                     />
                     <Ellipsis className="size-4 hover:text-muted-foreground" />
                   </div>
                 </div>
                 <div className="body-normal-body-long-01">
-                  {isEditing ? (
+                  {isEditing === comment.id ? (
                     <div
+                      ref={contentEditableRef}
                       contentEditable
                       suppressContentEditableWarning
-                      ref={contentEditableRef}
-                      onBlur={handleBlur}
-                      className="w-full rounded border border-gray-300 p-2"
+                      onBlur={() => handleBlur(comment.id)}
+                      className="w-full border-b p-2"
                     >
                       {comment.comment}
                     </div>
                   ) : (
-                    <span onClick={handleEditClick}>{comment.comment}</span>
+                    <span onClick={() => handleEditClick(comment.id)}>
+                      {comment.comment}
+                    </span>
                   )}
                 </div>
               </div>
@@ -178,8 +228,13 @@ export default function DetailComment({ post }: { post: PostFeed }) {
             <Input
               placeholder="새로운 커멘트 남기기"
               className="w-full border-none"
+              onChange={handleInputChange}
             />
-            <Button variant="ghost" className="text-primary">
+            <Button
+              variant="ghost"
+              className="text-primary"
+              onClick={handleSaveClick}
+            >
               등록
             </Button>
           </div>

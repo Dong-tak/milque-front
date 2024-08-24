@@ -186,6 +186,7 @@ export function OurSidebar({
 
       const data = await response.json();
       console.log("Data saved successfully:", data);
+      window.location.reload();
     } catch (error) {
       console.error("Error saving data:", error);
     }

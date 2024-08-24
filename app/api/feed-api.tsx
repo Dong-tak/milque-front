@@ -3,7 +3,7 @@ interface getDataProps {
 }
 
 export const getPostData = async ({ userId }: getDataProps) => {
-  const baseurl = process.env.NEXT_PUBLIC_POST_API_URL;
+  const baseurl = process.env.NEXT_PUBLIC_POST_API_URL_TEST;
 
   if (typeof baseurl === "undefined") {
     console.error("API URL is not defined");

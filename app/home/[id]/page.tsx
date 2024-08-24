@@ -6,7 +6,6 @@ import { getPostData } from "@/app/api/feed-api";
 
 export default async function HomePage({ params }: { params: { id: string } }) {
   const userId = params.id;
-  console.log("User ID:", userId);
 
   // SSR을 통해 데이터 가져오기
   const data = await getPostData({ userId });
