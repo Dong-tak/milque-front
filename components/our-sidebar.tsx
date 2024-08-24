@@ -114,7 +114,7 @@ function SidebarDropdownBtn() {
     router.push("/bookmark");
   };
   return (
-    <div className="dropdown flex">
+    <div className="dropdown relative flex">
       <DropdownMenu>
         <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
           <SidebarBtn asChild>
@@ -124,7 +124,7 @@ function SidebarDropdownBtn() {
             </div>
           </SidebarBtn>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="mt-1 flex flex-col">
+        <DropdownMenuContent className="absolute bottom-1 left-7 mt-1 flex flex-col">
           <DropdownMenuItem onSelect={navToLink}>
             <Link className="icon mr-2 h-4 w-4" />
             <span>계정연동</span>
