@@ -14,6 +14,80 @@ import {
   SettingDropDown,
   SettingArrow,
 } from "@/components/setting/setting-comp";
+import {
+  GoodTag,
+  WarningTag,
+  StopTag,
+  NewTag,
+  RecommendTag,
+  HotTag,
+  PrivateTag,
+  PublicTag,
+} from "../our-status-tag";
+import { SocialTag } from "../our-social-tag";
+
+const invoices = [
+  {
+    media: (
+      <SocialTag
+        size="default"
+        logo="/social-media/icon-youtube.png"
+        social="youtube"
+      />
+    ),
+    account: "velroylee669",
+    scrap: "2,182",
+    status: <GoodTag />,
+  },
+  {
+    media: (
+      <SocialTag
+        size="default"
+        logo="/social-media/icon-linkedin.png"
+        social="linkedin"
+      />
+    ),
+    account: "539639259",
+    scrap: "2,182",
+    status: <GoodTag />,
+  },
+  {
+    media: (
+      <SocialTag
+        size="default"
+        logo="/social-media/icon-instagram.png"
+        social="instagram"
+      />
+    ),
+    account: "vel_030_roy",
+    scrap: "2,182",
+    status: <StopTag />,
+  },
+  {
+    media: (
+      <SocialTag
+        size="default"
+        logo="/social-media/icon-instagram.png"
+        social="instagram"
+      />
+    ),
+    account: "mileque_contact",
+    scrap: "2,182",
+    status: <GoodTag />,
+  },
+  {
+    media: (
+      <SocialTag
+        size="default"
+        logo="/social-media/icon-messenger.png"
+        social="messenger"
+      />
+    ),
+    account: "100004859553991",
+    scrap: "31",
+    status: <WarningTag />,
+  },
+];
 
 export function SocialAccountView() {
   return (
@@ -42,10 +116,16 @@ export function SocialAccountView() {
           내 소셜 계정
         </DialogTitle>
         <AccountTable
-          tableheader_1="미디어"
-          tableheader_2="계정"
-          tableheader_3="스크랩 수"
-          tableheader_4="연결 상태"
+          tableheader={["미디어", "계정", "스크랩 수", "연결 상태"]}
+          arrowupdown={[false, true, false, false]}
+          contentData={invoices.map((invoice) => ({
+            content: [
+              invoice.media,
+              invoice.account,
+              invoice.scrap,
+              invoice.status,
+            ] as string[] | Element,
+          }))}
         />
       </div>
     </div>
