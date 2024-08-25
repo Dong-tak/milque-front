@@ -16,6 +16,7 @@ import {
   Bell,
   DownloadCloud,
   Ghost,
+  Settings2,
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 
@@ -73,7 +74,8 @@ export interface OurOptionSidebarProps {
   setView: (
     view:
       | "profile"
-      | "accountlist"
+      | "detailedsettings"
+      | "socialaccount"
       | "download"
       | "notification"
       | "friend"
@@ -104,21 +106,15 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
           </div>
         </SelectGroup>
         <CommandGroup className="z-50 w-full">
-          <SidebarItem
-            onClick={() => {
-              console.log("프로필 설정 버튼 클릭됨");
-              setView("profile");
-            }}
-          >
+          <SidebarItem onClick={() => setView("profile")}>
             <Ghost className="mr-2 h-4 w-4" />
-            <span>프로필 설정</span>
+            <span>계정 설정</span>
           </SidebarItem>
-          <SidebarItem
-            onClick={() => {
-              console.log("소셜 계정 버튼 클릭됨");
-              setView("accountlist");
-            }}
-          >
+          <SidebarItem onClick={() => setView("detailedsettings")}>
+            <Settings2 className="mr-2 h-4 w-4" />
+            <span>상세 설정</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("socialaccount")}>
             <Link className="mr-2 h-4 w-4" />
             <span>소셜 계정 설정</span>
           </SidebarItem>
@@ -154,26 +150,6 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
           <SidebarItem onClick={() => setView("template")}>
             <LayoutTemplate className="mr-2 h-4 w-4" />
             <span>템플릿 설정</span>
-          </SidebarItem>
-        </CommandGroup>
-        <CommandGroup className="max-h-[295px] min-h-[211px]">
-          <SidebarItem onClick={() => setView("event")}>
-            <PartyPopper className="mr-2 h-4 w-4" />
-            <span>이벤트</span>
-            <CommandShortcut>24</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem onClick={() => setView("beta")}>
-            <Bold className="mr-2 h-4 w-4" />
-            <span>베타 테스트 신청</span>
-            <CommandShortcut>대기중</CommandShortcut>
-          </SidebarItem>
-          <SidebarItem onClick={() => setView("team")}>
-            <ThumbsUp className="mr-2 h-4 w-4" />
-            <span>무료 팀기능 도입 문의</span>
-          </SidebarItem>
-          <SidebarItem onClick={() => setView("feedback")}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            <span>불편/건의 사항</span>
           </SidebarItem>
         </CommandGroup>
         <CommandGroup className="border-t">

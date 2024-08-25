@@ -14,12 +14,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Github, Instagram } from "lucide-react";
+import { Github, Instagram, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { OurOption } from "@/components/our-option";
+import {
+  GoodTag,
+  WarningTag,
+  StopTag,
+  NewTag,
+  RecommendTag,
+  HotTag,
+  PublicTag,
+  PrivateTag,
+} from "@/components/our-status-tag";
+import { AccountTable } from "@/components/setting/our-table";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -121,7 +132,7 @@ export default function Login() {
           </Link>
         </CardContent>
       </Card>
-      <div>
+      <div className="flex flex-col items-center space-y-5">
         <OurOption />
       </div>
     </div>

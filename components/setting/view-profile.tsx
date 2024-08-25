@@ -19,7 +19,7 @@ import {
   SettingDropDown,
   SettingProfile,
   SettingArrow,
-} from "@/components/setting/settingcomp";
+} from "@/components/setting/setting-comp";
 
 export function ProfileView() {
   const [profile, setProfile] = useState({
@@ -44,10 +44,25 @@ export function ProfileView() {
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
-            프로필 설정
+            내 프로필
           </DialogTitle>
         </DialogHeader>
         <SettingProfile id="별명" nickname="이승철 과장" className="" />
+        {/* 한줄 소개 */}
+        <div className="h-full w-full space-y-[6px]">
+          <div>
+            {/* 아이디 */}
+            <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
+              한줄 소개
+            </Label>
+          </div>
+          {/* 닉네임 */}
+          <div className="inline-flex h-10 w-full items-center justify-start gap-2 rounded-md border border-slate-300 bg-white px-3 py-2">
+            <div className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400">
+              이승철 과장
+            </div>
+          </div>
+        </div>
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">

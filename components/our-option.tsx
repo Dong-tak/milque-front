@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { OptionSidebar } from "@/components/setting/optionsidebar";
+import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X, Menu, ChevronLeft } from "lucide-react";
-import { ProfileView } from "@/components/setting/profileview";
-import { AccountListView } from "@/components/setting/accountlistview";
+import { ProfileView } from "@/components/setting/view-profile";
+import { DetailedSettingsView } from "@/components/setting/view-detailed-settings";
+import { SocialAccountView } from "@/components/setting/view-social-account";
+import { NotificationView } from "@/components/setting/view-notification";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -17,16 +19,27 @@ export function OurOption() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); // 사이드바 토글 함수
 
-  type ViewType = "profile" | "accountlist" | "default";
+  type ViewType =
+    | "profile"
+    | "detailedsettings"
+    | "socialaccount"
+    | "notification"
+    | "default";
 
   const renderContentView = (view: ViewType): JSX.Element => {
     switch (view) {
       case "profile":
         console.log("profile");
         return <ProfileView />;
-      case "accountlist":
-        console.log("accountlist");
-        return <AccountListView />;
+      case "detailedsettings":
+        console.log("detailedsettings");
+        return <DetailedSettingsView />;
+      case "socialaccount":
+        console.log("socialaccount");
+        return <SocialAccountView />;
+      case "notification":
+        console.log("notification");
+        return <NotificationView />;
       default:
         console.log("default");
         return <ProfileView />;
@@ -53,7 +66,7 @@ export function OurOption() {
           <div
             className={`${
               isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
-            } fixed right-0 z-40 h-full w-[250px] flex-shrink-0 border-b border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
+            } fixed right-0 z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
           >
             <OptionSidebar setView={setView} />
           </div>

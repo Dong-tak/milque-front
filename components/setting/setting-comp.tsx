@@ -40,7 +40,7 @@ export function SettingButton({
         <Label className="font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900">
           {title}
         </Label>
-        <Label className="font-['SUIT Variable'] self-stretch text-xs font-normal leading-none text-slate-500">
+        <Label className="font-['SUIT Variable'] flex self-stretch text-xs font-normal leading-none text-slate-500">
           {content}
         </Label>
       </div>
@@ -124,12 +124,14 @@ interface SettingDropDownProps {
   content: string;
   className?: string;
   //드롭다운 메뉴 타이틀 및 내용 추가 필요
+  dropdownTitle: string;
 }
 
 export function SettingDropDown({
   title,
   content,
   className,
+  dropdownTitle,
 }: SettingDropDownProps) {
   const [position, setPosition] = React.useState("bottom");
   return (
@@ -137,7 +139,7 @@ export function SettingDropDown({
       className={`inline-flex h-10 w-[378px] items-center justify-between ${className}`}
     >
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
-        <Label className="font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900">
+        <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
           {title}
         </Label>
         <Label className="font-['SUIT Variable'] self-stretch text-xs font-normal leading-none text-slate-500">
@@ -147,8 +149,11 @@ export function SettingDropDown({
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="justify-between border-none">
-              해제
+            <Button
+              variant="outline"
+              className="justify-between gap-2 border-none"
+            >
+              {dropdownTitle}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -227,8 +232,8 @@ export function SettingProfile({
       <div className="inline-flex h-20 flex-col items-end justify-end gap-2.5">
         <Image
           className="h-20 w-20 rounded-[999px] border"
-          src="/rectangle-352.png"
-          alt="Rectangle"
+          src="/images/rectangle-352.png"
+          alt="Profile Image"
           width={80}
           height={80}
         />
