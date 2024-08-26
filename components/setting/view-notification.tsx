@@ -33,7 +33,11 @@ const invoices = [
     time: "Credit Card",
   },
   {
-    type: "공지사항",
+    type: (
+      <div className="flex justify-start gap-[10px]">
+        활동 알림 <NewTag />
+      </div>
+    ),
     content: "Pending",
     button: "$150.00",
     time: "PayPal",
