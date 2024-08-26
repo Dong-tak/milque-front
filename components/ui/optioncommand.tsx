@@ -15,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "absoulute w-max-[1136px] right-0 flex h-full w-full flex-col overflow-hidden rounded-none bg-background text-popover-foreground md:relative md:border-r",
+      "absoulute right-0 flex h-full w-full flex-col overflow-hidden rounded-none bg-background text-popover-foreground md:relative",
       className,
     )}
     {...props}
@@ -114,18 +114,36 @@ const CommandSeparator = React.forwardRef<
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
 const CommandItem = React.forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
->(({ className, ...props }, ref) => (
-  <CommandPrimitive.Item
-    ref={ref}
-    className={cn(
-      "flex w-full cursor-default items-center outline-none body-normal-body-01 data-[disabled=true]:pointer-events-none data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50",
-      className,
-    )}
-    {...props}
-  />
-));
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("Custom CommandItem clicked");
+    if (props.onClick) {
+      props.onClick(event);
+    }
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "flex w-full cursor-pointer items-center outline-none body-normal-body-01",
+        "hover:bg-accent hover:text-accent-foreground", // 호버 시 배경과 텍스트 색상 변경
+        "active:scale-105 active:bg-accent active:text-accent-foreground", // 클릭 시 배경과 텍스트 색상 변경
+        "data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50",
+        className, // 추가적인 사용자 정의 스타일 유지
+      )}
+      onClick={handleClick}
+      role="button" // role을 button으로 변경
+      {...props}
+    >
+      {props.children}
+    </div>
+  );
+});
 
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 

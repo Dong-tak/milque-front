@@ -1,3 +1,4 @@
+
 "use client";
 import { AxiosResponse, AxiosError } from "axios";
 import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
@@ -49,15 +50,24 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
   window.location.href = `/home/${id}`;
 };
 
-export const onLogIn = async (params: LoginData) => {
+export const onLogIn = async (
+  params: LoginData,
+  navigate: (path: string) => void,
+) => {
   try {
     const response = await httpClientForCredentials.post<LoginResponse>(
-      "/user/auth/",
+      `${API_URL}/user/auth/`,
       params,
     );
     console.log("로그인 성공:", response);
     if (response.status === 200) {
-      onLogInSuccess(response);
+      const { access } = response.data.token;
+      const { id } = response.data.user;
+
+      httpClientForCredentials.defaults.headers.common["Authorization"] =
+        `Bearer ${access}`;
+
+      navigate(`/${id}`);
     }
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
@@ -68,25 +78,4 @@ export const onLogIn = async (params: LoginData) => {
   }
 };
 
-export const onSilentRefresh = async () => {
-  try {
-    const response = await httpClientForCredentials.post<LoginResponse>(
-      "/user/auth/refresh/",
-    );
-    if (response.status === 200) {
-      // AccessToken을 변수로 저장
-      onLogInSuccess(response);
-    }
-  } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>;
-    if (axiosError.response?.status === 401) {
-      // RefreshToken 만료 - 로그인 페이지로 이동
-      window.location.href = "/login";
-    } else {
-      const errorMessage =
-        axiosError.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
-      console.error("토큰 갱신 실패:", errorMessage);
-      throw new Error(errorMessage);
-    }
-  }
-};
+export type { LoginData }; // LoginData 타입을 내보냄

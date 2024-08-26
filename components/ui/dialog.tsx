@@ -38,7 +38,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-0 z-50 grid overflow-y-auto border bg-background shadow-lg duration-200", // 기본적으로 전체 화면
+        "fixed inset-0 z-50 grid border bg-background shadow-lg duration-200", // 기본적으로 전체 화면
         "md:inset-auto md:left-[50%] md:top-[50%] md:max-h-[75%] md:max-w-[70%] md:translate-x-[-50%] md:translate-y-[-50%]", // md 이상에서 중앙 위치 및 크기 조정
         className,
       )}
