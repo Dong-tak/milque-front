@@ -1,4 +1,3 @@
-
 "use client";
 import { AxiosResponse, AxiosError } from "axios";
 import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
@@ -50,13 +49,10 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
   window.location.href = `/home/${id}`;
 };
 
-export const onLogIn = async (
-  params: LoginData,
-  navigate: (path: string) => void,
-) => {
+export const onLogIn = async (params: LoginData) => {
   try {
     const response = await httpClientForCredentials.post<LoginResponse>(
-      `${API_URL}/user/auth/`,
+      `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`,
       params,
     );
     console.log("로그인 성공:", response);
@@ -67,7 +63,7 @@ export const onLogIn = async (
       httpClientForCredentials.defaults.headers.common["Authorization"] =
         `Bearer ${access}`;
 
-      navigate(`/${id}`);
+      onLogInSuccess(response);
     }
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
@@ -77,5 +73,3 @@ export const onLogIn = async (
     throw new Error(errorMessage);
   }
 };
-
-export type { LoginData }; // LoginData 타입을 내보냄

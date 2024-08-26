@@ -20,9 +20,8 @@ import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 
-import { LoginData } from "./action";
-import { useRouter } from "next/navigation";
 import { getCookie } from "@/components/cookie";
+import { OurOption } from "@/components/our-option";
 
 const convertFormDataToLoginData = (formData: FormData): LoginData => {
   const email = formData.get("email") as string;
@@ -30,14 +29,12 @@ const convertFormDataToLoginData = (formData: FormData): LoginData => {
   return { email, password };
 };
 
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 오류 메시지 상태 추가
 
   const router = useRouter();
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
