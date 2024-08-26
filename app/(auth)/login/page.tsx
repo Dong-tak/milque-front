@@ -19,24 +19,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
-import { OurOption } from "@/components/our-option";
-import {
-  GoodTag,
-  WarningTag,
-  StopTag,
-  NewTag,
-  RecommendTag,
-  HotTag,
-  PublicTag,
-  PrivateTag,
-} from "@/components/our-status-tag";
-import { AccountTable } from "@/components/setting/our-table";
+
+import { LoginData } from "./action";
+import { useRouter } from "next/navigation";
+import { getCookie } from "@/components/cookie";
+
+const convertFormDataToLoginData = (formData: FormData): LoginData => {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  return { email, password };
+};
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 오류 메시지 상태 추가
-  const router = useRouter(); // Next.js 라우터 사용
+
+  const router = useRouter();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +52,8 @@ export default function Login() {
     };
 
     try {
-      await onLogIn(loginData, (path) => router.push(path)); // navigate 대신 router.push 사용
+      await onLogIn(loginData);
+      // router.push("/"); // 로그인 성공 시 홈 페이지로 이동
     } catch (err) {
       const errorMessage = (err as Error).message; // 명시적 형변환
       setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
