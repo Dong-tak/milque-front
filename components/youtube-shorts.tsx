@@ -5,6 +5,22 @@ interface YouTubeShortsEmbedProps {
 }
 
 const YouTubeShortsEmbed: React.FC<YouTubeShortsEmbedProps> = ({ url }) => {
+  const defaultVideoId = "hz7uMn9m_eQ";
+  let videoId = defaultVideoId;
+  if (url) {
+    try {
+      const shortsId = new URL(url);
+      const pathSegments = shortsId.pathname.split("/");
+      if (pathSegments.length >= 2) {
+        videoId = pathSegments[pathSegments.length - 1];
+      }
+    } catch (error) {
+      console.error("Invalid URL format:", error);
+    }
+  }
+
+  console.log(videoId);
+
   return (
     <div
       style={{
@@ -23,7 +39,7 @@ const YouTubeShortsEmbed: React.FC<YouTubeShortsEmbedProps> = ({ url }) => {
           borderRadius: "3px",
           boxShadow: "0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15)",
         }}
-        src={`https://www.youtube.com/embed/${url}`}
+        src={`https://www.youtube.com/embed/${videoId}`}
         title="YouTube video player"
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

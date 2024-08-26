@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import OurProviders from "@/components/provider";
 
 const pretnedard = localFont({
   src: "../lib/PretendardVariable.woff2",
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="kr">
       <body className={suit.className}>
-        <div>{children}</div>
+        <OurProviders>{children}</OurProviders>
       </body>
     </html>
   );

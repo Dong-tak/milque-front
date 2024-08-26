@@ -8,6 +8,10 @@ interface YouTubeEmbedProps {
 }
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ url }) => {
+  console.log(url);
+  const videoId = new URL(url).searchParams.get("v");
+  console.log(videoId);
+
   const opts: YouTubeProps["opts"] = {
     height: "300",
     width: "490",
@@ -29,7 +33,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ url }) => {
     //     allowFullScreen
     //   ></iframe>
     // </div>
-    <YouTube videoId={url} opts={opts} />
+    <YouTube videoId={videoId || ""} opts={opts} />
   );
 };
 

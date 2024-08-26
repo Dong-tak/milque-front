@@ -2,6 +2,7 @@
 
 import React from "react";
 import MDEditor from "@uiw/react-md-editor";
+import ResponsiveIframe from "@/components/iframe-embed";
 
 export default function App() {
   const [value, setValue] = React.useState("**Hello world!!!**");
@@ -13,6 +14,8 @@ export default function App() {
     <div className="container">
       <MDEditor value={value} onChange={handleEditorChange} />
       <MDEditor.Markdown source={value} style={{ whiteSpace: "pre-wrap" }} />
+
+      <ResponsiveIframe src="https://toss.tech/article/nodejs_pipeline_plugin" />
     </div>
   );
 }
