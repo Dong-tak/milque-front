@@ -165,13 +165,14 @@ export function OurAccordion({
                     alt={`${post.media} thumbnail`}
                     width={128}
                     height={128}
-                    className="rounded-sm"
+                    className="flex-shrink-0 rounded-sm"
                     style={{
                       objectFit: "cover",
                       width: "128px",
                       height: "128px",
                     }}
                   />
+
                   <div className="flex flex-col items-start gap-2">
                     <div className="flex gap-2">
                       <div className="accordhead others-medium-title">
