@@ -15,6 +15,9 @@ export default function Page() {
   const goLogin = () => {
     router.push("/login");
   };
+  const goSignup = () => {
+    router.push("/signup");
+  };
 
   return (
     <div className="flex h-screen items-center justify-center">
@@ -23,6 +26,9 @@ export default function Page() {
       <OurTopBar />
       <div>
         <Button onClick={goLogin}>로그인하러가기</Button>
+      </div>
+      <div>
+        <Button onClick={goSignup}>회원가입 하러가기</Button>
       </div>
     </div>
   );
