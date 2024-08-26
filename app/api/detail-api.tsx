@@ -1,8 +1,9 @@
 interface getDataProps {
   userId: string;
+  postId: string;
 }
 
-export const getPostData = async ({ userId }: getDataProps) => {
+export const getPostDetailData = async ({ userId, postId }: getDataProps) => {
   const baseurl = process.env.NEXT_PUBLIC_POST_API_URL;
 
   if (typeof baseurl === "undefined") {
@@ -10,7 +11,9 @@ export const getPostData = async ({ userId }: getDataProps) => {
     return;
   }
 
-  const url = `${baseurl}/feed/${userId}/`;
+  const url = `${baseurl}/feed/${userId}/${postId}/`;
+  console.log("user id:", userId);
+  console.log("post id:", postId);
   console.log("Fetching data from:", url);
   try {
     const response = await fetch(url, {

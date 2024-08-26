@@ -1,38 +1,23 @@
-"use client";
-
 import DetailComment from "@/components/detail-comment";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
-import { getData } from "@/app/api/feed-api";
-import { ApiResponse, Post } from "@/lib/types";
-import SnsEmbed from "./sns-embed";
+import { ApiResponse, PostDetail } from "@/lib/types";
+import SnsEmbed from "../../../../components/sns-embed";
+import { getPostDetailData } from "@/app/api/detail-api";
+import RouteBack from "@/components/route-back";
 
-export default function DetailPage({ user_id }: { user_id: string }) {
-  const router = useRouter();
-  const { id } = useParams();
-  const [posts, setPosts] = useState<ApiResponse | null>(null);
-  console.log("The ID is:", id);
-  useEffect(() => {
-    const fetchPostData = async () => {
-      if (id) {
-        try {
-          const data = await getData({ data: `${user_id}/${id}` });
-          setPosts(data);
-        } catch (error) {
-          console.error("Failed to fetch post data:", error);
-        }
-      }
-    };
+export default async function DetailPage({
+  params,
+}: {
+  params: { userId: string; postId: string };
+}) {
+  const { userId, postId } = params;
 
-    fetchPostData();
-  }, [id]);
+  const posts: PostDetail | null = await getPostDetailData({ userId, postId });
 
-  const post = posts?.data?.posts[0] || null;
-  const comment = post?.comments || null;
+  if (!posts) return <div>Loading...</div>;
 
-  if (!post) return <div>Loading...</div>;
+  const post = posts?.data;
 
   let backgroundColor = "";
   let itemsArray = "items-start";
@@ -52,17 +37,12 @@ export default function DetailPage({ user_id }: { user_id: string }) {
     width = "w-auto";
   }
 
-  const goHome = () => {
-    router.back();
-  };
-
   return (
     <div className="flex h-screen items-center justify-center bg-neutral-500 py-6">
       <div className="hidden md:block">
-        <X
-          className="fixed right-8 top-6 size-8 text-background hover:cursor-pointer hover:text-gray-400"
-          onClick={goHome}
-        />
+        <div className="fixed right-8 top-6 size-8 text-background hover:cursor-pointer hover:text-gray-400">
+          <RouteBack />
+        </div>
         <Button variant="outline" size={"icon"} className="mx-5">
           <ChevronLeft className="size-4" />
         </Button>
@@ -78,7 +58,7 @@ export default function DetailPage({ user_id }: { user_id: string }) {
           </div>
         </div>
         <div className="flex w-auto md:min-w-0">
-          <DetailComment post={post} />
+          <DetailComment post={post} params={{ userId, postId }} />
         </div>
       </div>
       <div className="hidden md:block">

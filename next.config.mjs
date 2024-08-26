@@ -39,8 +39,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "img1.daumcdn.net",
       },
+      {
+        protocol: "https",
+        hostname: "techplay.blog",
+      },
     ],
   },
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;

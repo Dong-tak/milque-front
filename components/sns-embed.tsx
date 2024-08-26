@@ -13,9 +13,9 @@ export default function SnsEmbed({ form, contentUrl }: SnsEmbedProps) {
   switch (form) {
     case "instagrampost":
       return <InstagramFeedEmbed url={contentUrl} />;
-    case "instagramreels":
+    case "instagramshorts":
       return <InstagramReelsEmbed url={contentUrl} />;
-    case "tiktokshorts":
+    case "tiktokvideo":
       return <TiktokEmbed content={contentUrl} />;
     case "youtubevideo":
       return <YouTubeEmbed url={contentUrl} />;

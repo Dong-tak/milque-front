@@ -29,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -62,33 +62,42 @@ interface SidebarBtnProps {
   className?: string;
   disabled?: boolean;
   isActive?: boolean;
+  asChild?: boolean;
 }
 
-export function SidebarBtn({
-  children,
-  onClick,
-  className,
-  disabled,
-  asChild = false,
-  isActive = false,
-}: SidebarBtnProps & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : Button;
-  return (
-    <Comp
-      variant="sidebar"
-      size="sidebar"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "sidebar-item flex items-center justify-start",
-        isActive && "text-accent-foreground",
-        className,
-      )}
-    >
-      {children}
-    </Comp>
-  );
-}
+export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
+  (
+    {
+      children,
+      onClick,
+      className,
+      disabled,
+      asChild = false,
+      isActive = false,
+    },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : Button;
+    return (
+      <Comp
+        variant="sidebar"
+        size="sidebar"
+        onClick={onClick}
+        disabled={disabled}
+        ref={ref}
+        className={cn(
+          "sidebar-item flex items-center justify-start",
+          isActive && "text-accent-foreground",
+          className,
+        )}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+
+SidebarBtn.displayName = "SidebarBtn"; // for better debugging experience
 
 function SidebarDropdownBtn() {
   const router = useRouter();
@@ -105,7 +114,7 @@ function SidebarDropdownBtn() {
     router.push("/bookmark");
   };
   return (
-    <div className="dropdown flex">
+    <div className="dropdown relative flex">
       <DropdownMenu>
         <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
           <SidebarBtn asChild>
@@ -115,7 +124,7 @@ function SidebarDropdownBtn() {
             </div>
           </SidebarBtn>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="mt-1 flex flex-col">
+        <DropdownMenuContent className="absolute bottom-1 left-7 mt-1 flex flex-col">
           <DropdownMenuItem onSelect={navToLink}>
             <Link className="icon mr-2 h-4 w-4" />
             <span>계정연동</span>
@@ -142,8 +151,8 @@ export function OurSidebar({
   noti,
   user_id,
 }: {
-  noti: number;
-  user_id: string;
+  noti?: number;
+  user_id?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -177,6 +186,7 @@ export function OurSidebar({
 
       const data = await response.json();
       console.log("Data saved successfully:", data);
+      window.location.reload();
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -245,10 +255,17 @@ export function OurSidebar({
           </SidebarBtn>
           <Dialog>
             <DialogTrigger asChild>
-              <SidebarBtn onClick={navToHome} isActive={pathname === "/add"}>
-                <SquarePlus className="icon mr-2 size-4" />
-                <span>스크랩</span>
-              </SidebarBtn>
+              {user_id ? (
+                <SidebarBtn isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              ) : (
+                <SidebarBtn disabled isActive={pathname === "/add"}>
+                  <SquarePlus className="icon mr-2 size-4" />
+                  <span>스크랩</span>
+                </SidebarBtn>
+              )}
             </DialogTrigger>
             <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
@@ -280,7 +297,6 @@ export function OurSidebar({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
           <SidebarBtn
             onClick={navToHome}
             className="flex justify-between"

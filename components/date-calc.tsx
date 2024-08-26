@@ -1,3 +1,5 @@
+"use client";
+
 export function DateCalc({ dateString }: { dateString: string }) {
   const date = new Date(dateString);
   const now = new Date();

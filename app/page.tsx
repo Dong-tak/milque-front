@@ -1,24 +1,29 @@
+"use client";
+
 import { OurAccordion } from "@/components/our-accordion";
 import { OurBtmBar } from "@/components/our-btmbar";
 import { OurSidebar } from "@/components/our-sidebar";
 import { OurTopBar } from "@/components/our-topbar";
 
-import { getData } from "./api/feed-api";
+import { getPostData } from "./api/feed-api";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
-export default async function Page() {
-  const data = await getData({ data: "1" });
+export default function Page() {
+  const router = useRouter();
 
-  const posts = data?.data?.posts || [];
-  console.log(posts);
-  const noti = data?.data?.notifications || 0;
-
+  const goLogin = () => {
+    router.push("/login");
+  };
 
   return (
-    <div>
-      <OurSidebar noti={noti} user_id={"1"} />
+    <div className="flex h-screen items-center justify-center">
+      <OurSidebar />
       <OurBtmBar />
       <OurTopBar />
-      <OurAccordion posts={posts} />
+      <div>
+        <Button onClick={goLogin}>로그인하러가기</Button>
+      </div>
     </div>
   );
 }

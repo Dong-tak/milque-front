@@ -3,26 +3,43 @@ export interface Content {
   contentImage: string;
 }
 
-export interface Post {
+export interface PostDetail {
+  data: {
+    postId: number;
+    media: string;
+    type: string;
+    comments: Comment[];
+    title: string;
+    date: string;
+    description: string;
+    thumbnail: string;
+    contentUrl: string;
+    success: boolean;
+    message: string;
+  };
+}
+
+export interface PostFeed {
   postId: number;
   media: string;
   type: string;
   comments: Comment[];
-  contentUrl: string;
-  date: string;
-  thumbnail: string;
   title: string;
+  date: string;
   description: string;
+  thumbnail: string;
+  contentUrl: string;
+  success: boolean;
+  message: string;
 }
 
 export interface ApiResponse {
   data: {
-    posts: Post[];
+    posts: PostFeed[];
     notifications: number;
   };
   success: boolean;
   message: string;
-  status: number;
 }
 
 export interface Comment {

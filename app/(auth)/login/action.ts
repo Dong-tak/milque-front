@@ -1,3 +1,4 @@
+"use client";
 import { AxiosResponse, AxiosError } from "axios";
 import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
 
@@ -27,16 +28,25 @@ interface ErrorResponse {
   message?: string; // message 속성을 선택적으로 변경
 }
 
-export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
-  const { access } = response.data.token;
-  const { id } = response.data.user;
+// Function to set the Authorization headerexport
+const setAuthorizationHeader = (access: string) => {
+  console.log("Setting Authorization Header with token:", access);
 
-  // AccessToken을 기본 헤더에 설정
   httpClientForCredentials.defaults.headers.common["Authorization"] =
     `Bearer ${access}`;
 
+  // Log immediately after setting to ensure it is set
+  console.log(
+    "Authorization Header after setting:",
+    httpClientForCredentials.defaults.headers.common["Authorization"],
+  );
+};
+
+export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
+  const { id } = response.data.user;
+
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
-  window.location.href = `/detail?id=${id}`;
+  window.location.href = `/home/${id}`;
 };
 
 export const onLogIn = async (params: LoginData) => {
@@ -45,6 +55,7 @@ export const onLogIn = async (params: LoginData) => {
       "/user/auth/",
       params,
     );
+    console.log("로그인 성공:", response);
     if (response.status === 200) {
       onLogInSuccess(response);
     }
