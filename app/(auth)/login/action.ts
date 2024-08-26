@@ -57,12 +57,6 @@ export const onLogIn = async (params: LoginData) => {
     );
     console.log("로그인 성공:", response);
     if (response.status === 200) {
-      const { access } = response.data.token;
-      const { id } = response.data.user;
-
-      httpClientForCredentials.defaults.headers.common["Authorization"] =
-        `Bearer ${access}`;
-
       onLogInSuccess(response);
     }
   } catch (error) {
