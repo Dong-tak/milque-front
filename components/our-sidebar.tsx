@@ -261,12 +261,12 @@ export function OurSidebar({
           <Dialog>
             <DialogTrigger asChild>
               {user_id ? (
-                <SidebarBtn isActive={pathname === "/add"}>
+                <SidebarBtn>
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
               ) : (
-                <SidebarBtn disabled isActive={pathname === "/add"}>
+                <SidebarBtn disabled>
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
