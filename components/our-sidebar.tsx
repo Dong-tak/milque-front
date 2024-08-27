@@ -168,6 +168,7 @@ export function OurSidebar({
       const cookies = cookie.parse(document.cookie);
       const accessToken = cookies.accessToken;
       console.log(accessToken);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
         {
@@ -198,7 +199,7 @@ export function OurSidebar({
   };
 
   const navToHome = () => {
-    router.back();
+    router.push(`/home/${user_id}`);
   };
 
   return (
@@ -243,7 +244,7 @@ export function OurSidebar({
                 </SidebarBtn>
               )}
             </DialogTrigger>
-            <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+            <DialogContent className="max-h-[200px] w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
                 <DialogTitle className="w-full pb-2 display-undefine-display-01">
                   스크랩할 페이지를 입력하세요

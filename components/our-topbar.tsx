@@ -155,11 +155,11 @@ function SidebarDropdownBtn() {
   );
 }
 
-export function OurTopBar() {
+export function OurTopBar(params: { user_id: string }) {
+  const user_id = params.user_id;
   const router = useRouter();
   const navToHome = () => {
-    router.push("/");
-    console.log("click!!!");
+    router.push(`/home/${user_id}`);
   };
   const navToSetting = () => {
     router.push("/setting");
