@@ -31,6 +31,7 @@ import {
 
 import React, { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import cookie from "cookie";
 
 import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
@@ -164,12 +165,16 @@ export function OurSidebar({
 
   const handleSaveClick = async () => {
     try {
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify([
             {

@@ -1,6 +1,6 @@
 "use client";
+import { httpClientForCredentials } from "@/components/\baxios-header";
 import { AxiosResponse, AxiosError } from "axios";
-import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
 
 export interface LoginData {
   email: string;
@@ -22,6 +22,8 @@ interface LoginResponse {
   user: User;
   message: string;
   token: Token;
+  access: Token;
+  refresh: Token;
 }
 
 interface ErrorResponse {
@@ -29,22 +31,34 @@ interface ErrorResponse {
 }
 
 // Function to set the Authorization headerexport
-const setAuthorizationHeader = (access: string) => {
-  console.log("Setting Authorization Header with token:", access);
+// const setAuthorizationHeader = (access: string) => {
+//   console.log("Setting Authorization Header with token:", access);
+
+//   httpClientForCredentials.defaults.headers.common["Authorization"] =
+//     `Bearer ${access}`;
+
+//   // Log immediately after setting to ensure it is set
+//   console.log(
+//     "Authorization Header after setting:",
+//     httpClientForCredentials.defaults.headers.common["Authorization"],
+//   );
+// };
+
+export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
+  const { id } = response.data.user;
+  console.log(id);
+  const access = response.data.access;
+  const accessToken = access.toString();
+
+  // localStorage.setItem("accessToken", accessToken);
+  // document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
 
   httpClientForCredentials.defaults.headers.common["Authorization"] =
     `Bearer ${access}`;
 
-  // Log immediately after setting to ensure it is set
   console.log(
-    "Authorization Header after setting:",
     httpClientForCredentials.defaults.headers.common["Authorization"],
   );
-};
-
-export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
-  const { id } = response.data.user;
-
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
   window.location.href = `/home/${id}`;
 };

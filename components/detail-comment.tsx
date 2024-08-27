@@ -29,6 +29,7 @@ import { Comment, PostFeed } from "@/lib/types";
 import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
+import cookie from "cookie";
 
 export default function DetailComment({
   params,
@@ -58,6 +59,9 @@ export default function DetailComment({
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
       );
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
@@ -65,6 +69,7 @@ export default function DetailComment({
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
@@ -90,10 +95,17 @@ export default function DetailComment({
     postId: string;
   }) => {
     try {
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
       );
 
@@ -111,6 +123,10 @@ export default function DetailComment({
   const handleSaveClick = async () => {
     console.log("newComment:", newComment);
     try {
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
+
       const newCommentObject = {
         id: Date.now(), // 임시 ID (DB 저장 후 실제 ID로 대체 가능)
         comment: newComment,
@@ -133,6 +149,7 @@ export default function DetailComment({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             comment: newComment,
@@ -158,12 +175,20 @@ export default function DetailComment({
     if (!updatedContent) return;
 
     try {
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
+
+      if (!accessToken) {
+        throw new Error("Access token not found in cookies");
+      }
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             comment: updatedContent,

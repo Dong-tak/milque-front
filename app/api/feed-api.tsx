@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+
 interface getDataProps {
   userId: string;
 }
@@ -10,12 +12,24 @@ export const getPostData = async ({ userId }: getDataProps) => {
     return;
   }
 
+  const cookieStore = cookies();
+
+  const access = cookieStore.get("accessToken");
+  if (!access) {
+    return console.log("accessToken no:", access);
+  }
+  const accessToken = access.value;
+
   const url = `${baseurl}/feed/${userId}/`;
   console.log("Fetching data from:", url);
   try {
     const response = await fetch(url, {
       cache: "no-store",
       credentials: "include",
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+        "Content-Type": "application/json", // 필요에 따라 다른 헤더 추가
+      },
     });
     if (!response.ok) {
       throw new Error("Network response was not ok");
