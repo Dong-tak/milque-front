@@ -132,7 +132,6 @@ const CommandItem = React.forwardRef<
       className={cn(
         "flex w-full cursor-pointer items-center outline-none body-normal-body-01",
         "hover:bg-accent hover:text-accent-foreground", // 호버 시 배경과 텍스트 색상 변경
-        "active:scale-105 active:bg-accent active:text-accent-foreground", // 클릭 시 배경과 텍스트 색상 변경
         "data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50",
         className, // 추가적인 사용자 정의 스타일 유지
       )}
