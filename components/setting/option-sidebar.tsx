@@ -55,7 +55,7 @@ function SidebarItem({ children, onClick, disabled }: SidebarItemProps) {
   return (
     <CommandItem
       onClick={handleClick}
-      className={`w-full px-4 py-2 others-medium-button ${disabled ? "opacity-50" : ""}`}
+      className={`w-full px-4 py-2 others-medium-button ${disabled ? "opacity-50" : "active:scale-105 active:bg-accent active:text-accent-foreground"}`} // active가 아닌경우  클릭 시 배경과 텍스트 색상 변경
     >
       {children}
     </CommandItem>
@@ -150,6 +150,27 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
           <SidebarItem onClick={() => setView("template")}>
             <LayoutTemplate className="mr-2 h-4 w-4" />
             <span>템플릿 설정</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("event")}>
+            <PartyPopper className="mr-2 h-4 w-4" />
+            <span>이벤트</span>
+            <CommandShortcut>24</CommandShortcut>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("beta")}>
+            <Bold className="mr-2 h-4 w-4" />
+            <span>베타 테스트 신청</span>
+            <CommandShortcut>대기중</CommandShortcut>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("team")}>
+            <ThumbsUp className="mr-2 h-4 w-4" />
+            <span>무료 팀기능 도입 문의</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("feedback")}>
+            <MessageSquare className="mr-2 h-4 w-4" />
+            <span>불편/건의 사항</span>
+          </SidebarItem>
+          <SidebarItem>
+            <div className="block h-full md:hidden">왜 안돼</div>
           </SidebarItem>
         </CommandGroup>
         <CommandGroup className="border-t">
