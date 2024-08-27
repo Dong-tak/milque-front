@@ -9,12 +9,14 @@ import {
 import { CloudDownload, ExternalLink, Share2 } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 import { SqBadge } from "./ui/badge";
 import { PostFeed } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setGroupedPosts } from "@/store";
 
 interface AccordionBtnProps {
   children: React.ReactNode;
@@ -111,11 +113,17 @@ export function OurAccordion({
     setIsShared(!isShared);
   };
 
+  const dispatch = useDispatch();
+
   const groupedPosts = sortPostsByTime(groupPostsByDate(posts));
 
   const sortedDateKeys = Object.keys(groupedPosts).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
   );
+
+  useEffect(() => {
+    dispatch(setGroupedPosts(groupedPosts));
+  }, [groupedPosts, dispatch]);
 
   const router = useRouter();
 
@@ -157,13 +165,14 @@ export function OurAccordion({
                     alt={`${post.media} thumbnail`}
                     width={128}
                     height={128}
-                    className="rounded-sm"
+                    className="flex-shrink-0 rounded-sm"
                     style={{
                       objectFit: "cover",
                       width: "128px",
                       height: "128px",
                     }}
                   />
+
                   <div className="flex flex-col items-start gap-2">
                     <div className="flex gap-2">
                       <div className="accordhead others-medium-title">

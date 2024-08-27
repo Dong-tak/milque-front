@@ -3,6 +3,7 @@ import InstagramReelsEmbed from "@/components/insta-reels";
 import TiktokEmbed from "@/components/tiktok-embed";
 import YouTubeEmbed from "@/components/youtube-video";
 import YouTubeShortsEmbed from "@/components/youtube-shorts";
+import ResponsiveIframe from "./iframe-embed";
 
 interface SnsEmbedProps {
   form: string;
@@ -22,6 +23,6 @@ export default function SnsEmbed({ form, contentUrl }: SnsEmbedProps) {
     case "youtubeshorts":
       return <YouTubeShortsEmbed url={contentUrl} />;
     default:
-      return <div>Unsupported content type</div>;
+      return <ResponsiveIframe src={contentUrl} />;
   }
 }
