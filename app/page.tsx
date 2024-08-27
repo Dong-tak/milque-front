@@ -22,8 +22,8 @@ export default function Page() {
   return (
     <div className="flex h-screen items-center justify-center">
       <OurSidebar />
-      <OurBtmBar />
-      <OurTopBar />
+      <OurBtmBar user_id="" />
+      <OurTopBar user_id="" />
       <div>
         <Button onClick={goLogin}>로그인하러가기</Button>
       </div>

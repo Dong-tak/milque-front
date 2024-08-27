@@ -129,12 +129,11 @@ function NavButton({
   );
 }
 
-interface OurBtmBarProps {
-  params: string;
-}
+
 
 export function OurBtmBar({ params }: { params: OurBtmBarProps }) {
   const user_id = params;
+
   const router = useRouter();
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
@@ -217,15 +216,15 @@ export function OurBtmBar({ params }: { params: OurBtmBarProps }) {
         <DialogTrigger asChild>
           {user_id ? (
             <NavButton>
-              <SquarePlus className="icon mr-2 size-4" />
+              <SquarePlus className="icon mr-2 size-6" />
             </NavButton>
           ) : (
             <NavButton disabled>
-              <SquarePlus className="icon mr-2 size-4" />
+              <SquarePlus className="icon mr-2 size-6" />
             </NavButton>
           )}
         </DialogTrigger>
-        <DialogContent className="max-h-[200px] w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+        <DialogContent className="fixed inset-0 flex h-[220px] w-full max-w-[512px] flex-col justify-center gap-5 rounded-md bg-popover p-6">
           <DialogHeader>
             <DialogTitle className="w-full pb-2 display-undefine-display-01">
               스크랩할 페이지를 입력하세요

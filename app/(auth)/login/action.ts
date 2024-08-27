@@ -51,7 +51,7 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
   const accessToken = access.toString();
 
   // localStorage.setItem("accessToken", accessToken);
-  // document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
+  document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
 
   httpClientForCredentials.defaults.headers.common["Authorization"] =
     `Bearer ${access}`;
