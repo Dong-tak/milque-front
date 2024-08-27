@@ -40,23 +40,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { NewTag } from "@/components/our-status-tag";
+import { any, string } from "zod";
 
 interface DataTableProps {
   tableheader: { title: string; accessor: string; sort: boolean }[];
-  arrowupdown?: boolean[];
-  contentData: any[];
+  contentData: {
+    type?: { name: string; tag: boolean };
+    [key: string]: any; // 추가 속성을 허용
+  }[];
   header?: boolean;
   footer?: boolean;
-  tag?: boolean;
 }
 
 export function TestDataTable({
   tableheader,
-  arrowupdown = [],
   contentData,
   header = true,
   footer = true,
-  tag = false,
 }: DataTableProps) {
   const columns: ColumnDef<any>[] = tableheader.map((header, index) => ({
     accessorKey: header.accessor,
@@ -71,7 +72,19 @@ export function TestDataTable({
           </Button>
         )
       : header.title,
-    cell: ({ row }) => <div>{row.getValue(header.accessor)}</div>,
+    cell: ({ row }) => (
+      <div className="flex gap-[10px]">
+        {typeof row.original[header.accessor] === "object" &&
+        row.original[header.accessor]?.name ? (
+          <>
+            {row.original[header.accessor].name}
+            {row.original[header.accessor].tag && <NewTag logo={false} />}{" "}
+          </>
+        ) : (
+          row.getValue(header.accessor)
+        )}
+      </div>
+    ),
   }));
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -124,6 +137,33 @@ export function TestDataTable({
               Priority
             </Button>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Settings2 className="h-4 w-4" />
+                View
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
       <div className="flex border-y">
