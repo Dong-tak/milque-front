@@ -155,8 +155,7 @@ function SidebarDropdownBtn() {
   );
 }
 
-export function OurTopBar(params: { user_id: string }) {
-  const user_id = params.user_id;
+export function OurTopBar(user_id: { user_id: string }) {
   const router = useRouter();
   const navToHome = () => {
     router.push(`/home/${user_id}`);

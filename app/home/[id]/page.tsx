@@ -18,8 +18,8 @@ export default async function HomePage({ params }: { params: { id: string } }) {
   return (
     <div>
       <OurSidebar noti={noti} user_id={userId} />
-      <OurBtmBar />
-      <OurTopBar />
+      <OurBtmBar user_id={userId} />
+      <OurTopBar user_id={userId} />
       <OurAccordion posts={posts} userId={userId} />
     </div>
   );
