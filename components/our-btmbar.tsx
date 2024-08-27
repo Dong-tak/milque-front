@@ -129,7 +129,11 @@ function NavButton({
   );
 }
 
-export function OurBtmBar({ user_id }: { user_id: string }) {
+
+
+export function OurBtmBar({ params }: { params: OurBtmBarProps }) {
+  const user_id = params;
+
   const router = useRouter();
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
