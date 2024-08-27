@@ -198,32 +198,7 @@ export function OurSidebar({
   };
 
   const navToHome = () => {
-    router.push("/");
-    console.log("click!!!");
-  };
-  const navToAdd = () => {
-    router.push("/add");
-  };
-  const navToGroup = () => {
-    router.push("/group");
-  };
-  const navToProfile = () => {
-    router.push("/profile");
-  };
-  const navToSetting = () => {
-    router.push("/setting");
-  };
-  const navToLink = () => {
-    router.push("/link");
-  };
-  const navToInvite = () => {
-    router.push("/invite");
-  };
-  const navToDownload = () => {
-    router.push("/download");
-  };
-  const navToMark = () => {
-    router.push("/bookmark");
+    router.back();
   };
 
   return (
@@ -247,11 +222,7 @@ export function OurSidebar({
             <Calendar className="icon mr-2 size-4" />
             <span>홈</span>
           </SidebarBtn>
-          <SidebarBtn
-            disabled
-            onClick={navToHome}
-            className="flex justify-between"
-          >
+          <SidebarBtn disabled className="flex justify-between">
             <div className="flex items-center">
               <Compass className="icon mr-2 size-4" />
               <span>탐색</span>
@@ -303,7 +274,6 @@ export function OurSidebar({
             </DialogContent>
           </Dialog>
           <SidebarBtn
-            onClick={navToHome}
             className="flex justify-between"
             isActive={pathname === "/group"}
           >
@@ -319,19 +289,19 @@ export function OurSidebar({
           <Label className="sidebar-label px-4 py-2 others-medium-button">
             바로가기
           </Label>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Link className="mr-2 size-4" />
             <span>계정 연동</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <FileDown className="mr-2 size-4" />
             <span>다운로드</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Bookmark className="mr-2 size-4" />
             <span>북마크</span>
           </SidebarBtn>
@@ -340,11 +310,11 @@ export function OurSidebar({
       <div>
         <Separator />
         <div className="flex flex-col p-2">
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Ghost className="icon mr-2 size-4" />
             <span>프로필</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome} className="flex justify-between">
+          <SidebarBtn className="flex justify-between">
             <div className="flex items-center">
               <Bell className="icon mr-2 size-4" />
               <span>알림</span>
