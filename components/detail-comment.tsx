@@ -59,8 +59,8 @@ export default function DetailComment({
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
       );
-      const cookies = cookie.parse(document.cookie);
-      const accessToken = cookies.accessToken;
+      const cookies = document.cookie.split("accessToken=")[1];
+      const accessToken = cookies;
       console.log(accessToken);
 
       const response = await fetch(
@@ -95,8 +95,8 @@ export default function DetailComment({
     postId: string;
   }) => {
     try {
-      const cookies = cookie.parse(document.cookie);
-      const accessToken = cookies.accessToken;
+      const cookies = document.cookie.split("accessToken=")[1];
+      const accessToken = cookies;
       console.log(accessToken);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
@@ -123,8 +123,8 @@ export default function DetailComment({
   const handleSaveClick = async () => {
     console.log("newComment:", newComment);
     try {
-      const cookies = cookie.parse(document.cookie);
-      const accessToken = cookies.accessToken;
+      const cookies = document.cookie.split("accessToken=")[1];
+      const accessToken = cookies;
       console.log(accessToken);
 
       const newCommentObject = {
@@ -175,8 +175,8 @@ export default function DetailComment({
     if (!updatedContent) return;
 
     try {
-      const cookies = cookie.parse(document.cookie);
-      const accessToken = cookies.accessToken;
+      const cookies = document.cookie.split("accessToken=")[1];
+      const accessToken = cookies;
       console.log(accessToken);
 
       if (!accessToken) {
@@ -223,6 +223,9 @@ export default function DetailComment({
         console.error("Failed to copy text: ", err);
       });
   };
+  const handleBackClick = () => {
+    router.back();
+  };
 
   return (
     <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
@@ -230,7 +233,10 @@ export default function DetailComment({
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
           <div className="flex items-center">
-            <div className="p-3 md:hidden">
+            <div
+              className="p-3 hover:bg-card md:hidden"
+              onClick={handleBackClick}
+            >
               <ChevronLeft className="size-6" />
             </div>
             <span className="accordhead others-medium-title">
