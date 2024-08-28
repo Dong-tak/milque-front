@@ -85,32 +85,35 @@ function SidebarList({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavButton({
-  children,
-  onClick,
-  disabled,
-  className,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-}) {
+const NavButton = React.forwardRef<
+  HTMLButtonElement,
+  {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    isActive?: boolean;
+    className?: string;
+  }
+>(({ children, onClick, disabled, isActive = false, className }, ref) => {
   return (
     <Button
       variant="background"
       size={"nav"}
       disabled={disabled}
       className={cn(
-        "rounded-none border-none hover:text-accent-foreground",
+        "w-full border-none hover:text-accent-foreground",
+        isActive && "text-accent-foreground",
         className,
       )}
       onClick={onClick}
+      ref={ref}
     >
       {children}
     </Button>
   );
-}
+});
+
+export default NavButton;
 
 function SidebarDropdownBtn() {
   const router = useRouter();
