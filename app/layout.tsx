@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "MileQue",
   description: "Get Insight of your marketing data",
   icons: {
-    icon: "/lastlast.svg",
+    icon: "/lllllast.svg",
   },
 };
 
