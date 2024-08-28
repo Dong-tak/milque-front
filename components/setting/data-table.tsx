@@ -42,15 +42,18 @@ import {
 } from "@/components/ui/table";
 import { NewTag } from "@/components/our-status-tag";
 import { any, string } from "zod";
+import { Column, Row } from "@tanstack/react-table";
 
 interface DataTableProps {
   tableheader: { title: string; accessor: string; sort: boolean }[];
   contentData: {
     type?: { name: string; tag: boolean };
+    contents?: { title: string; content: string; button: boolean };
     [key: string]: any; // 추가 속성을 허용
   }[];
   header?: boolean;
   footer?: boolean;
+  checkbox?: boolean;
 }
 
 export function TestDataTable({
@@ -58,34 +61,126 @@ export function TestDataTable({
   contentData,
   header = true,
   footer = true,
+  checkbox = false,
 }: DataTableProps) {
-  const columns: ColumnDef<any>[] = tableheader.map((header, index) => ({
-    accessorKey: header.accessor,
-    header: header.sort
-      ? ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {header.title}
-            <ArrowUpDown className="ml-2 h-4 w-4 cursor-pointer" />
-          </Button>
-        )
-      : header.title,
-    cell: ({ row }) => (
-      <div className="flex gap-[10px]">
-        {typeof row.original[header.accessor] === "object" &&
-        row.original[header.accessor]?.name ? (
-          <>
-            {row.original[header.accessor].name}
-            {row.original[header.accessor].tag && <NewTag logo={false} />}{" "}
-          </>
-        ) : (
-          row.getValue(header.accessor)
-        )}
-      </div>
+  //체크박스 컬럼
+  const checkboxColumn: ColumnDef<any> = {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
     ),
-  }));
+    cell: ({ row }: { row: any }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  };
+
+  // 테이블 컬럼
+  const columns: ColumnDef<any>[] = [
+    ...tableheader.map((header) => ({
+      accessorKey: header.accessor,
+      header: header.sort
+        ? ({ column }: { column: Column<any> }) => (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              {header.title}
+              <ArrowUpDown className="ml-2 h-4 w-4 cursor-pointer" />
+            </Button>
+          )
+        : header.title,
+      cell: ({ row }: { row: Row<any> }) => {
+        console.log("row.original:", row.original);
+        console.log("header.accessor:", header.accessor);
+        const cellValue = row.original[header.accessor];
+        console.log(cellValue);
+        // 'contents'라는 accessor에 대한 처리
+        if (typeof cellValue === "object" && cellValue?.title) {
+          const { title, content, button } = cellValue;
+          console.log(cellValue);
+          return (
+            <div className="flex items-center justify-center">
+              <div className="text-black">
+                {cellValue.title && <div>{title}</div>}
+                {cellValue.content && <div>{content}</div>}
+              </div>
+              {button && (
+                <Button
+                  variant="default" // 버튼 스타일은 필요에 따라 수정 가능ㅇ
+                  className="ml-2"
+                >
+                  확인하기
+                </Button>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex gap-[10px]">
+            {typeof cellValue === "object" && cellValue?.name ? (
+              <>
+                {cellValue.name}
+                {cellValue.tag && <NewTag logo={false} />}
+              </>
+            ) : (
+              row.getValue(header.accessor)
+            )}
+          </div>
+        );
+      },
+    })),
+
+    //삭제 메뉴
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }: { row: Row<any> }) => {
+        const payment = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="rounded-radius-md p-padding-py-2 relative box-border flex w-full flex-row items-center justify-end"
+              >
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="relative h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(payment.id)}
+              >
+                삭제하기
+              </DropdownMenuItem>
+              <DropdownMenuItem>View customer</DropdownMenuItem>
+              <DropdownMenuItem>View payment details</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+  //체크 박스가 true일 경우 체크박스 컬럼을 추가
+  if (checkbox) {
+    columns.unshift(checkboxColumn);
+  }
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -116,16 +211,17 @@ export function TestDataTable({
 
   return (
     <div className="w-full">
+      {/* 헤더가 true일 경우 보이게 */}
       {header && (
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-[6px]">
             <Input
-              placeholder="Filter emails..."
+              placeholder="Filter tasks..."
               value={
-                (table.getColumn("email")?.getFilterValue() as string) ?? ""
+                (table.getColumn("type")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("email")?.setFilterValue(event.target.value)
+                table.getColumn("type")?.setFilterValue(event.target.value)
               }
               className="w-max-[] inline-flex h-full flex-col items-start justify-start gap-1.5"
             />
@@ -166,6 +262,9 @@ export function TestDataTable({
           </DropdownMenu>
         </div>
       )}
+      {/* 헤더 끝 */}
+
+      {/* 테이블 */}
       <div className="flex border-y">
         <Table>
           <TableHeader>
@@ -211,6 +310,9 @@ export function TestDataTable({
           </TableBody>
         </Table>
       </div>
+      {/* 테이블 끝 */}
+
+      {/* 풋터가 true일 경우 보이게 */}
       {footer && (
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
@@ -237,6 +339,7 @@ export function TestDataTable({
           </div>
         </div>
       )}
+      {/* 풋터 끝 */}
     </div>
   );
 }
