@@ -126,6 +126,7 @@ const NavButton = React.forwardRef<
     </Button>
   );
 });
+NavButton.displayName = "NavButton";
 
 export function OurBtmBar({ user_id }: { user_id: string }) {
   const router = useRouter();
