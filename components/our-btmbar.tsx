@@ -99,19 +99,16 @@ function SidebarList({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavButton({
-  children,
-  onClick,
-  disabled,
-  isActive = false,
-  className,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  isActive?: boolean;
-  className?: string;
-}) {
+const NavButton = React.forwardRef<
+  HTMLButtonElement,
+  {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    isActive?: boolean;
+    className?: string;
+  }
+>(({ children, onClick, disabled, isActive = false, className }, ref) => {
   return (
     <Button
       variant="background"
@@ -123,11 +120,12 @@ function NavButton({
         className,
       )}
       onClick={onClick}
+      ref={ref}
     >
       {children}
     </Button>
   );
-}
+});
 
 export function OurBtmBar({ user_id }: { user_id: string }) {
   const router = useRouter();

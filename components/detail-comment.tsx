@@ -127,22 +127,6 @@ export default function DetailComment({
       const accessToken = cookies;
       console.log(accessToken);
 
-      const newCommentObject = {
-        id: Date.now(), // 임시 ID (DB 저장 후 실제 ID로 대체 가능)
-        comment: newComment,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        is_deleted: false,
-      };
-
-      // 새로운 댓글을 UI에 즉시 추가
-      setComments((prevComments) => [...prevComments, newCommentObject]);
-      setnewComment("");
-
-      if (comments[0].comment === "Comment를 입력하세요.") {
-        handleDeleteComment(comments[0].id);
-      }
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
@@ -163,6 +147,22 @@ export default function DetailComment({
 
       const data = await response.json();
       console.log("Data saved successfully:", data);
+
+      const newCommentObject = {
+        id: data.data.id,
+        comment: newComment,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_deleted: false,
+      };
+
+      // 새로운 댓글을 UI에 즉시 추가
+      setComments((prevComments) => [...prevComments, newCommentObject]);
+      setnewComment("");
+
+      if (comments[0].comment === "Comment를 입력하세요.") {
+        handleDeleteComment(comments[0].id);
+      }
     } catch (error) {
       console.error("Error saving data:", error);
     }
