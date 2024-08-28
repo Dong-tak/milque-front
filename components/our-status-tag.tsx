@@ -44,13 +44,13 @@ export function StopTag() {
 }
 
 interface NewTagProps {
-  Newhidden?: "hidden" | "visible";
+  logo: boolean;
 }
 
-export function NewTag() {
+export function NewTag({ logo }: NewTagProps) {
   return (
     <div className="inline-flex h-6 items-center justify-center gap-1 rounded border border-[#aeea00] px-2">
-      <Baby className="relative h-4 w-4 text-[#aeea00]" />
+      {logo && <Baby className="relative h-4 w-4 text-[#aeea00]" />}
       <div className="text-[#aeea00]">NEW</div>
     </div>
   );

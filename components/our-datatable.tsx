@@ -40,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { NewTag } from "@/components/our-status-tag";
 
 const data: Payment[] = [
   {

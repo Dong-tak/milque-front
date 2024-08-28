@@ -108,25 +108,74 @@ import { TestDataTable } from "./test";
 //   },
 // ];
 const tableheader = [
-  { title: "알림 유형", accessor: "type", sort: false },
+  { title: "알림 유형", accessor: "type", sort: true },
   { title: "알림 내용", accessor: "content", sort: false },
-  { title: "액션", accessor: "action", sort: true },
+  { title: "", accessor: "action", sort: true },
   { title: "알림 시간", accessor: "date", sort: true },
 ];
 
 const contentData = [
   {
-    type: "활동 알림",
+    type: { name: "활동 알림", tag: true },
     content: "어쩌구저쩌구...",
     action: "확인하기",
     date: "24.07.24 18:33",
   },
   {
-    type: "공지사항",
+    type: { name: "공지사항", tag: false },
     content: "[24.07.24] 능지등급제...",
     action: "확인하기",
     date: "24.07.24 18:33",
   },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: true },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+  {
+    type: { name: "공지사항", tag: false },
+    content: "[24.07.24] 능지등급제...",
+    action: "확인하기",
+    date: "24.07.24 18:33",
+  },
+
   // 추가 데이터...
 ];
 
@@ -161,13 +210,7 @@ export function NotificationView() {
             <Settings2 className="relative h-4 w-4" /> View
           </Button>
         </div> */}
-        <TestDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          arrowupdown={[true, false, true, false, false]}
-          footer={false}
-          header={true}
-        />
+        <TestDataTable tableheader={tableheader} contentData={contentData} />;
         {/* <AccountTable
           tableheader={["알림 유형", "알림 내용", "", "알림 시간", ""]}
           arrowupdown={[true, true, false, true, false]}
