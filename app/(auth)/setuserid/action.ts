@@ -45,6 +45,7 @@ export async function completeUserProfile(
     }
 
     const data = await response.json();
+    console.log("Profile completed:", data);
     router.push(`/home/${data.data.user}`);
     return { success: true, message: "Profile completed and user logged in" };
   } catch (error) {

@@ -166,8 +166,9 @@ export function OurSidebar({
   const handleSaveClick = async () => {
     try {
       const cookies = cookie.parse(document.cookie);
+      console.log("Cookie:", cookies);
       const accessToken = cookies.accessToken;
-      console.log(accessToken);
+      console.log("accessToken:", accessToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,

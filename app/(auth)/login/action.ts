@@ -45,6 +45,7 @@ interface ErrorResponse {
 // };
 
 export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
+  console.log("로그인 성공:", response);
   const { id } = response.data.user;
   console.log(id);
   const access = response.data.access;
