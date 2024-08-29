@@ -165,10 +165,16 @@ export function OurSidebar({
 
   const handleSaveClick = async () => {
     try {
-      const cookies = cookie.parse(document.cookie);
-      console.log("Cookie:", cookies);
-      const accessToken = cookies.accessToken;
+      // const cookies = cookie.parse(document.cookie);
+      // console.log("Cookie:", cookies);
+      // const accessToken = cookies.accessToken;
+      // console.log("accessToken:", accessToken);
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
       console.log("accessToken:", accessToken);
+      console.log("refreshToken:", refreshToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
@@ -176,7 +182,7 @@ export function OurSidebar({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
           },
           body: JSON.stringify([
             {
