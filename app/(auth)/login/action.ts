@@ -3,7 +3,7 @@ import { httpClientForCredentials } from "@/components/\baxios-header";
 import { AxiosResponse, AxiosError } from "axios";
 
 export interface LoginData {
-  email: string;
+  userId: string;
   password: string;
 }
 

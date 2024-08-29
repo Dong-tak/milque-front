@@ -171,12 +171,6 @@ export default function SetUserId() {
       value,
       isMarketed,
     );
-
-    if (result.success) {
-    } else {
-      console.error(result.error);
-      // 추가적인 실패 처리 로직
-    }
   };
 
   return (
