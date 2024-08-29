@@ -118,7 +118,7 @@ export function SiteView() {
       <div>
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
-            내 스크랩 히스토리
+            내 사이트
           </DialogTitle>
         </DialogHeader>
         <TestDataTable tableheader={tableheader} contentData={contentData} />

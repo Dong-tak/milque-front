@@ -20,6 +20,11 @@ import {
   SettingProfile,
   SettingArrow,
 } from "@/components/setting/setting-comp";
+import {
+  SettingAlertDialog,
+  SettingAlertLabel,
+  SettingAlertLink,
+} from "@/components/setting/alert-dialog";
 
 export function ProfileView() {
   const [profile, setProfile] = useState({
@@ -81,6 +86,9 @@ export function ProfileView() {
           buttonTitle="인증수단 변경"
           onClick={() => console.log("인증수단 변경")}
           className="h-full w-full"
+          username="이승철"
+          dialogAlertTitle={"인증"}
+          alertdiscription="오늘은 당신을 위한 선물을 준비했어요. 좋다면 소리 벗고, 팬티 질러주세요! 당신이 참 궁금합니다."
         />
         <SettingButton
           title="비밀번호"
@@ -88,6 +96,14 @@ export function ProfileView() {
           buttonTitle="비밀번호 변경"
           onClick={() => console.log("비밀번호 변경")}
           className="h-full w-full"
+          username="이윤교"
+          dialogAlertTitle={"👋 님, 반가워요!"}
+          alertdiscription="오늘은 당신을 위한 선물을 준비했어요. 좋다면 소리 벗고, 팬티 질러주세요! 당신이 참 궁금합니다."
+        />
+        <SettingAlertLink
+          buttonName="몰루"
+          dialogTitle="👋 이윤교님, 반가워요!"
+          dialogDescription="바로 계정을 연결하세요!"
         />
         <SettingSwitch
           title="계정공개 여부"

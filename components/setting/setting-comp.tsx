@@ -11,12 +11,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ChevronRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { SettingAlertDialog } from "@/components/setting/alert-dialog";
 
 // 이메일 변경 버튼 컴포넌트 , 모달 기능 추가 예상
 interface EmailChangeButtonProps {
@@ -25,6 +38,9 @@ interface EmailChangeButtonProps {
   content: string;
   buttonTitle: string;
   className?: string;
+  username: string;
+  dialogAlertTitle: string;
+  alertdiscription: string;
 }
 
 export function SettingButton({
@@ -33,6 +49,8 @@ export function SettingButton({
   content,
   buttonTitle,
   className,
+  dialogAlertTitle,
+  alertdiscription,
 }: EmailChangeButtonProps) {
   return (
     <div className={`inline-flex items-center justify-between ${className}`}>
@@ -45,14 +63,11 @@ export function SettingButton({
         </Label>
       </div>
       <div>
-        <Button
-          size={"sm"}
-          type="submit"
-          className="font-['SUIT Variable'] leading-tigh inline-flex h-9 shrink grow basis-0 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-center text-sm font-semibold text-slate-900 hover:bg-background"
-          onClick={onClick}
-        >
-          {buttonTitle}
-        </Button>
+        <SettingAlertDialog
+          buttonName={buttonTitle}
+          dialogTitle={dialogAlertTitle}
+          dialogDescription={alertdiscription} // 추가된 속성 전달
+        />
       </div>
     </div>
   );
