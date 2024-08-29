@@ -1,23 +1,25 @@
 "use client"; // Ensure this runs in the client-side environment
 
 import dotenv from "dotenv";
+import { useRouter } from "next/navigation";
 
 dotenv.config();
 
 const POST_API_URL = process.env.NEXT_PUBLIC_POST_API_URL;
 
 export async function completeUserProfile(
-  nickname: string,
-  socialName: string,
-  socialClientId: string,
+  router: ReturnType<typeof useRouter>,
+  loginId: string,
   password: string,
+  job: string,
+  isMarketed: boolean,
 ) {
   try {
-    const csrfToken = "o7XMibme54PGYFbn6z16UhrzQnrK9dkG"; // Get the CSRF token from the cookie
+    // const csrfToken = "o7XMibme54PGYFbn6z16UhrzQnrK9dkG"; // Get the CSRF token from the cookie
 
-    if (!csrfToken) {
-      throw new Error("CSRF token not found");
-    }
+    // if (!csrfToken) {
+    //   throw new Error("CSRF token not found");
+    // }
 
     const response = await fetch(`${POST_API_URL}/user/complete_profile/`, {
       method: "POST",
@@ -26,16 +28,18 @@ export async function completeUserProfile(
         //"X-CSRFToken": csrfToken, // Include the CSRF token in the headers
       },
       body: JSON.stringify({
-        nickname,
-        social_name: socialName,
-        social_client_id: socialClientId,
+        loginId,
         password,
+        job,
+        isMarketed,
       }),
       credentials: "include", // Important: ensures cookies (including session cookie) are sent with the request
     });
 
     if (response.ok) {
       const data = await response.json();
+      console.log(data.data.user);
+      router.push(`/home/${data.data.user}`);
       return { success: true, message: "Profile completed and user logged in" };
     } else {
       const contentType = response.headers.get("content-type");

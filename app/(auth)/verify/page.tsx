@@ -43,7 +43,7 @@ export default function Verify() {
       const result = await verifyEmail(code);
       if (result.success) {
         setIsVerified(true);
-        router.push("/sociallink");
+        router.push("/setuserid");
       } else {
         setState({ fieldErrors: { code: result.message } });
       }

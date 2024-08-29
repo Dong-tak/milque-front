@@ -70,17 +70,17 @@ export default function Login() {
         <CardContent className="h-auto w-full space-y-4 p-0">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-[6px]">
-              <Label htmlFor="email" className="h-10">
+              <Label htmlFor="text" className="h-10">
                 Email
               </Label>
               <Input
-                name="email"
-                type="email"
+                name="text"
+                type="text"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                id="email"
-                placeholder="name@example.com"
+                id="text"
+                placeholder="name"
               />
             </div>
             <div className="space-y-[6px]">

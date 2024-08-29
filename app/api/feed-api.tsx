@@ -15,10 +15,12 @@ export const getPostData = async ({ userId }: getDataProps) => {
   const cookieStore = cookies();
 
   const access = cookieStore.get("accessToken");
-  if (!access) {
-    return console.log("accessToken no:", access);
+  const refresh = cookieStore.get("refreshToken");
+  if (!access || !refresh) {
+    return console.log("accessToken no:", access, "refreshToken no:", refresh);
   }
   const accessToken = access.value;
+  const refreshToken = refresh.value;
 
   const url = `${baseurl}/feed/${userId}/`;
   console.log("Fetching data from:", url);
@@ -27,7 +29,7 @@ export const getPostData = async ({ userId }: getDataProps) => {
       cache: "no-store",
       credentials: "include",
       headers: {
-        Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+        Authorization: `Bearer ${accessToken} ${refreshToken}`, // Authorization 헤더 추가
         "Content-Type": "application/json", // 필요에 따라 다른 헤더 추가
       },
     });
