@@ -69,10 +69,10 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
         {
           method: "DELETE",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${accessToken}`,
-          // },
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${accessToken}`,
+          },
         },
       );
 
@@ -106,10 +106,10 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
         {
           method: "DELETE",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${accessToken}`,
-          // },
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${accessToken}`,
+          },
         },
       );
 
@@ -137,10 +137,10 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
           method: "POST",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${accessToken}`,
-          // },
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${accessToken}`,
+          },
           body: JSON.stringify({
             comment: newComment,
           }),
@@ -195,10 +195,10 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
         {
           method: "PATCH",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          // },
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          },
           body: JSON.stringify({
             comment: updatedContent,
           }),

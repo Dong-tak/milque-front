@@ -28,10 +28,10 @@ export const getPostDetailData = async ({ userId, postId }: getDataProps) => {
     const response = await fetch(url, {
       cache: "no-store",
       credentials: "include",
-      // headers: {
-      //   Authorization: `Bearer ${accessToken} ${refreshToken}`, // Authorization 헤더 추가
-      //   "Content-Type": "application/json", // 필요에 따라 다른 헤더 추가
-      // },
+      headers: {
+        // Authorization: `Bearer ${accessToken} ${refreshToken}`, // Authorization 헤더 추가
+        "Content-Type": "application/json", // 필요에 따라 다른 헤더 추가
+      },
     });
     if (!response.ok) {
       throw new Error("Network response was not ok");
