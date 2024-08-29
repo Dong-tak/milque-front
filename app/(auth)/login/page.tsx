@@ -24,9 +24,9 @@ import { getCookie } from "@/components/cookie";
 import { OurOption } from "@/components/our-option";
 
 const convertFormDataToLoginData = (formData: FormData): LoginData => {
-  const userId = formData.get("userId") as string;
+  const loginId = formData.get("loginId") as string;
   const password = formData.get("password") as string;
-  return { userId, password };
+  return { loginId, password };
 };
 
 export default function Login() {
@@ -40,11 +40,11 @@ export default function Login() {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("userId", email);
+    formData.append("loginId", email);
     formData.append("password", password);
 
     const loginData: LoginData = {
-      userId: formData.get("userId") as string,
+      loginId: formData.get("loginId") as string,
       password: formData.get("password") as string,
     };
 
