@@ -24,9 +24,9 @@ import { getCookie } from "@/components/cookie";
 import { OurOption } from "@/components/our-option";
 
 const convertFormDataToLoginData = (formData: FormData): LoginData => {
-  const email = formData.get("email") as string;
+  const userId = formData.get("userId") as string;
   const password = formData.get("password") as string;
-  return { email, password };
+  return { userId, password };
 };
 
 export default function Login() {
@@ -40,11 +40,11 @@ export default function Login() {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("email", email);
+    formData.append("userId", email);
     formData.append("password", password);
 
     const loginData: LoginData = {
-      email: formData.get("email") as string,
+      userId: formData.get("userId") as string,
       password: formData.get("password") as string,
     };
 
@@ -71,7 +71,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-[6px]">
               <Label htmlFor="text" className="h-10">
-                Email
+                아이디
               </Label>
               <Input
                 name="text"
@@ -85,7 +85,7 @@ export default function Login() {
             </div>
             <div className="space-y-[6px]">
               <Label htmlFor="password" className="h-10">
-                Password
+                비밀번호
               </Label>
               <Input
                 name="password"

@@ -3,7 +3,7 @@ import { httpClientForCredentials } from "@/components/\baxios-header";
 import { AxiosResponse, AxiosError } from "axios";
 
 export interface LoginData {
-  email: string;
+  userId: string;
   password: string;
 }
 
@@ -51,14 +51,8 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
   const accessToken = access.toString();
 
   // localStorage.setItem("accessToken", accessToken);
-  document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
+  // document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
 
-  httpClientForCredentials.defaults.headers.common["Authorization"] =
-    `Bearer ${access}`;
-
-  console.log(
-    httpClientForCredentials.defaults.headers.common["Authorization"],
-  );
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
   window.location.href = `/home/${id}`;
 };
