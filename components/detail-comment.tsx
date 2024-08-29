@@ -59,20 +59,20 @@ export default function DetailComment({
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
       );
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
+      // const accessCookies = document.cookie.split("accessToken=")[1];
+      // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // const accessToken = accessCookies;
+      // const refreshToken = refreshCookies;
+      // console.log(accessToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
+          // headers: {
+          //   "Content-Type": "application/json",
+          //   Authorization: `Bearer ${accessToken}`,
+          // },
         },
       );
 
@@ -97,19 +97,19 @@ export default function DetailComment({
     postId: string;
   }) => {
     try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
+      // const accessCookies = document.cookie.split("accessToken=")[1];
+      // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // const accessToken = accessCookies;
+      // const refreshToken = refreshCookies;
+      // console.log(accessToken);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
+          // headers: {
+          //   "Content-Type": "application/json",
+          //   Authorization: `Bearer ${accessToken}`,
+          // },
         },
       );
 
@@ -127,20 +127,20 @@ export default function DetailComment({
   const handleSaveClick = async () => {
     console.log("newComment:", newComment);
     try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
+      // const accessCookies = document.cookie.split("accessToken=")[1];
+      // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // const accessToken = accessCookies;
+      // const refreshToken = refreshCookies;
+      // console.log(accessToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
+          // headers: {
+          //   "Content-Type": "application/json",
+          //   Authorization: `Bearer ${accessToken}`,
+          // },
           body: JSON.stringify({
             comment: newComment,
           }),
@@ -181,24 +181,24 @@ export default function DetailComment({
     if (!updatedContent) return;
 
     try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
-      console.log(refreshToken);
+      // const accessCookies = document.cookie.split("accessToken=")[1];
+      // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // const accessToken = accessCookies;
+      // const refreshToken = refreshCookies;
+      // console.log(accessToken);
+      // console.log(refreshToken);
 
-      if (!accessToken) {
-        throw new Error("Access token not found in cookies");
-      }
+      // if (!accessToken) {
+      //   throw new Error("Access token not found in cookies");
+      // }
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
+          // headers: {
+          //   "Content-Type": "application/json",
+          //   Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          // },
           body: JSON.stringify({
             comment: updatedContent,
           }),
