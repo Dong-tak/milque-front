@@ -71,7 +71,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-[6px]">
               <Label htmlFor="text" className="h-10">
-                Email
+                아이디
               </Label>
               <Input
                 name="text"
@@ -85,7 +85,7 @@ export default function Login() {
             </div>
             <div className="space-y-[6px]">
               <Label htmlFor="password" className="h-10">
-                Password
+                비밀번호
               </Label>
               <Input
                 name="password"

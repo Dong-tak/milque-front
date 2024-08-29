@@ -59,8 +59,10 @@ export default function DetailComment({
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
       );
-      const cookies = document.cookie.split("accessToken=")[1];
-      const accessToken = cookies;
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
       console.log(accessToken);
 
       const response = await fetch(
@@ -95,8 +97,10 @@ export default function DetailComment({
     postId: string;
   }) => {
     try {
-      const cookies = document.cookie.split("accessToken=")[1];
-      const accessToken = cookies;
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
       console.log(accessToken);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
@@ -123,8 +127,10 @@ export default function DetailComment({
   const handleSaveClick = async () => {
     console.log("newComment:", newComment);
     try {
-      const cookies = document.cookie.split("accessToken=")[1];
-      const accessToken = cookies;
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
       console.log(accessToken);
 
       const response = await fetch(
@@ -175,9 +181,12 @@ export default function DetailComment({
     if (!updatedContent) return;
 
     try {
-      const cookies = document.cookie.split("accessToken=")[1];
-      const accessToken = cookies;
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
       console.log(accessToken);
+      console.log(refreshToken);
 
       if (!accessToken) {
         throw new Error("Access token not found in cookies");
@@ -188,7 +197,7 @@ export default function DetailComment({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
           },
           body: JSON.stringify({
             comment: updatedContent,
@@ -223,6 +232,7 @@ export default function DetailComment({
         console.error("Failed to copy text: ", err);
       });
   };
+
   const handleBackClick = () => {
     router.back();
   };

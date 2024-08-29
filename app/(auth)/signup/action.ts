@@ -8,12 +8,6 @@ const POST_API_URL = process.env.NEXT_PUBLIC_POST_API_URL;
 
 export async function registerUser(email: string) {
   try {
-    const csrfToken = "o7XMibme54PGYFbn6z16UhrzQnrK9dkG"; // Get the CSRF token from the cookie
-
-    if (!csrfToken) {
-      throw new Error("CSRF token not found");
-    }
-
     const response = await fetch(`${POST_API_URL}/user/register/`, {
       method: "POST",
       headers: {

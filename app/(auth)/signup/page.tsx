@@ -64,7 +64,7 @@ export default function Signup() {
         >
           <div className="space-y-[6px]">
             <Label htmlFor="register-email" className="h-10">
-              Email
+              이메일
             </Label>
             <Input
               type="email"
