@@ -9,6 +9,9 @@ import { ProfileView } from "@/components/setting/view-profile";
 import { DetailedSettingsView } from "@/components/setting/view-detailed-settings";
 import { SocialAccountView } from "@/components/setting/view-social-account";
 import { NotificationView } from "@/components/setting/view-notification";
+import { FriendView } from "@/components/setting/view-friend";
+import { DownloadView } from "@/components/setting/view-download";
+import { ScrapView } from "@/components/setting/view-scrap";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -24,6 +27,9 @@ export function OurOption() {
     | "detailedsettings"
     | "socialaccount"
     | "notification"
+    | "download"
+    | "friend"
+    | "scrap"
     | "default";
 
   const renderContentView = (view: ViewType): JSX.Element => {
@@ -40,6 +46,15 @@ export function OurOption() {
       case "notification":
         console.log("notification");
         return <NotificationView />;
+      case "download":
+        console.log("download"); //scrap
+        return <DownloadView />;
+      case "friend":
+        console.log("friend");
+        return <FriendView />;
+      case "scrap":
+        console.log("scrap");
+        return <ScrapView />;
       default:
         console.log("default");
         return <ProfileView />;

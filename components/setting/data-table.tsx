@@ -40,20 +40,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { NewTag } from "@/components/our-status-tag";
-import { any, string } from "zod";
+import {
+  NewTag,
+  PublicTag,
+  PrivateTag,
+  GoodTag,
+  HotTag,
+  RecommendTag,
+  StopTag,
+  WarningTag,
+} from "@/components/our-status-tag";
 import { Column, Row } from "@tanstack/react-table";
+import Image from "next/image";
+import { SocialTag } from "../our-social-tag";
 
 interface DataTableProps {
   tableheader: { title: string; accessor: string; sort: boolean }[];
   contentData: {
     type?: { name: string; tag: boolean };
-    contents?: { title: string; content: string; button: boolean };
-    [key: string]: any; // 추가 속성을 허용
+    contents?: {
+      profile?: string;
+      title?: string;
+      content: string | object;
+      button?: boolean;
+      socials?: [];
+      status?:
+        | "Newtag"
+        | "PublicTag"
+        | "PrivateTag"
+        | "GoodTag"
+        | "HotTag"
+        | "RecommendTag"
+        | "StopTag"
+        | "WarningTag"
+        | "DefaultTag";
+    };
+    [key: string]: any;
   }[];
   header?: boolean;
   footer?: boolean;
   checkbox?: boolean;
+  profileClassName?: string;
 }
 
 export function TestDataTable({
@@ -62,6 +89,7 @@ export function TestDataTable({
   header = true,
   footer = true,
   checkbox = false,
+  profileClassName,
 }: DataTableProps) {
   //체크박스 컬럼
   const checkboxColumn: ColumnDef<any> = {
@@ -105,32 +133,84 @@ export function TestDataTable({
           )
         : header.title,
       cell: ({ row }: { row: Row<any> }) => {
-        console.log("row.original:", row.original);
-        console.log("header.accessor:", header.accessor);
-        const cellValue = row.original[header.accessor];
-        console.log(cellValue);
+        let cellValue = row.original[header.accessor];
+        console.log("cellValue:", cellValue);
+        console.log("row.original:", row.original); // 알림 설정 {type: {…}, contents: {…}, date: '23.07.24 18:33'}
+        console.log("header.accessor:", header.accessor); //contents
+
         // 'contents'라는 accessor에 대한 처리
-        if (typeof cellValue === "object" && cellValue?.title) {
-          const { title, content, button } = cellValue;
-          console.log(cellValue);
+        if (typeof cellValue === "object" && cellValue?.content) {
+          const { title, content, button, profile, status } = cellValue;
+          const renderStatusTag = (status: string) => {
+            switch (status) {
+              case "good":
+                return <GoodTag />;
+              case "warning":
+                return <WarningTag />;
+              case "stop":
+                return <StopTag />;
+              case "new":
+                return <NewTag logo={true} />;
+              case "recommend":
+                return <RecommendTag />;
+              case "hot":
+                return <HotTag />;
+              case "private":
+                return <PrivateTag />;
+              case "public":
+                return <PublicTag />;
+              default:
+                return null;
+            }
+          };
           return (
-            <div className="flex items-center justify-center">
-              <div className="text-black">
-                {cellValue.title && <div>{title}</div>}
-                {cellValue.content && <div>{content}</div>}
+            <div className="p-padding-py-4 font-othersmedium-button relative box-border flex w-full flex-1 grid-cols-3 flex-row items-center justify-between gap-2.5 text-left text-sm text-black">
+              <div className="flex items-center gap-[10px]">
+                {/* profile이 있을 경우 이미지 출력 */}
+                {profile && (
+                  <Image
+                    src={profile || "/images/avatar.png"} // profile 속성 없을 경우 기본 이미지 사용
+                    alt="프로필 이미지"
+                    width={40}
+                    height={40}
+                    className={`${profileClassName}h-9 w-9`}
+                  />
+                )}
+                <div className="">
+                  {title && <p className="m-0 font-extrabold">{title}</p>}
+                  <p className="m-0">
+                    {/* content가 문자열인지 객체인지 확인하고, 객체인 경우 JSON.stringify를 사용하여 출력 */}
+                    {typeof content === "object"
+                      ? JSON.stringify(content)
+                      : content}
+                  </p>
+                </div>
               </div>
+              {/* button이 true일 경우 버튼 출력 */}
               {button && (
-                <Button
-                  variant="default" // 버튼 스타일은 필요에 따라 수정 가능ㅇ
-                  className="ml-2"
-                >
+                <Button variant="default" className="ml-2">
                   확인하기
                 </Button>
+              )}
+              {/* status를 별도의 칸에 렌더링 */}
+              {status && (
+                <div className="status-class">{renderStatusTag(status)}</div>
               )}
             </div>
           );
         }
+        //만약 props에 socials가 있을 경우 SocialTag 컴포넌트로 렌더링
+        if (typeof cellValue === "object" && cellValue?.social) {
+          const { size, social, logo } = cellValue;
 
+          return (
+            <div className="flex items-center gap-[10px]">
+              <SocialTag size={size} social={social} logo={logo} />
+            </div>
+          );
+        }
+
+        //만약 props에 type이 있을 경우 NewTag 컴포넌트로 렌더링
         return (
           <div className="flex gap-[10px]">
             {typeof cellValue === "object" && cellValue?.name ? (
@@ -146,7 +226,7 @@ export function TestDataTable({
       },
     })),
 
-    //삭제 메뉴
+    // 삭제 메뉴
     {
       id: "actions",
       enableHiding: false,
@@ -177,7 +257,8 @@ export function TestDataTable({
       },
     },
   ];
-  //체크 박스가 true일 경우 체크박스 컬럼을 추가
+
+  // 체크박스가 true일 경우 체크박스 컬럼을 추가
   if (checkbox) {
     columns.unshift(checkboxColumn);
   }
@@ -210,7 +291,7 @@ export function TestDataTable({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-[758px]">
       {/* 헤더가 true일 경우 보이게 */}
       {header && (
         <div className="flex items-center justify-between py-4">
@@ -267,7 +348,7 @@ export function TestDataTable({
       {/* 테이블 */}
       <div className="flex border-y">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-card">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

@@ -136,7 +136,7 @@ export function SettingDropDown({
   const [position, setPosition] = React.useState("bottom");
   return (
     <div
-      className={`inline-flex h-10 w-[378px] items-center justify-between ${className}`}
+      className={`inline-flex h-10 w-full items-center justify-between ${className}`}
     >
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
         <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">

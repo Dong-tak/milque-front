@@ -22,10 +22,11 @@ import { OurDataTable } from "../our-datatable";
 import { ColumnDef } from "@tanstack/react-table";
 import { TestDataTable } from "./data-table";
 import { buffer } from "stream/consumers";
+import { profile } from "console";
 
 const tableheader = [
   { title: "알림 유형", accessor: "type", sort: true },
-  { title: "알림 내용", accessor: "content", sort: true },
+  { title: "알림 내용", accessor: "contents", sort: true },
   { title: "알림 시간", accessor: "date", sort: true },
 ];
 
@@ -34,53 +35,55 @@ const contentData = [
     type: { name: "활동 알림", tag: true },
     contents: {
       title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "스크랩이라요",
+      content: "을 성공적으로 완료했습니다.",
       button: true,
     },
     date: "24.07.24 18:32",
   },
   {
-    type: { name: "공지사항", tag: false },
+    type: { name: "공지사항", tag: true },
     contents: {
-      title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "어asdf의 스크랩",
+      title: "[24.07.24] 등급제를 실시했습니다.",
+      content: "자세한 내용은 공지사항을 확인해주세요",
       button: true,
     },
     date: "24.07.24 18:23",
   },
   {
-    type: { name: "공지사항", tag: false },
+    type: { name: "업데이트", tag: true },
     contents: {
-      title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "어쩌구저쩌구를 외 5개의 스크랩",
+      title: "버전 1.0.3으로 업데이트 되었습니다.",
+      content: "자세한 내용은 업데이트 노트를 확인해주세요",
       button: true,
     },
     date: "24.07.24 18:31",
   },
   {
-    type: { name: "공지사항", tag: false },
+    type: { name: "이벤트", tag: false },
     contents: {
-      title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "어쩌구저쩌구를 외 5개의 스크랩",
+      title: "잡아라 알을 잡아라!!",
+      content: "새로운 이벤트가 게시되었습니다.",
       button: true,
     },
     date: "24.07.24 18:33",
   },
   {
-    type: { name: "공지사항", tag: true },
+    type: { name: "친구 요청", tag: false },
     contents: {
-      title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "어쩌구저쩌구를 외 5개asdfasdf크랩",
-      button: false,
+      profile: "/images/avatar.png",
+      title: "@Dorte98 님이 친구 요청을 보냈습니다.",
+      content: "수락하시겠습니까?",
+      button: true,
     },
     date: "24.07.14 18:33",
   },
   {
-    type: { name: "공지사항", tag: false },
+    type: { name: "초대 요청", tag: false },
     contents: {
-      title: "어쩌구저쩌구를 외 5개의 스크랩",
-      content: "어쩌구저쩌구를 외 5개의 스크랩",
-      button: false,
+      profile: "/images/avatar.png",
+      title: "삼성전자 마케팅팀에서 초대 요청을 보냈습니다",
+      content: "수락하시겠습니까?",
+      button: true,
     },
     date: "23.07.24 18:33",
   },

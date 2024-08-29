@@ -17,6 +17,7 @@ import {
   DownloadCloud,
   Ghost,
   Settings2,
+  ScreenShareIcon,
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 
@@ -78,6 +79,7 @@ export interface OurOptionSidebarProps {
       | "socialaccount"
       | "download"
       | "notification"
+      | "scrap"
       | "friend"
       | "share"
       | "display"
@@ -125,6 +127,10 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
           <SidebarItem onClick={() => setView("notification")}>
             <Bell className="mr-2 h-4 w-4" />
             <span>알림 설정</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("scrap")}>
+            <ScreenShareIcon className="mr-2 h-4 w-4" />
+            <span>스크랩 설정</span>
           </SidebarItem>
         </CommandGroup>
         <CommandGroup>
