@@ -165,14 +165,14 @@ export function OurSidebar({
 
   const handleSaveClick = async () => {
     try {
-      // const cookies = cookie.parse(document.cookie);
-      // console.log("Cookie:", cookies);
-      // const accessToken = cookies.accessToken;
-      // console.log("accessToken:", accessToken);
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
+      const cookies = cookie.parse(document.cookie);
+      console.log("Cookie:", cookies);
+      const accessToken = cookies.accessToken;
+      const refreshToken = cookies.refreshToken;
+      // const accessCookies = document.cookie.split("accessToken=")[1];
+      // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // const accessToken = accessCookies;
+      // const refreshToken = refreshCookies;
       console.log("accessToken:", accessToken);
       console.log("refreshToken:", refreshToken);
 
