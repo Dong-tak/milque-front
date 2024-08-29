@@ -46,7 +46,7 @@ export async function completeUserProfile(
 
     const data = await response.json();
     console.log("Profile completed:", data);
-    router.push(`/home/${data.data.user}`);
+    router.push(`/home/${data.user.id}`);
     return { success: true, message: "Profile completed and user logged in" };
   } catch (error) {
     // fetch의 에러를 처리
