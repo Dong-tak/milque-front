@@ -165,10 +165,10 @@ export function OurSidebar({
 
   const handleSaveClick = async () => {
     try {
-      // const cookies = cookie.parse(document.cookie);
-      // console.log("Cookie:", cookies);
-      // const accessToken = cookies.accessToken;
-      // const refreshToken = cookies.refreshToken;
+      const cookies = cookie.parse(document.cookie);
+      console.log("Cookie:", cookies);
+      const accessToken = cookies.accessToken;
+      const refreshToken = cookies.refreshToken;
       // // const accessCookies = document.cookie.split("accessToken=")[1];
       // // const refreshCookies = document.cookie.split("refreshToken=")[1];
       // // const accessToken = accessCookies;
@@ -183,7 +183,7 @@ export function OurSidebar({
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken} ${refreshToken}`,
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
           },
           body: JSON.stringify([
             {
