@@ -218,12 +218,14 @@ interface SettingProfileProps {
   id: string;
   nickname: string;
   className?: string;
+  src?: string;
 }
 
 export function SettingProfile({
   id,
   nickname,
   className,
+  src = "",
 }: SettingProfileProps) {
   return (
     <div
@@ -232,7 +234,7 @@ export function SettingProfile({
       <div className="inline-flex h-20 flex-col items-end justify-end gap-2.5">
         <Image
           className="h-20 w-20 rounded-[999px] border"
-          src="/images/rectangle-352.png"
+          src={src}
           alt="Profile Image"
           width={80}
           height={80}

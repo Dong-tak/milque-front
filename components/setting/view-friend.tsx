@@ -23,10 +23,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TestDataTable } from "./data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
+import { root } from "postcss";
 
 const tableheader = [
   { title: "사용자", accessor: "user", sort: true },
-  { title: "권한", accessor: "authority", sort: true },
+  { title: "권한", accessor: "dropdownarrow", sort: true },
 ];
 
 const contentData = [
@@ -36,6 +37,7 @@ const contentData = [
       title: "이승철 과장",
       content: "@vel_030_roy",
     },
+    dropdownarrow: { title: "Can View", ridioitem: ["Can Commit", "Can View"] },
   },
   {
     user: {
@@ -43,6 +45,7 @@ const contentData = [
       title: "이승철 과장",
       content: "@vel_030_roy",
     },
+    dropdownarrow: { title: "Can View", ridioitem: ["Can Commit", "Can View"] },
   },
   {
     user: {
@@ -50,6 +53,7 @@ const contentData = [
       title: "이승철 과장",
       content: "@vel_030_roy",
     },
+    dropdownarrow: { title: "Can View", ridioitem: ["Can Commit", "Can View"] },
   },
   {
     user: {
@@ -57,6 +61,7 @@ const contentData = [
       title: "이승철 과장",
       content: "@vel_030_roy",
     },
+    dropdownarrow: { title: "Can View", ridioitem: ["Can Commit", "Can View"] },
   },
   {
     user: {
@@ -64,6 +69,7 @@ const contentData = [
       title: "이승철 과장",
       content: "@vel_030_roy",
     },
+    dropdownarrow: { title: "Can View", ridioitem: ["Can Commit", "Can View"] },
   },
 
   // 추가 데이터...

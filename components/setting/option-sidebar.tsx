@@ -81,6 +81,7 @@ export interface OurOptionSidebarProps {
       | "notification"
       | "scrap"
       | "friend"
+      | "group"
       | "share"
       | "display"
       | "template"
@@ -138,7 +139,8 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
             <User className="mr-2 size-4" />
             <span>친구설정</span>
           </SidebarItem>
-          <SidebarItem disabled>
+          {/*  disabled 변경해야함 */}
+          <SidebarItem onClick={() => setView("group")}>
             <Network className="mr-2 h-4 w-4" />
             <span>그룹설정</span>
             <CommandShortcut>준비중</CommandShortcut>

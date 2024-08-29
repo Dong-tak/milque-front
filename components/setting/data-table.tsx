@@ -53,6 +53,7 @@ import {
 import { Column, Row } from "@tanstack/react-table";
 import Image from "next/image";
 import { SocialTag } from "../our-social-tag";
+import { DropDownArrow } from "./dropdown-arrow";
 
 interface DataTableProps {
   tableheader: { title: string; accessor: string; sort: boolean }[];
@@ -65,15 +66,17 @@ interface DataTableProps {
       button?: boolean;
       socials?: [];
       status?:
-        | "Newtag"
-        | "PublicTag"
-        | "PrivateTag"
-        | "GoodTag"
-        | "HotTag"
-        | "RecommendTag"
-        | "StopTag"
-        | "WarningTag"
-        | "DefaultTag";
+        | "New"
+        | "Public"
+        | "Private"
+        | "Good"
+        | "Hot"
+        | "Recommend"
+        | "Stop"
+        | "Warning"
+        | "Default";
+      authority?: string;
+      dropdownarrow?: { title: string; ridioitem: [] };
     };
     [key: string]: any;
   }[];
@@ -91,6 +94,30 @@ export function TestDataTable({
   checkbox = false,
   profileClassName,
 }: DataTableProps) {
+  // 상태 태그 컴포넌트 렌더링
+  const renderStatusTag = (status: string) => {
+    switch (status) {
+      case "Good":
+        return <GoodTag />;
+      case "Warning":
+        return <WarningTag />;
+      case "Stop":
+        return <StopTag />;
+      case "New":
+        return <NewTag logo={true} />;
+      case "Recommend":
+        return <RecommendTag />;
+      case "Hot":
+        return <HotTag />;
+      case "Private":
+        return <PrivateTag />;
+      case "Public":
+        return <PublicTag />;
+      default:
+        return null;
+    }
+  };
+
   //체크박스 컬럼
   const checkboxColumn: ColumnDef<any> = {
     id: "select",
@@ -140,29 +167,8 @@ export function TestDataTable({
 
         // 'contents'라는 accessor에 대한 처리
         if (typeof cellValue === "object" && cellValue?.content) {
-          const { title, content, button, profile, status } = cellValue;
-          const renderStatusTag = (status: string) => {
-            switch (status) {
-              case "good":
-                return <GoodTag />;
-              case "warning":
-                return <WarningTag />;
-              case "stop":
-                return <StopTag />;
-              case "new":
-                return <NewTag logo={true} />;
-              case "recommend":
-                return <RecommendTag />;
-              case "hot":
-                return <HotTag />;
-              case "private":
-                return <PrivateTag />;
-              case "public":
-                return <PublicTag />;
-              default:
-                return null;
-            }
-          };
+          const { title, content, button, profile } = cellValue;
+
           return (
             <div className="p-padding-py-4 font-othersmedium-button relative box-border flex w-full flex-1 grid-cols-3 flex-row items-center justify-between gap-2.5 text-left text-sm text-black">
               <div className="flex items-center gap-[10px]">
@@ -192,10 +198,6 @@ export function TestDataTable({
                   확인하기
                 </Button>
               )}
-              {/* status를 별도의 칸에 렌더링 */}
-              {status && (
-                <div className="status-class">{renderStatusTag(status)}</div>
-              )}
             </div>
           );
         }
@@ -206,6 +208,23 @@ export function TestDataTable({
           return (
             <div className="flex items-center gap-[10px]">
               <SocialTag size={size} social={social} logo={logo} />
+            </div>
+          );
+        }
+        //만약 props에 status가 있을 경우 상태 태그 컴포넌트로 렌더링
+
+        // status 컬럼에 대한 처리
+        if (header.accessor === "status" && cellValue) {
+          return (
+            <div className="status-class">{renderStatusTag(cellValue)}</div>
+          );
+        }
+        //만약 props에 dropdownarrow가 있을 경우 DropDownArrow 컴포넌트로 렌더링
+        if (header.accessor === "dropdownarrow" && cellValue) {
+          const { title, ridioitem } = cellValue;
+          return (
+            <div>
+              <DropDownArrow title={title} ridioitem={ridioitem} />
             </div>
           );
         }

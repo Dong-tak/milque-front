@@ -29,7 +29,7 @@ const tableheader = [
   { title: "채널/계정", accessor: "socials", sort: true },
   { title: "원문", accessor: "content", sort: true },
   { title: "통로", accessor: "channel", sort: true },
-  { title: "소속", accessor: "range", sort: true },
+  { title: "소속", accessor: "day", sort: true },
   { title: "스크랩 시간", accessor: "date", sort: true },
 ];
 
@@ -46,8 +46,8 @@ const contentData = [
       content: "원문 내용", //discription
       // range: "영상", // list
     },
-    range: "영상", // list
-
+    day: "24.07.24", // list
+    channel: "mileque", // list
     date: "24.07.24 18:32",
   },
   {
@@ -61,8 +61,9 @@ const contentData = [
       title: "원문 제목 원문 제목 원문 제목 원문 제목",
       content: "원문 내용",
     },
-    range: "이미지+본문",
-    date: "24.07.24 18:32",
+    day: "24.07.24",
+    channel: "mileque", // list
+    date: "24.07.24 18:31",
   },
   {
     socials: {
@@ -75,7 +76,8 @@ const contentData = [
       title: "원문 제목 원문 제목 원문 제목 원문 제목",
       content: "원문 내용",
     },
-    range: "이미지+본문",
+    day: "24.07.24",
+    channel: "mileque", // list
     date: "24.07.24 18:32",
   },
   {
@@ -89,7 +91,8 @@ const contentData = [
       title: "원문 제목 원문 제목 원문 제목 원문 제목",
       content: "원문 내용",
     },
-    range: "이미지+본문",
+    day: "24.07.24",
+    channel: "mileque", // list
     date: "24.07.24 18:32",
   },
   // 추가 데이터...

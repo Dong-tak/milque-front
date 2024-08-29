@@ -47,7 +47,12 @@ export function ProfileView() {
             내 프로필
           </DialogTitle>
         </DialogHeader>
-        <SettingProfile id="별명" nickname="이승철 과장" className="" />
+        <SettingProfile
+          id="별명"
+          nickname="이승철 과장"
+          className=""
+          src="/images/rectangle-352.png"
+        />
         {/* 한줄 소개 */}
         <div className="h-full w-full space-y-[6px]">
           <div>

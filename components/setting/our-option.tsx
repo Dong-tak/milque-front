@@ -12,6 +12,7 @@ import { NotificationView } from "@/components/setting/view-notification";
 import { FriendView } from "@/components/setting/view-friend";
 import { DownloadView } from "@/components/setting/view-download";
 import { ScrapView } from "@/components/setting/view-scrap";
+import { GroupView } from "@/components/setting/view-group";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -30,6 +31,7 @@ export function OurOption() {
     | "download"
     | "friend"
     | "scrap"
+    | "group"
     | "default";
 
   const renderContentView = (view: ViewType): JSX.Element => {
@@ -55,6 +57,9 @@ export function OurOption() {
       case "scrap":
         console.log("scrap");
         return <ScrapView />;
+      case "group":
+        console.log("group");
+        return <GroupView />;
       default:
         console.log("default");
         return <ProfileView />;
@@ -81,7 +86,7 @@ export function OurOption() {
           <div
             className={`${
               isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
-            } fixed right-0 top-[30px] z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
+            } fixed right-0 top-[50px] z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
           >
             <OptionSidebar setView={setView} />
           </div>

@@ -25,68 +25,67 @@ import {
   PublicTag,
 } from "../our-status-tag";
 import { SocialTag } from "../our-social-tag";
+import { TestDataTable } from "./data-table";
 
-const invoices = [
+const tableheader = [
+  { title: "미디어", accessor: "socials", sort: true },
+  { title: "계정", accessor: "account", sort: true },
+  { title: "스크랩 수", accessor: "scrap_count", sort: true },
+  { title: "연결 상태", accessor: "status", sort: true },
+];
+
+const contentData = [
   {
-    media: (
-      <SocialTag
-        size="default"
-        logo="/social-media/icon-youtube.png"
-        social="youtube"
-      />
-    ),
+    socials: {
+      size: "default",
+      social: "youtube",
+      logo: "/social-media/icon-youtube.png",
+    },
     account: "velroylee669",
-    scrap: "2,182",
-    status: <GoodTag />,
+    scrap_count: 2182,
+    status: "Good",
   },
   {
-    media: (
-      <SocialTag
-        size="default"
-        logo="/social-media/icon-linkedin.png"
-        social="linkedin"
-      />
-    ),
+    socials: {
+      size: "default",
+      social: "linkedin",
+      logo: "/social-media/icon-linkedin.png",
+    },
     account: "539639259",
-    scrap: "2,182",
-    status: <GoodTag />,
+    scrap_count: 321,
+    status: "Good",
   },
   {
-    media: (
-      <SocialTag
-        size="default"
-        logo="/social-media/icon-instagram.png"
-        social="instagram"
-      />
-    ),
+    socials: {
+      size: "default",
+      social: "instagram",
+      logo: "/social-media/icon-instagram.png",
+    },
     account: "vel_030_roy",
-    scrap: "2,182",
-    status: <StopTag />,
+    scrap_count: 1282,
+    status: "Stop",
   },
   {
-    media: (
-      <SocialTag
-        size="default"
-        logo="/social-media/icon-instagram.png"
-        social="instagram"
-      />
-    ),
+    socials: {
+      size: "default",
+      social: "instagram",
+      logo: "/social-media/icon-instagram.png",
+    },
     account: "mileque_contact",
-    scrap: "2,182",
-    status: <GoodTag />,
+    scrap_count: 128,
+    status: "Good",
   },
   {
-    media: (
-      <SocialTag
-        size="default"
-        logo="/social-media/icon-messenger.png"
-        social="messenger"
-      />
-    ),
+    socials: {
+      size: "default",
+      social: "Messnger",
+      logo: "/social-media/icon-messenger.png",
+    },
     account: "100004859553991",
-    scrap: "31",
-    status: <WarningTag />,
+    scrap_count: 31,
+    status: "Warning",
   },
+  // 추가 데이터...
 ];
 
 export function SocialAccountView() {
@@ -115,17 +114,11 @@ export function SocialAccountView() {
         <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
           내 소셜 계정
         </DialogTitle>
-        <AccountTable
-          tableheader={["미디어", "계정", "스크랩 수", "연결 상태"]}
-          arrowupdown={[false, true, false, false]}
-          contentData={invoices.map((invoice) => ({
-            content: [
-              invoice.media,
-              invoice.account,
-              invoice.scrap,
-              invoice.status,
-            ] as string[] | Element,
-          }))}
+        <TestDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          header={false}
+          footer={false}
         />
       </div>
     </div>
