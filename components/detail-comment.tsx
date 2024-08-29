@@ -69,6 +69,7 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
         {
           method: "DELETE",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${accessToken}`,
@@ -106,6 +107,7 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
         {
           method: "DELETE",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${accessToken}`,
@@ -137,6 +139,7 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${accessToken}`,
@@ -195,6 +198,7 @@ export default function DetailComment({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${accessToken} ${refreshToken}`,

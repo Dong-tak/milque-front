@@ -180,10 +180,11 @@ export function OurSidebar({
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
         {
           method: "POST",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          // },
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          },
           body: JSON.stringify([
             {
               content_url: contentUrl,
