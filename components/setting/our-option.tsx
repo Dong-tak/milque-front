@@ -13,6 +13,7 @@ import { FriendView } from "@/components/setting/view-friend";
 import { DownloadView } from "@/components/setting/view-download";
 import { ScrapView } from "@/components/setting/view-scrap";
 import { GroupView } from "@/components/setting/view-group";
+import { SiteView } from "@/components/setting/view-site";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -32,6 +33,7 @@ export function OurOption() {
     | "friend"
     | "scrap"
     | "group"
+    | "site"
     | "default";
 
   const renderContentView = (view: ViewType): JSX.Element => {
@@ -60,6 +62,9 @@ export function OurOption() {
       case "group":
         console.log("group");
         return <GroupView />;
+      case "site":
+        console.log("site");
+        return <SiteView />;
       default:
         console.log("default");
         return <ProfileView />;

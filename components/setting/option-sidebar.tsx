@@ -18,6 +18,7 @@ import {
   Ghost,
   Settings2,
   ScreenShareIcon,
+  Cast,
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 
@@ -82,6 +83,7 @@ export interface OurOptionSidebarProps {
       | "scrap"
       | "friend"
       | "group"
+      | "site"
       | "share"
       | "display"
       | "template"
@@ -132,6 +134,10 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
           <SidebarItem onClick={() => setView("scrap")}>
             <ScreenShareIcon className="mr-2 h-4 w-4" />
             <span>스크랩 설정</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("site")}>
+            <Cast className="mr-2 h-4 w-4" />
+            <span>사이트 설정</span>
           </SidebarItem>
         </CommandGroup>
         <CommandGroup>
