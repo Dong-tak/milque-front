@@ -133,7 +133,8 @@ jobs:
               ]
             }
         env:
-          SLACK_CHANNEL_ID: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       
       - name: Slack Notification on Failure
         if: failure()
@@ -203,4 +204,5 @@ jobs:
               ]
             }
         env:
-          SLACK_CHANNEL_ID: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
