@@ -81,10 +81,9 @@ jobs:
           rm -rf .next/cache
           rm -rf **/node_modules
           
-      - name: Slack Notification
-        uses: 8398a7/action-slack@v3
+      - name: Send Slack notification with workflow result.
+        uses: ScribeMD/slack-templates@0.6.38
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
+          channel-id: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
+          template: result
+          results: "${{ join(needs.*.result, ' ') }}"
