@@ -81,74 +81,10 @@ jobs:
           rm -rf .next/cache
           rm -rf **/node_modules
           
-      - name: Slack Notification on Success
-        if: success() 
+      - name: Slack Notification
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          payload: |
-            {
-              "channel": "front-request",
-              "attachments": [
-                {
-                  "color": "#36a64f",
-                  "title": "push to AWS ECR 성공 :white_check_mark: in Main Branch ",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "The action has succeeded for the following job: `${{ github.job }}`",
-                  "fields": [
-                    {
-                      "title": "Repository",
-                      "value": "${{ github.repository }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Branch",
-                      "value": "${{ github.ref }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Docker Build and Push",
-                      "value": "Successfully built and pushed Docker image to ECR",
-                      "short": true
-                    }
-                  ]
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
-      
-      - name: Slack Notification on Failure
-        if: failure() 
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          payload: |
-            {
-              "channel": "front-request",
-              "attachments": [
-                {
-                  "color": "#ff0000",
-                  "title": "push to AWS ECR 실패 :x: in Main Branch ",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "The action has failed for the following job: `${{ github.job }}`",
-                  "fields": [
-                    {
-                      "title": "Repository",
-                      "value": "${{ github.repository }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Branch",
-                      "value": "${{ github.ref }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Docker Build and Push",
-                      "value": "Failed to build or push Docker image to ECR",
-                      "short": true
-                    }
-                  ]      
-                }
-              ]
-            }
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
