@@ -4,8 +4,14 @@ on:
   push:
     branches:
       - "main"
-    tags:
-      - "**"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - 'develop'
+      - 'feat/**'
+      - 'release/**'
+      - 'release'
 
 jobs:
   push:
@@ -74,3 +80,81 @@ jobs:
           echo "Cleaning up caches"
           rm -rf .next/cache
           rm -rf **/node_modules
+          
+      - name: Slack Notification on Success
+        if: success() # 이 step은 job이 성공한 경우에만 실행된다.
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Main Branch Docker Push
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+        payload: |
+          {
+            "channel": "front-request",
+            "attachments": [
+              {
+                "color": "#36a64f", # 성공시 연두색
+                "title": "push to AWS ECR 성공 :white_check_mark: in Main Branch ",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "The action has succeeded for the following job: `${{ github.job }}`",
+                "fields": [
+                  {
+                    "title": "Repository",
+                    "value": "${{ github.repository }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "${{ github.ref }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Docker Build and Push",
+                    "value": "Successfully built and pushed Docker image to ECR",
+                    "short": true
+                  }
+                ]
+              }
+            ]
+          }
+
+      - name: Slack Notification on Failure
+        if: failure() # 이 step은 job이 실패한 경우에만 실행됩니다.
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Main Branch Docker Push
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+        payload: |
+          {
+            "channel": "front-request,
+            "attachments": [
+              {
+                "color": "#ff0000", # 실패시 빨간색
+                "title": "push to AWS ECR 실패:x: in Main Branch ",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "The action has failed for the following job: `${{ github.job }}`",
+                "fields": [
+                  {
+                    "title": "Repository",
+                    "value": "${{ github.repository }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "${{ github.ref }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Docker Build and Push",
+                    "value": "Failed to build or push Docker image to ECR",
+                    "short": true
+                  }
+                ]      
+              }
+            ]
+          }
