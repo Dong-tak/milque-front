@@ -1,6 +1,6 @@
 "use client";
 import { AxiosResponse, AxiosError } from "axios";
-import { httpClientForCredentials } from "@/app/api/utils/api"; // 경로는 실제 파일 구조에 맞게 수정
+import { httpClientForCredentials } from "@/app/api/axios-header"; // 경로는 실제 파일 구조에 맞게 수정
 
 export interface LoginData {
   email: string;
