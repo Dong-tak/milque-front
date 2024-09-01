@@ -97,13 +97,12 @@ export function SettingOneLabel({
 export function SettingTwoLabel({
   dialogTitle,
   dialogDescription,
-  button,
   label_1_title,
   label_2_title,
 }: SettingAlertDialogProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild></AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
@@ -146,9 +145,6 @@ export function SettingThreeLabel({
   dialogTitle,
   dialogDescription,
   button,
-  label_1_title,
-  label_2_title,
-  label_3_title,
 }: SettingAlertDialogProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -209,7 +205,7 @@ export function SettingThreeLabel({
             <div className="space-y-[6px]">
               <div>
                 <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
-                  {label_1_title}
+                  현재 비밀번호 입력
                 </Label>
               </div>
               <div className="relative">
@@ -233,7 +229,7 @@ export function SettingThreeLabel({
             <div className="space-y-[6px]">
               <div>
                 <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
-                  {label_2_title}
+                  새 비밀번호 입력
                 </Label>
               </div>
               <div className="relative">
@@ -257,13 +253,13 @@ export function SettingThreeLabel({
             <div className="space-y-[6px]">
               <div>
                 <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
-                  {label_3_title}
+                  새 비밀번호 확인
                 </Label>
               </div>
               <div className="relative">
                 <Input
                   className="font-['SUIT Variable'] shrink grow basis-0 pr-10 text-sm font-normal leading-tight text-slate-400"
-                  placeholder="새 비밀번호 확인"
+                  placeholder="비밀번호 확인"
                   type={showPassword3 ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}

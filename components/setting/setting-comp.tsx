@@ -172,7 +172,7 @@ interface SettingArrowProps {
   content: string;
   className?: string;
   titleClassName?: string;
-  trigger?: React.ReactNode;
+  trigger: React.ReactNode;
 }
 
 export function SettingArrow({
@@ -186,7 +186,7 @@ export function SettingArrow({
     <div className={`inline-flex items-center justify-between ${className}`}>
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
         <Label
-          className={`${titleClassName}font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900`}
+          className={`${titleClassName} font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight`}
         >
           {title}
         </Label>
@@ -195,19 +195,7 @@ export function SettingArrow({
         </Label>
       </div>
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <SettingThreeLabel
-          button={
-            <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-              <ChevronRight className="relative h-4 w-4 text-black" />
-            </Button>
-          }
-          buttonName="dd"
-          dialogTitle="👋 이윤교님, 반가워요!"
-          dialogDescription="바로 계정을 연결하세요!"
-          label_1_title="현재 비밀번호"
-          label_2_title="새 비밀번호"
-          label_3_title="새 비밀번호 확인"
-        />
+        {trigger}
       </div>
     </div>
   );

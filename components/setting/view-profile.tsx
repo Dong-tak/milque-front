@@ -26,6 +26,9 @@ import {
   SettingOneLabel,
   SettingMediaSlect,
 } from "@/components/setting/alert-dialog";
+import { PasswordDialog } from "@/components/setting/dialog-component/password-view";
+import { ChevronRight } from "lucide-react";
+import { DeleteAccountDialog } from "./dialog-component/delete-account-view";
 
 export function ProfileView() {
   const [profile, setProfile] = useState({
@@ -44,6 +47,12 @@ export function ProfileView() {
       [id]: value,
     }));
   };
+
+  const button = (
+    <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
+      <ChevronRight className="relative h-4 w-4 text-black" />
+    </Button>
+  );
 
   return (
     <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
@@ -98,16 +107,16 @@ export function ProfileView() {
           alertdiscription="오늘은 당신을 위한 선물을 준비했어요. 좋다면 소리 벗고, 팬티 질러주세요! 당신이 참 궁금합니다."
         />
         <SettingArrow
-          title="비밀번호"
+          title="비밀번호 변경"
           content="계정 로그인에 사용할 비밀번호를 재설정하세요"
           className="h-full w-full"
-        />
-        <SettingMediaSlect
-          buttonName="몰루"
-          dialogTitle="👋 이윤교님, 반가워요!"
-          dialogDescription="바로 계정을 연결하세요!"
-          buttonClassName="w-[100px] h-[40px] bg-slate-300 text-white"
-          button
+          trigger={
+            <PasswordDialog
+              dialogTitle="비밀번호 재설정"
+              dialogDescription="계정 로그인에 사용할 새 비밀번호를 입력하세요."
+              button={button}
+            />
+          }
         />
         <SettingSwitch
           title="계정공개 여부"
@@ -130,11 +139,25 @@ export function ProfileView() {
           title="로그아웃"
           content="tmdcjf326dtmdcjf@gmail.com"
           className=""
+          trigger={
+            <PasswordDialog
+              dialogTitle="비밀번호 재설정"
+              dialogDescription="계정 로그인에 사용할 새 비밀번호를 입력하세요."
+              button={button}
+            />
+          }
         />
         <SettingArrow
           title="내 계정 삭제"
           content="tmdcjf326dtmdcjf@gmail.com"
-          titleClassName="text-red-500"
+          titleClassName="text-red-700"
+          trigger={
+            <DeleteAccountDialog
+              dialogTitle="전체 계정을 영구적으로 삭제하시겠습니까?"
+              dialogDescription="이 작업은 실행 취소할 수 없습니다. 전체 계정이 영구적으로 삭제됩니다. 모든 개인 스크랩이 삭제되고 모든 계정에 있는 데이터와 계정이 제거됩니다"
+              button={button}
+            />
+          }
         />
       </div>
     </div>
