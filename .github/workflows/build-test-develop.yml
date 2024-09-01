@@ -71,23 +71,25 @@ jobs:
         with:
           payload: |
             {
-              "channel": "front-request",
-              "attachments": [
+              "text": "Build Test Success :white_check_mark:",
+              "blocks": [
                 {
-                  "color": "#36a64f",
-                  "title": "Build Test Success :white_check_mark:",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "The action has succeeded for the following job: `${{ github.job }}`",
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "The action has succeeded for the following job: `${{ github.job }}`"
+                  }
+                },
+                {
+                  "type": "section",
                   "fields": [
                     {
-                      "title": "Repository",
-                      "value": "${{ github.repository }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*Repository*\n${{ github.repository }}"
                     },
                     {
-                      "title": "Branch",
-                      "value": "${{ github.ref }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*Branch*\n${{ github.ref }}"
                     }
                   ]
                 }
@@ -102,25 +104,27 @@ jobs:
         with:
           payload: |
             {
-              "channel": "front-request",
-              "attachments": [
+              "text": "Build Test Failure :x:",
+              "blocks": [
                 {
-                  "color": "#ff0000",
-                  "title": "Build Test Failure :x:",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "The action has failed for the following job: `${{ github.job }}`",
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "The action has failed for the following job: `${{ github.job }}`"
+                  }
+                },
+                {
+                  "type": "section",
                   "fields": [
                     {
-                      "title": "Repository",
-                      "value": "${{ github.repository }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*Repository*\n${{ github.repository }}"
                     },
                     {
-                      "title": "Branch",
-                      "value": "${{ github.ref }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*Branch*\n${{ github.ref }}"
                     }
-                  ]      
+                  ]
                 }
               ]
             }
