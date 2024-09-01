@@ -29,7 +29,11 @@ import { ChevronRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { SettingAlertDialog } from "@/components/setting/alert-dialog";
+import {
+  SettingAlertDialog,
+  SettingTwoLabel,
+  SettingThreeLabel,
+} from "@/components/setting/alert-dialog";
 
 // 이메일 변경 버튼 컴포넌트 , 모달 기능 추가 예상
 interface EmailChangeButtonProps {
@@ -63,39 +67,8 @@ export function SettingButton({
         </Label>
       </div>
       <div>
-        <SettingAlertDialog
-          buttonName={buttonTitle}
-          dialogTitle={dialogAlertTitle}
-          dialogDescription={alertdiscription} // 추가된 속성 전달
-        />
-      </div>
-    </div>
-  );
-}
-
-// 카드 형태
-interface SettingCardProps {
-  title: string;
-  content: string;
-  className?: string;
-}
-
-export function SettingCard({ title, content, className }: SettingCardProps) {
-  return (
-    <div
-      className={`inline-flex h-10 items-center justify-between ${className}`}
-    >
-      <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
-        <Label className="font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900">
-          {title}
-        </Label>
-        <Label className="font-['SUIT Variable'] self-stretch text-xs font-normal leading-none text-slate-500">
-          {content}
-        </Label>
-      </div>
-      <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-          <ChevronRight className="relative h-4 w-4 text-black" />
+        <Button variant="outline" className={className}>
+          {buttonTitle}
         </Button>
       </div>
     </div>
@@ -199,6 +172,7 @@ interface SettingArrowProps {
   content: string;
   className?: string;
   titleClassName?: string;
+  trigger?: React.ReactNode;
 }
 
 export function SettingArrow({
@@ -206,6 +180,7 @@ export function SettingArrow({
   content,
   className,
   titleClassName,
+  trigger,
 }: SettingArrowProps) {
   return (
     <div className={`inline-flex items-center justify-between ${className}`}>
@@ -220,9 +195,19 @@ export function SettingArrow({
         </Label>
       </div>
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-          <ChevronRight className="relative h-4 w-4 text-black" />
-        </Button>
+        <SettingThreeLabel
+          button={
+            <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
+              <ChevronRight className="relative h-4 w-4 text-black" />
+            </Button>
+          }
+          buttonName="dd"
+          dialogTitle="👋 이윤교님, 반가워요!"
+          dialogDescription="바로 계정을 연결하세요!"
+          label_1_title="현재 비밀번호"
+          label_2_title="새 비밀번호"
+          label_3_title="새 비밀번호 확인"
+        />
       </div>
     </div>
   );
@@ -256,20 +241,20 @@ export function SettingProfile({
         />
       </div>
 
-      <div className="space-y-[6px]">
+      {/* <div className="space-y-[6px]">
         <div>
-          {/* 아이디 */}
+          아이디 
           <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
             {id}
           </Label>
         </div>
-        {/* 닉네임 */}
+         닉네임
         <div className="inline-flex h-10 w-[258px] items-center justify-start gap-2 rounded-md border border-slate-300 bg-white px-3 py-2">
           <div className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400">
             {nickname}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
