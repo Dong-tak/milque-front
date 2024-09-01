@@ -139,8 +139,8 @@ jobs:
                     {
                       "type": "button",
                       "text": {
-                        "type": "plain_text",
-                        "text": ":github: View Action"
+                        "type": "mrkdwn",
+                        "text": ":github_on_fire: View Action"
                       },
                       "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                     }
@@ -210,8 +210,8 @@ jobs:
                     {
                       "type": "button",
                       "text": {
-                        "type": "plain_text",
-                        "text": ":github: View Action"
+                        "type": "mrkdwn",
+                        "text": ":github_on_fire: *View Action*"
                       },
                       "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                     }
