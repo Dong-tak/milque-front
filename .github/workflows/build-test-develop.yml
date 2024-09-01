@@ -58,8 +58,6 @@ jobs:
           cache-to: type=gha,mode=max
           push: false
           tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front #:${{ env.branch_name }}
-          # build-args: |
-          #   NEXT_PUBLIC_URI=${{ secrets.NEXT_PUBLIC_URI }}
 
       - name: Post job cleanup
         run: |
@@ -68,7 +66,7 @@ jobs:
           rm -rf **/node_modules
           
       - name: Slack Notification on Success
-        if: success() # 이 step은 job이 성공한 경우에만 실행된다.
+        if: success()
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
