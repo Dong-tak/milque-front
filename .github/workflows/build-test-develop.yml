@@ -64,19 +64,20 @@ jobs:
           echo "Cleaning up caches"
           rm -rf .next/cache
           rm -rf **/node_modules
+     
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
             {
-              "text": "Build Test Success :white_check_mark:",
               "blocks": [
+                { "type": "divider" },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "The action has succeeded for the following job: `${{ github.job }}`"
+                    "text": ":white_check_mark: *Build Test Success*"
                   }
                 },
                 {
@@ -115,25 +116,38 @@ jobs:
                       "text": "*Duration*\n${{ github.run_duration_ms }} ms"
                     }
                   ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Action"
+                      },
+                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
                 }
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
-
+          SLACK_CHANNEL_ID: ${{ secrets.FRONT_SLACK_CHANNEL_ID }}
+      
       - name: Slack Notification on Failure
         if: failure()
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
             {
-              "text": "Build Test Failure :x:",
               "blocks": [
+                { "type": "divider" },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "The action has failed for the following job: `${{ github.job }}`"
+                    "text": ":x: *Build Test Failure*"
                   }
                 },
                 {
@@ -171,9 +185,22 @@ jobs:
                       "type": "mrkdwn",
                       "text": "*Duration*\n${{ github.run_duration_ms }} ms"
                     }
-                  ]      
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Action"
+                      },
+                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
                 }
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL_ID: ${{ secrets.FRONT_SLACK_CHANNEL_ID }}
