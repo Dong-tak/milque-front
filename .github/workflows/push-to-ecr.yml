@@ -139,8 +139,8 @@ jobs:
                     {
                       "type": "button",
                       "text": {
-                        "type": "mrkdwn",
-                        "text": ":github_on_fire: View Action"
+                        "type": "plain_text",
+                        "text": "View Action"
                       },
                       "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                     }
