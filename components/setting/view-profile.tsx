@@ -26,29 +26,16 @@ import {
   SettingOneLabel,
   SettingMediaSlect,
 } from "@/components/setting/alert-dialog";
-import { PasswordDialog } from "@/components/setting/dialog-component/password-view";
+import { PasswordDialog } from "@/components/setting/profile-dialog/password-view";
 import { ChevronRight } from "lucide-react";
-import { DeleteAccountDialog } from "./dialog-component/delete-account-view";
+import { DeleteAccountDialog } from "./profile-dialog/delete-account-view";
+import { LogoutDialog } from "./profile-dialog/logout-view";
+import ChangeAuthMethodDialog from "./profile-dialog/auth-change";
+import { ViewProfile } from "@/components/setting/setting-comp"; // 일반 버튼 컴포넌트 추가
 
 export function ProfileView() {
-  const [profile, setProfile] = useState({
-    name: "Pedro Duarte",
-    username: "@peduarte",
-    introduction: "",
-    profilePicture: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setProfile((prevProfile) => ({
-      ...prevProfile,
-      [id]: value,
-    }));
-  };
-
-  const button = (
+  // 화살표 버튼
+  const arrow = (
     <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
       <ChevronRight className="relative h-4 w-4 text-black" />
     </Button>
@@ -71,22 +58,20 @@ export function ProfileView() {
         <SettingButton
           title="별명"
           content="이승철 과장"
-          buttonTitle="별명 변경"
-          onClick={() => console.log("이름 변경")}
-          className="h-full w-full"
-          username="이승철"
-          dialogAlertTitle={"별명 변경"}
-          alertdiscription="별명을 변경하시겠습니까?"
+          trigger={
+            <ChangeAuthMethodDialog
+              button={<ViewProfile buttonTitle={"인증수단 변경"} />}
+            />
+          }
         />
         <SettingButton
           title="한줄 소개"
           content="어쩌구 저쩌구"
-          buttonTitle="별명 변경"
-          onClick={() => console.log("이름 변경")}
-          className="h-full w-full"
-          username="이승철"
-          dialogAlertTitle={"이름 변경"}
-          alertdiscription="이름을 변경하시겠습니까?"
+          trigger={
+            <ChangeAuthMethodDialog
+              button={<ViewProfile buttonTitle={"인증수단 변경"} />}
+            />
+          }
         />
       </div>
 
@@ -99,12 +84,17 @@ export function ProfileView() {
         <SettingButton
           title="인증수단"
           content="tmdcjf326dtmdcjf@gmail.com"
-          buttonTitle="인증수단 변경"
-          onClick={() => console.log("인증수단 변경")}
           className="h-full w-full"
-          username="이승철"
-          dialogAlertTitle={"인증"}
-          alertdiscription="오늘은 당신을 위한 선물을 준비했어요. 좋다면 소리 벗고, 팬티 질러주세요! 당신이 참 궁금합니다."
+          trigger={
+            <ChangeAuthMethodDialog
+              button={
+                <ViewProfile
+                  buttonTitle={"인증수단 변경"}
+                  className="text-black"
+                />
+              }
+            />
+          }
         />
         <SettingArrow
           title="비밀번호 변경"
@@ -114,7 +104,7 @@ export function ProfileView() {
             <PasswordDialog
               dialogTitle="비밀번호 재설정"
               dialogDescription="계정 로그인에 사용할 새 비밀번호를 입력하세요."
-              button={button}
+              button={arrow}
             />
           }
         />
@@ -135,15 +125,16 @@ export function ProfileView() {
             지원
           </DialogTitle>
         </DialogHeader>
+
         <SettingArrow
           title="로그아웃"
           content="tmdcjf326dtmdcjf@gmail.com"
           className=""
           trigger={
-            <PasswordDialog
-              dialogTitle="비밀번호 재설정"
-              dialogDescription="계정 로그인에 사용할 새 비밀번호를 입력하세요."
-              button={button}
+            <LogoutDialog
+              dialogTitle="로그아웃 하시겠습니까?"
+              dialogDescription="로그아웃하면 현재 계정에서 로그아웃되어 홈 화면으로 이동합니다."
+              button={arrow}
             />
           }
         />
@@ -153,9 +144,9 @@ export function ProfileView() {
           titleClassName="text-red-700"
           trigger={
             <DeleteAccountDialog
-              dialogTitle="전체 계정을 영구적으로 삭제하시겠습니까?"
+              dialogTitle="계정을 영구적으로 삭제하시겠습니까?"
               dialogDescription="이 작업은 실행 취소할 수 없습니다. 전체 계정이 영구적으로 삭제됩니다. 모든 개인 스크랩이 삭제되고 모든 계정에 있는 데이터와 계정이 제거됩니다"
-              button={button}
+              button={arrow}
             />
           }
         />

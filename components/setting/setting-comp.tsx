@@ -32,29 +32,22 @@ import Image from "next/image";
 import {
   SettingAlertDialog,
   SettingTwoLabel,
-  SettingThreeLabel,
 } from "@/components/setting/alert-dialog";
+import { DropdownMenuRadioItemProps } from "@radix-ui/react-dropdown-menu";
 
 // 이메일 변경 버튼 컴포넌트 , 모달 기능 추가 예상
 interface EmailChangeButtonProps {
-  onClick: () => void;
   title: string;
   content: string;
-  buttonTitle: string;
   className?: string;
-  username: string;
-  dialogAlertTitle: string;
-  alertdiscription: string;
+  trigger: React.ReactNode;
 }
 
 export function SettingButton({
-  onClick,
   title,
   content,
-  buttonTitle,
   className,
-  dialogAlertTitle,
-  alertdiscription,
+  trigger,
 }: EmailChangeButtonProps) {
   return (
     <div className={`inline-flex items-center justify-between ${className}`}>
@@ -67,9 +60,9 @@ export function SettingButton({
         </Label>
       </div>
       <div>
-        <Button variant="outline" className={className}>
-          {buttonTitle}
-        </Button>
+        {/* <Button variant="outline" className={className}> */}
+        {trigger}
+        {/* </Button> */}
       </div>
     </div>
   );
@@ -111,8 +104,11 @@ interface SettingDropDownProps {
   title: string;
   content: string;
   className?: string;
-  //드롭다운 메뉴 타이틀 및 내용 추가 필요
   dropdownTitle: string;
+  value: string;
+  menulabel: string; // 추가된 부분
+  radioItems: { label: string; value: string }[]; // 추가된 부분
+  disabled?: boolean; // 추가된 부분
 }
 
 export function SettingDropDown({
@@ -120,11 +116,27 @@ export function SettingDropDown({
   content,
   className,
   dropdownTitle,
+  value,
+  menulabel, // 추가된 부분
+  radioItems = [], // 추가된 부분
+  disabled = false,
 }: SettingDropDownProps) {
-  const [position, setPosition] = React.useState("bottom");
+  const [selectedValue, setSelectedValue] = React.useState(value);
+  const [currentTitle, setCurrentTitle] = React.useState(dropdownTitle);
+
+  const handleValueChange = (newValue: string) => {
+    setSelectedValue(newValue);
+    const selectedItem = radioItems.find((item) => item.value === newValue);
+    if (selectedItem) {
+      setCurrentTitle(selectedItem.label);
+    }
+  };
+
   return (
     <div
-      className={`inline-flex h-10 w-full items-center justify-between ${className}`}
+      className={`inline-flex h-10 w-full items-center justify-between ${className} ${
+        disabled ? "pointer-events-none opacity-50" : ""
+      }`}
     >
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
         <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
@@ -141,22 +153,22 @@ export function SettingDropDown({
               variant="outline"
               className="justify-between gap-2 border-none"
             >
-              {dropdownTitle}
+              {currentTitle}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+            <DropdownMenuLabel>{menulabel}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup
-              value={position}
-              onValueChange={setPosition}
+              value={selectedValue}
+              onValueChange={handleValueChange}
             >
-              <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="bottom">
-                Bottom
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+              {radioItems.map((item, index) => (
+                <DropdownMenuRadioItem key={index} value={item.value}>
+                  {item.label}
+                </DropdownMenuRadioItem>
+              ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -246,3 +258,23 @@ export function SettingProfile({
     </div>
   );
 }
+
+interface ViewProfileProps {
+  buttonTitle?: string;
+  className?: string;
+  onClick?: () => void;
+}
+
+const ViewProfile: React.FC<ViewProfileProps> = ({
+  buttonTitle = "인증수단 변경",
+  className,
+  onClick,
+}) => {
+  return (
+    <Button variant="outline" className={className} onClick={onClick}>
+      {buttonTitle}
+    </Button>
+  );
+};
+
+export { ViewProfile };

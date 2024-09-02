@@ -71,7 +71,7 @@ export const DeleteAccountDialog = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-3">
-              <CircleAlert className="text-red-700" /> {dialogTitle}
+              {dialogTitle}
             </AlertDialogTitle>
             <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
           </AlertDialogHeader>
@@ -97,7 +97,11 @@ export const DeleteAccountDialog = ({
             )}
           </div>
           <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
+              취소
+            </AlertDialogCancel>
             <AlertDialogAction
+              className="bg-destructive"
               onClick={async (event) => {
                 event.preventDefault(); // 기본 동작 막기
                 event.stopPropagation(); // 이벤트 전파 막기
@@ -109,9 +113,6 @@ export const DeleteAccountDialog = ({
             >
               계정 삭제
             </AlertDialogAction>
-            <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
-              취소
-            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
