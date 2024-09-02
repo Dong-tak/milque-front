@@ -84,15 +84,17 @@ interface DataTableProps {
   footer?: boolean;
   checkbox?: boolean;
   profileClassName?: string;
+  menuItems: { label: string; onClick: () => void }[];
 }
 
-export function TestDataTable({
+export function SettingDataTable({
   tableheader,
   contentData,
   header = true,
   footer = true,
   checkbox = false,
   profileClassName,
+  menuItems = [],
 }: DataTableProps) {
   // 상태 태그 컴포넌트 렌더링
   const renderStatusTag = (status: string) => {
@@ -263,13 +265,11 @@ export function TestDataTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                삭제하기
-              </DropdownMenuItem>
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              {menuItems.map((item, index) => (
+                <DropdownMenuItem key={index} onClick={item.onClick}>
+                  {item.label}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         );

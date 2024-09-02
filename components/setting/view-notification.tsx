@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, Settings2 } from "lucide-react";
 import { OurDataTable } from "../our-datatable";
 import { ColumnDef } from "@tanstack/react-table";
-import { TestDataTable } from "./data-table";
+import { SettingDataTable } from "@/components/setting/data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
 
@@ -100,7 +100,11 @@ export function NotificationView() {
             내 알림
           </DialogTitle>
         </DialogHeader>
-        <TestDataTable tableheader={tableheader} contentData={contentData} />
+        <SettingDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          menuItems={[{ label: "삭제하기", onClick: () => {} }]}
+        />
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">

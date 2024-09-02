@@ -24,8 +24,10 @@ import {
   PrivateTag,
   PublicTag,
 } from "../our-status-tag";
-import { SocialTag } from "../our-social-tag";
-import { TestDataTable } from "./data-table";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SettingDataTable } from "@/components/setting/data-table";
+import { MediaSlect } from "./social-dialog/media-slect";
 
 const tableheader = [
   { title: "미디어", accessor: "socials", sort: true },
@@ -89,6 +91,12 @@ const contentData = [
 ];
 
 export function SocialAccountView() {
+  const arrow = (
+    <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
+      <ChevronRight className="relative h-4 w-4 text-black" />
+    </Button>
+  );
+
   return (
     <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
       <div className="flex w-full flex-grow flex-col gap-4">
@@ -101,6 +109,13 @@ export function SocialAccountView() {
           title="새로운 소셜 계정 연결하기"
           content="내 활동과 상태를 알립니다."
           className="h-full w-full"
+          trigger={
+            <MediaSlect
+              dialogTitle={"소셜 미디어 선택"}
+              dialogDescription={"미디어를 선택하세요"}
+              button={arrow}
+            />
+          }
         />
         <SettingButton
           title="소셜 계정 진단하기"
@@ -114,11 +129,15 @@ export function SocialAccountView() {
         <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
           내 소셜 계정
         </DialogTitle>
-        <TestDataTable
+        <SettingDataTable
           tableheader={tableheader}
           contentData={contentData}
           header={false}
           footer={false}
+          menuItems={[
+            { label: "삭제하기", onClick: () => {} },
+            { label: "수정하기", onClick: () => {} },
+          ]}
         />
       </div>
     </div>

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, Settings2 } from "lucide-react";
 import { OurDataTable } from "../our-datatable";
 import { ColumnDef } from "@tanstack/react-table";
-import { TestDataTable } from "./data-table";
+import { SettingDataTable } from "./data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
 import { channel } from "process";
@@ -120,7 +120,7 @@ export function ScrapView() {
             내 스크랩 히스토리
           </DialogTitle>
         </DialogHeader>
-        <TestDataTable tableheader={tableheader} contentData={contentData} />
+        <SettingDataTable tableheader={tableheader} contentData={contentData} />
       </div>
     </div>
   );

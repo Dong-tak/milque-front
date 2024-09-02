@@ -24,168 +24,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Copy, Eye, Check } from "lucide-react";
 import Image from "next/image";
-import { flattenBy } from "@tanstack/react-table";
 
-interface SettingAlertDialogProps {
-  buttonName: string;
+interface MediaSlectDialogProps {
   dialogTitle: string;
   dialogDescription: string;
-  buttonClassName?: string;
   button: React.ReactNode; //버튼을 외부에서 주입 받도록 추가
   label_1_title?: string;
   label_2_title?: string;
   label_3_title?: string;
 }
 
-export function SettingAlertDialog({
+export const MediaSlect: React.FC<MediaSlectDialogProps> = ({
   dialogTitle,
   dialogDescription,
   button,
-}: SettingAlertDialogProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-export function SettingOneLabel({
-  buttonName,
-  dialogTitle,
-  dialogDescription,
-  buttonClassName,
-}: SettingAlertDialogProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" className={buttonClassName}>
-          {buttonName}
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="w-full space-y-5">
-          <div className="space-y-[6px]">
-            <Input
-              className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400"
-              placeholder="Field Name or Example"
-            />
-          </div>
-        </div>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-export function SettingTwoLabel({
-  dialogTitle,
-  dialogDescription,
-  label_1_title,
-  label_2_title,
-}: SettingAlertDialogProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>버튼</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-export function SettingAlertLink({
-  buttonName,
-  dialogTitle,
-  dialogDescription,
-  buttonClassName,
-}: SettingAlertDialogProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" className={buttonClassName}>
-          {buttonName}
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="w-full space-y-5">
-          <div className="items-center space-y-[6px]">
-            <div>
-              <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
-                초대 링크
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Input
-                className="font-['SUIT Variable'] shrink grow basis-0 bg-muted text-sm font-normal leading-tight text-slate-400"
-                placeholder="https://www.mileque.com/invite/velroy030/ofikjsdfo342"
-              />
-              <Button variant="outline" className="p-3">
-                <Copy className="size-4" />
-              </Button>
-            </div>
-          </div>
-          <div className="flex grid-cols-3 items-center gap-2">
-            <div className="relative h-0.5 w-full max-w-full flex-1 shrink-0 overflow-hidden bg-border"></div>
-            <div className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-400">
-              OR ADD WITH
-            </div>
-            <div className="relative h-0.5 max-w-full flex-1 shrink-0 overflow-hidden bg-border"></div>
-          </div>
-          <div className="space-y-[6px]">
-            <div>
-              <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
-                아이디 입력
-              </Label>
-            </div>
-            <Input
-              className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400"
-              placeholder="Field Name or Example"
-            />
-          </div>
-        </div>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-export const SettingMediaSlect: React.FC<SettingAlertDialogProps> = ({
-  buttonName,
-  dialogTitle,
-  dialogDescription,
-  buttonClassName,
 }) => {
   const [isClicked, setClickedStates] = useState([
     false, // Facebook
@@ -206,11 +58,7 @@ export const SettingMediaSlect: React.FC<SettingAlertDialogProps> = ({
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" className={buttonClassName}>
-          {buttonName}
-        </Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
@@ -382,22 +230,3 @@ export const SettingMediaSlect: React.FC<SettingAlertDialogProps> = ({
     </AlertDialog>
   );
 };
-
-// 오른쪽 화살표 버튼
-// <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-//   <ChevronRight className="relative h-4 w-4 text-black" />
-// </Button>;
-
-// 드롭다운 버튼
-// <Button
-//   variant="outline"
-//   className="justify-between gap-2 border-none"
-// >
-//   {dropdownTitle}
-//   <ChevronDown className="h-4 w-4" />
-// </Button>;
-
-//버튼 형태
-// <Button variant="outline" className={className}>
-//   {buttonTitle}
-// </Button>;
