@@ -110,7 +110,21 @@ export function DownloadView() {
       <SettingDropDown
         title="다운로드 범위"
         content="다운로드할 범위를 선택하세요"
-        dropdownTitle="이미지/영상+본문"
+        dropdownTitle="이미지/영상"
+        value="image&video" // 기본 선택된 값을 설정해야 합니다.
+        menulabel="다운로드 범위"
+        radioItems={[
+          { label: "이미지/영상", value: "image&video" },
+          { label: "본문", value: "content" },
+          { label: "댓글", value: "comment" },
+          { label: "이미지/영상+본문", value: "image&video&content" },
+          { label: "이미지/영상+댓글", value: "image&video&comment" },
+          { label: "본문+댓글", value: "content&comment" },
+          {
+            label: "이미지/영상+본문+댓글",
+            value: "image&video&content&comment",
+          },
+        ]}
       />
       <div>
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
