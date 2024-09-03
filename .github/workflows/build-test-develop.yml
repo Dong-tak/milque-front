@@ -17,7 +17,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /milque-front  # 리포지토리가 있는 디렉토리로 이동
+            cd milque-front  # 리포지토리가 있는 디렉토리로 이동
             git pull origin develop  # 최신 develop 브랜치 코드를 가져옴
             echo "NEXT_PUBLIC_POST_API_URL=${{ secrets.NEXT_PUBLIC_POST_API_URL }}" > .env  # GitHub Secrets에서 환경 변수 설정
             sudo docker build -t mileque-front:dev .  # Dockerfile을 이용해 이미지를 빌드
