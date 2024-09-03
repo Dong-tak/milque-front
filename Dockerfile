@@ -1,40 +1,20 @@
-# Use the official Node.js 20 image as the base image
-FROM node:20-alpine AS builder
-
-# Create and set the working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json first for efficient caching
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy the rest of the application code
-COPY . .
-
-# Build the Next.js application
-RUN npm run build
-
-# Use a minimal image for production
+# 베이스 이미지 선택
 FROM node:20-alpine
 
-# Set the working directory
+# 작업 디렉토리 설정
 WORKDIR /app
 
-# Copy only necessary files from the builder stage
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
+# package.json 및 package-lock.json 파일만 복사
+COPY package*.json ./
 
-# Install only production dependencies (if needed)
+# 의존성 설치
 RUN npm ci --only=production
 
-# Set the user to 'node' for better security practices
-USER node
+# 나머지 애플리케이션 코드 복사
+COPY . .
 
-# Expose the port that the Next.js app will run on
-EXPOSE 3000
+# 애플리케이션 빌드
+RUN npm run build
 
-# Command to start the application
-CMD ["npm", "run", "start"]
+# 애플리케이션 실행
+CMD ["npm", "start"]
