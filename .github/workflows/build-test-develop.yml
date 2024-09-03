@@ -10,9 +10,6 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     steps:
-      - name: Clean Docker system
-        run: |
-          sudo docker system prune -a -f --volumes
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
