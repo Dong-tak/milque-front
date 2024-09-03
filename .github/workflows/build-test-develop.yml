@@ -27,7 +27,6 @@ jobs:
               echo "${{ secrets.ENV }}" > .env.tmp
               mv .env.tmp .env
             fi
-
             # 디스크 용량 확보를 위해 Docker 리소스 정리
             sudo docker system prune -a -f --volumes
 
