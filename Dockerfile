@@ -22,10 +22,12 @@ FROM node:20-alpine
 # Set the working directory
 WORKDIR /app
 
-# Copy the built files from the builder stage
-COPY --from=builder /app /app
+# Copy only necessary files from the builder stage
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Install only production dependencies
+# Install only production dependencies (if needed)
 RUN npm ci --only=production
 
 # Set the user to 'node' for better security practices
