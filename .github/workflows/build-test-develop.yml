@@ -4,14 +4,9 @@ on:
   push:
     branches:
       - "develop"
-  pull_request:
-    branches:
-      - "develop"
-    paths:
-      - 'feat/**'
 
 jobs:
-  push:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,10 +20,10 @@ jobs:
 
       - name: Cache Node modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
@@ -37,17 +32,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .next/cache
-          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('next.config.js', 'package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-cache-
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
-
-      - name: Extract branch name
-        id: extract_branch
-        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v5
@@ -57,7 +48,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
-          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front #:${{ env.branch_name }}
+          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:${{ env.branch_name }}
 
       - name: Post job cleanup
         run: |
