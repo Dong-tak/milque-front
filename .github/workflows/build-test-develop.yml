@@ -18,8 +18,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd milque-front  # 리포지토리가 있는 디렉토리로 이동
-            git pull origin develop  # 최신 develop 브랜치 코드를 가져옴
-
+            # 로컬 변경 사항 제거 후 최신 코드를 가져옴
+            git reset --hard HEAD
+            git pull origin develop
             # .env 파일이 없으면 생성하고, 있으면 내용을 최신화
             if [ ! -f .env ]; then
               echo "${{ secrets.ENV }}" > .env
