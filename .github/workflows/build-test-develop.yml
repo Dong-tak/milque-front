@@ -4,41 +4,45 @@ on:
   push:
     branches:
       - "develop"
+
 jobs:
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
-        with: 
+        with:
           host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd milque-front  # 리포지토리가 있는 디렉토리로 이동
-            # 로컬 변경 사항 제거 후 최신 코드를 가져옴
+            cd milque-front
             git reset --hard HEAD
             git pull origin develop
-            # .env 파일이 없으면 생성하고, 있으면 내용을 최신화
             if [ ! -f .env ]; then
               echo "${{ secrets.ENV }}" > .env
             else
               echo "${{ secrets.ENV }}" > .env.tmp
               mv .env.tmp .env
             fi
-            # 디스크 용량 확보를 위해 Docker 리소스 정리
             sudo docker system prune -a -f --volumes
-
-            # Dockerfile을 이용해 이미지를 빌드
             sudo docker build -t mileque-front:dev .
-
-            # 기존 컨테이너 중지 및 제거
             sudo docker stop front || true
             sudo docker rm front || true
-            # mileque-network가 없을 경우 생성
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            # 새로운 컨테이너 실행
             sudo docker run -d --name front --network mileque-network -p 3000:3000 mileque-front:dev
             
       - name: Slack Notification on Success
