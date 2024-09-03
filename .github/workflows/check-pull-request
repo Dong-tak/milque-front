@@ -1,4 +1,4 @@
-name: Build Test Develop Branch
+name: build test for pull request
 
 on:
   pull_request:
