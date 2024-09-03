@@ -1,4 +1,4 @@
-name: Build Test Develop Branch
+name: build test for pull request
 
 on:
   pull_request:
@@ -18,20 +18,37 @@ jobs:
         uses: actions/setup-node@v3
 
       - name: Cache dependencies
-        id: cache
+        id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-node-modules-
+
+      - name: Cache Next.js build cache
+        id: cache-nextjs
+        uses: actions/cache@v3
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-cache-
 
       - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run build
         run: npm run build
-        
+
+      - name: Cache Next.js build cache post-build
+        if: always()
+        uses: actions/cache@v3
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('**/package-lock.json') }}
+
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
@@ -44,7 +61,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":white_check_mark: *Build Test Success*"
+                    "text": ":white_check_mark: *Pushed image to AWS ECR for Deployment!*"
                   }
                 },
                 {
@@ -100,7 +117,7 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       
       - name: Slack Notification on Failure
@@ -115,7 +132,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Build Test Failure*"
+                    "text": ":x: *Failed to Push image to AWS ECR for Deployment* :x:"
                   }
                 },
                 {
@@ -171,5 +188,5 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
