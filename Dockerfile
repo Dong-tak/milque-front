@@ -1,35 +1,39 @@
-# Step 1: Build Stage
+# Dockerfile
+
+# Base image
 FROM node:20-alpine AS builder
 
-# 작업 디렉토리 설정
+# Set working directory
 WORKDIR /app
 
-# package.json 및 package-lock.json 복사
+# Copy package.json and package-lock.json separately for better caching
 COPY package*.json ./
 
-# 의존성 설치
+# Install dependencies
 RUN npm ci --only=production
 
-# 애플리케이션 코드 복사
+# Copy the rest of the application code
 COPY . .
 
-# Next.js 애플리케이션 빌드
+# Build the application
 RUN npm run build
 
-# Step 2: Production Stage
+# Use a minimal image for production
 FROM node:20-alpine
 
-# 작업 디렉토리 설정
+# Set the working directory
 WORKDIR /app
 
-# 빌드된 파일 복사
-COPY --from=builder /app ./
+# Copy only necessary files from the builder stage
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Production dependencies 설치
+# Install production dependencies (if needed)
 RUN npm ci --only=production
 
-# 3000 포트 오픈
+# Expose the port
 EXPOSE 3000
 
-# 애플리케이션 실행
+# Start the application
 CMD ["npm", "start"]
