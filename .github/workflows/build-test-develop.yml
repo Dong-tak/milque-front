@@ -48,7 +48,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
-          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front}
+          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front
 
       - name: Post job cleanup
         run: |
