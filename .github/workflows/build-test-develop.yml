@@ -1,4 +1,4 @@
-name: Build Test Develop Branch
+name: Deploy to Develop EC2
 
 on:
   push:
@@ -6,56 +6,25 @@ on:
       - "develop"
 
 jobs:
-  build:
+  deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Node modules
-        id: cache-node-modules
-        uses: actions/cache@v3
+      - name: SSH into EC2 and pull latest code
+        uses: appleboy/ssh-action@master
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
-      - name: Cache Next.js build cache
-        id: cache-nextjs
-        uses: actions/cache@v2
-        with:
-          path: .next/cache
-          key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('next.config.js', 'package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-cache-
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Build and push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          push: false
-          tags: 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front
-
-      - name: Post job cleanup
-        run: |
-          echo "Cleaning up caches"
-          rm -rf .next/cache
-          rm -rf **/node_modules
-     
+          host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /milque-front  # 리포지토리가 있는 디렉토리로 이동
+            git pull origin develop  # 최신 develop 브랜치 코드를 가져옴
+            echo "NEXT_PUBLIC_POST_API_URL=${{ secrets.NEXT_PUBLIC_POST_API_URL }}" > .env  # GitHub Secrets에서 환경 변수 설정
+            sudo docker build -t mileque-front:dev .  # Dockerfile을 이용해 이미지를 빌드
+            sudo docker stop front || true  # 기존 컨테이너 중지
+            sudo docker rm front || true  # 기존 컨테이너 제거
+            sudo docker run -d --name front -p 3000:3000 --env-file .env mileque-front:dev  # 새로운 컨테이너 실행
+            
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
