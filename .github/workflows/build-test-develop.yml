@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
-        with:
+        with: 
           host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
