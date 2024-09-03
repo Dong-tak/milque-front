@@ -36,7 +36,8 @@ jobs:
             # 기존 컨테이너 중지 및 제거
             sudo docker stop front || true
             sudo docker rm front || true
-
+            # mileque-network가 없을 경우 생성
+            sudo docker network ls | grep mileque-network || docker network create mileque-network
             # 새로운 컨테이너 실행
             sudo docker run -d --name front --network mileque-network -p 3000:3000 mileque-front:dev
             
