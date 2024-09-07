@@ -24,6 +24,8 @@ import { SettingDataTable } from "@/components/setting/data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
 import { root } from "postcss";
+import { ChevronRight } from "lucide-react";
+import { FriendRequest } from "@/components/setting/friend-dialog/friend-request";
 
 const tableheader = [
   { title: "사용자", accessor: "user", sort: true },
@@ -76,6 +78,12 @@ const contentData = [
 ];
 
 export function FriendView() {
+  const arrow = (
+    <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
+      <ChevronRight className="relative h-4 w-4 text-black" />
+    </Button>
+  );
+
   return (
     <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
       <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
@@ -86,6 +94,13 @@ export function FriendView() {
       <SettingArrow
         title="친구 요청하기"
         content="내 활동과 상태를 말합니다."
+        trigger={
+          <FriendRequest
+            button={arrow}
+            dialogDescription="친구의 아이디를 입력해주세요."
+            dialogTitle="친구요청"
+          />
+        }
       />
       <SettingDataTable
         tableheader={tableheader}
