@@ -28,7 +28,9 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingDataTable } from "@/components/setting/data-table";
 import { MediaSlect } from "./social-dialog/media-slect";
-
+import { useState } from "react";
+import { UpdateMedia } from "@/components/setting/social-dialog/media-update";
+import { DeleteMedia } from "@/components/setting/social-dialog/media-delete";
 const tableheader = [
   { title: "미디어", accessor: "socials", sort: true },
   { title: "계정", accessor: "account", sort: true },
@@ -91,6 +93,32 @@ const contentData = [
 ];
 
 export function SocialAccountView() {
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [initialContentData, setContentData] = useState(contentData);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const handleUpdateClick = () => {
+    setIsUpdateDialogOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleUpdateCloseDialog = () => {
+    setIsUpdateDialogOpen(false);
+  };
+  const handleDeleteCloseDialog = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleDeleteAccount = () => {
+    setContentData(
+      initialContentData.filter((item) => item.account !== selectedAccount),
+    );
+    setIsDeleteDialogOpen(false);
+  };
   const arrow = (
     <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
       <ChevronRight className="relative h-4 w-4 text-black" />
@@ -111,8 +139,8 @@ export function SocialAccountView() {
           className="h-full w-full"
           trigger={
             <MediaSlect
-              dialogTitle={"소셜 미디어 선택"}
-              dialogDescription={"미디어를 선택하세요"}
+              dialogTitle={"소셜 계정 연결"}
+              dialogDescription={"연결할 소셜 미디어를 선택하세요."}
               button={arrow}
             />
           }
@@ -121,8 +149,7 @@ export function SocialAccountView() {
           title="소셜 계정 진단하기"
           content="연결된 소셜 계정들의 연결 상태를 진단합니다."
           className="h-full w-full"
-          buttonTitle="진단하기"
-          onClick={() => console.log("소셜 계정 진단하기")}
+          trigger={undefined}
         />
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
@@ -135,9 +162,21 @@ export function SocialAccountView() {
           header={false}
           footer={false}
           menuItems={[
-            { label: "삭제하기", onClick: () => {} },
-            { label: "수정하기", onClick: () => {} },
+            { label: "삭제하기", onClick: handleDeleteClick },
+            { label: "수정하기", onClick: handleUpdateClick },
           ]}
+        />
+      </div>
+      <div>
+        <UpdateMedia
+          isOpen={isUpdateDialogOpen}
+          onClose={handleUpdateCloseDialog}
+        />
+
+        <DeleteMedia
+          isOpen={isDeleteDialogOpen}
+          onClose={handleDeleteCloseDialog}
+          onDelete={handleDeleteAccount}
         />
       </div>
     </div>

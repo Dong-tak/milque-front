@@ -73,12 +73,14 @@ interface SettingSwitchProps {
   title: string;
   content: string;
   className?: string;
+  onCheckedChange?: (checked: boolean) => void; // 상태 변경 콜백 추가
 }
 
 export function SettingSwitch({
   title,
   content,
   className,
+  onCheckedChange,
 }: SettingSwitchProps) {
   return (
     <div
@@ -93,7 +95,7 @@ export function SettingSwitch({
         </Label>
       </div>
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Switch />
+        <Switch onCheckedChange={onCheckedChange} />
       </div>
     </div>
   );

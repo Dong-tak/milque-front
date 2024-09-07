@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, Settings2 } from "lucide-react";
 import { OurDataTable } from "../our-datatable";
 import { ColumnDef } from "@tanstack/react-table";
-import { TestDataTable } from "./data-table";
+import { SettingDataTable } from "@/components/setting/data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
 import { root } from "postcss";
@@ -87,7 +87,14 @@ export function FriendView() {
         title="친구 요청하기"
         content="내 활동과 상태를 말합니다."
       />
-      <TestDataTable tableheader={tableheader} contentData={contentData} />
+      <SettingDataTable
+        tableheader={tableheader}
+        contentData={contentData}
+        menuItems={[
+          { label: "삭제하기", onClick: () => {} }, //수정 필요
+          { label: "수정하기", onClick: () => {} }, //수정 필요
+        ]}
+      />
     </div>
   );
 }

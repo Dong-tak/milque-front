@@ -18,8 +18,15 @@ import {
   SettingProfile,
   SettingArrow,
 } from "@/components/setting/setting-comp";
+import { useState } from "react";
 
 export function DetailedSettingsView() {
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+
+  // onCheckedChange 함수 정의
+  const handleSwitchChange = (checked: boolean) => {
+    setIsSwitchOn(checked);
+  };
   return (
     <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-y-auto px-8">
       <div className="flex w-full flex-grow flex-col gap-4">
@@ -91,6 +98,7 @@ export function DetailedSettingsView() {
           title="위치를 사용하여 자동으로 설정"
           content="자세한 내용은 쿠키 공지를 확인하세요"
           className="h-full w-full"
+          onCheckedChange={handleSwitchChange}
         />
         <SettingDropDown
           title="시간대"
@@ -103,7 +111,7 @@ export function DetailedSettingsView() {
             { label: "닉네임", value: "nickname" },
             { label: "이름", value: "name" },
           ]}
-          disabled={true}
+          disabled={isSwitchOn}
         />
         <SettingDropDown
           title="언어"
@@ -116,7 +124,7 @@ export function DetailedSettingsView() {
             { label: "닉네임", value: "nickname" },
             { label: "이름", value: "name" },
           ]}
-          disabled={true}
+          disabled={isSwitchOn}
         />
         <SettingDropDown
           title="하루의 시작을 나누는 시간"
