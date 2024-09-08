@@ -112,8 +112,7 @@ export function SiteView() {
       <SettingButton
         title="기본 도메인 변경"
         content="www.mileque.com/velroy"
-        buttonTitle="기본 도메인 변경"
-        onClick={() => console.log("기본 도메인 변경")}
+        trigger={undefined} //수정필요
       />
       <div>
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
@@ -121,7 +120,14 @@ export function SiteView() {
             내 사이트
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable tableheader={tableheader} contentData={contentData} />
+        <SettingDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          menuItems={[
+            { label: "삭제하기", onClick: () => {} }, //수정필요
+            { label: "수정하기", onClick: () => {} }, //수정필요
+          ]}
+        />
       </div>
     </div>
   );

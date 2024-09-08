@@ -109,10 +109,12 @@ export function ScrapView() {
       <SettingArrow
         title="직접 스크랩"
         content="링크를 입력하여 직접 스크랩을 할 수 있습니다."
+        trigger={undefined} //수정필요
       />
       <SettingArrow
         title="새로운 소셜 계정 연결하기"
         content="내 활동과 상태를 알립니다."
+        trigger={undefined} //수정필요
       />
       <div>
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
@@ -120,7 +122,14 @@ export function ScrapView() {
             내 스크랩 히스토리
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable tableheader={tableheader} contentData={contentData} />
+        <SettingDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          menuItems={[
+            { label: "삭제하기", onClick: () => {} }, //수정필요
+            { label: "수정하기", onClick: () => {} }, //수정필요
+          ]}
+        />
       </div>
     </div>
   );

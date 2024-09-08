@@ -153,16 +153,19 @@ export function GroupView() {
           title="그룹 초대하기"
           content="새로운 그룹 멤버를 초대하세요"
           className="w-full"
+          trigger={undefined} //수정필요
         />
         <SettingArrow
           title="공지하기"
           content="그룹 전체에게 알림을 보내세요"
           className="w-full"
+          trigger={undefined} //수정필요
         />
         <SettingArrow
           title="목표 설정하기"
           content="반복되는 목표를 설정하세요"
           className="w-full"
+          trigger={undefined} //수정필요
         />
         <SettingDropDown
           title="주기 설정하기"
