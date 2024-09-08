@@ -56,6 +56,7 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -241,7 +242,11 @@ export function OurSidebar({
           <Dialog>
             <DialogTrigger asChild>
               {user_id ? (
-                <SidebarBtn>
+                <SidebarBtn
+                  onClick={() => {
+                    sendGTMEvent({ event: "buttonClicked", value: "xyz" });
+                  }}
+                >
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>

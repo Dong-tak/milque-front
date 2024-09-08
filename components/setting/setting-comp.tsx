@@ -11,28 +11,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ChevronRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
+import {
+  SettingAlertDialog,
+  SettingTwoLabel,
+} from "@/components/setting/alert-dialog";
+import { DropdownMenuRadioItemProps } from "@radix-ui/react-dropdown-menu";
 
 // 이메일 변경 버튼 컴포넌트 , 모달 기능 추가 예상
 interface EmailChangeButtonProps {
-  onClick: () => void;
   title: string;
   content: string;
-  buttonTitle: string;
   className?: string;
+  trigger: React.ReactNode;
 }
 
 export function SettingButton({
-  onClick,
   title,
   content,
-  buttonTitle,
   className,
+  trigger,
 }: EmailChangeButtonProps) {
   return (
     <div className={`inline-flex items-center justify-between ${className}`}>
@@ -45,43 +60,9 @@ export function SettingButton({
         </Label>
       </div>
       <div>
-        <Button
-          size={"sm"}
-          type="submit"
-          className="font-['SUIT Variable'] leading-tigh inline-flex h-9 shrink grow basis-0 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-center text-sm font-semibold text-slate-900 hover:bg-background"
-          onClick={onClick}
-        >
-          {buttonTitle}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-// 카드 형태
-interface SettingCardProps {
-  title: string;
-  content: string;
-  className?: string;
-}
-
-export function SettingCard({ title, content, className }: SettingCardProps) {
-  return (
-    <div
-      className={`inline-flex h-10 items-center justify-between ${className}`}
-    >
-      <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
-        <Label className="font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900">
-          {title}
-        </Label>
-        <Label className="font-['SUIT Variable'] self-stretch text-xs font-normal leading-none text-slate-500">
-          {content}
-        </Label>
-      </div>
-      <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-          <ChevronRight className="relative h-4 w-4 text-black" />
-        </Button>
+        {/* <Button variant="outline" className={className}> */}
+        {trigger}
+        {/* </Button> */}
       </div>
     </div>
   );
@@ -92,12 +73,14 @@ interface SettingSwitchProps {
   title: string;
   content: string;
   className?: string;
+  onCheckedChange?: (checked: boolean) => void; // 상태 변경 콜백 추가
 }
 
 export function SettingSwitch({
   title,
   content,
   className,
+  onCheckedChange,
 }: SettingSwitchProps) {
   return (
     <div
@@ -112,7 +95,7 @@ export function SettingSwitch({
         </Label>
       </div>
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Switch />
+        <Switch onCheckedChange={onCheckedChange} />
       </div>
     </div>
   );
@@ -123,8 +106,11 @@ interface SettingDropDownProps {
   title: string;
   content: string;
   className?: string;
-  //드롭다운 메뉴 타이틀 및 내용 추가 필요
   dropdownTitle: string;
+  value: string;
+  menulabel: string; // 추가된 부분
+  radioItems: { label: string; value: string }[]; // 추가된 부분
+  disabled?: boolean; // 추가된 부분
 }
 
 export function SettingDropDown({
@@ -132,11 +118,27 @@ export function SettingDropDown({
   content,
   className,
   dropdownTitle,
+  value,
+  menulabel, // 추가된 부분
+  radioItems = [], // 추가된 부분
+  disabled = false,
 }: SettingDropDownProps) {
-  const [position, setPosition] = React.useState("bottom");
+  const [selectedValue, setSelectedValue] = React.useState(value);
+  const [currentTitle, setCurrentTitle] = React.useState(dropdownTitle);
+
+  const handleValueChange = (newValue: string) => {
+    setSelectedValue(newValue);
+    const selectedItem = radioItems.find((item) => item.value === newValue);
+    if (selectedItem) {
+      setCurrentTitle(selectedItem.label);
+    }
+  };
+
   return (
     <div
-      className={`inline-flex h-10 w-[378px] items-center justify-between ${className}`}
+      className={`inline-flex h-10 w-full items-center justify-between ${className} ${
+        disabled ? "pointer-events-none opacity-50" : ""
+      }`}
     >
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
         <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
@@ -153,22 +155,22 @@ export function SettingDropDown({
               variant="outline"
               className="justify-between gap-2 border-none"
             >
-              {dropdownTitle}
+              {currentTitle}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+            <DropdownMenuLabel>{menulabel}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup
-              value={position}
-              onValueChange={setPosition}
+              value={selectedValue}
+              onValueChange={handleValueChange}
             >
-              <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="bottom">
-                Bottom
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+              {radioItems.map((item, index) => (
+                <DropdownMenuRadioItem key={index} value={item.value}>
+                  {item.label}
+                </DropdownMenuRadioItem>
+              ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -184,6 +186,7 @@ interface SettingArrowProps {
   content: string;
   className?: string;
   titleClassName?: string;
+  trigger: React.ReactNode;
 }
 
 export function SettingArrow({
@@ -191,12 +194,13 @@ export function SettingArrow({
   content,
   className,
   titleClassName,
+  trigger,
 }: SettingArrowProps) {
   return (
     <div className={`inline-flex items-center justify-between ${className}`}>
       <div className="inline-flex h-10 flex-col items-start justify-start gap-1">
         <Label
-          className={`${titleClassName}font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight text-slate-900`}
+          className={`${titleClassName} font-['SUIT Variable'] self-stretch text-sm font-normal leading-tight`}
         >
           {title}
         </Label>
@@ -205,9 +209,7 @@ export function SettingArrow({
         </Label>
       </div>
       <div className="inline-flex h-10 flex-col items-end justify-end gap-2.5">
-        <Button className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md bg-background p-3 hover:bg-background">
-          <ChevronRight className="relative h-4 w-4 text-black" />
-        </Button>
+        {trigger}
       </div>
     </div>
   );
@@ -218,12 +220,14 @@ interface SettingProfileProps {
   id: string;
   nickname: string;
   className?: string;
+  src?: string;
 }
 
 export function SettingProfile({
   id,
   nickname,
   className,
+  src = "",
 }: SettingProfileProps) {
   return (
     <div
@@ -232,27 +236,47 @@ export function SettingProfile({
       <div className="inline-flex h-20 flex-col items-end justify-end gap-2.5">
         <Image
           className="h-20 w-20 rounded-[999px] border"
-          src="/images/rectangle-352.png"
+          src={src}
           alt="Profile Image"
           width={80}
           height={80}
         />
       </div>
 
-      <div className="space-y-[6px]">
+      {/* <div className="space-y-[6px]">
         <div>
-          {/* 아이디 */}
+          아이디 
           <Label className="font-['SUIT Variable'] text-sm font-normal leading-tight text-slate-900">
             {id}
           </Label>
         </div>
-        {/* 닉네임 */}
+         닉네임
         <div className="inline-flex h-10 w-[258px] items-center justify-start gap-2 rounded-md border border-slate-300 bg-white px-3 py-2">
           <div className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400">
             {nickname}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
+
+interface ViewProfileProps {
+  buttonTitle?: string;
+  className?: string;
+  onClick?: () => void;
+}
+
+const ViewProfile: React.FC<ViewProfileProps> = ({
+  buttonTitle = "인증수단 변경",
+  className,
+  onClick,
+}) => {
+  return (
+    <Button variant="outline" className={className} onClick={onClick}>
+      {buttonTitle}
+    </Button>
+  );
+};
+
+export { ViewProfile };

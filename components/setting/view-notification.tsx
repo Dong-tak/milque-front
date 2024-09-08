@@ -14,172 +14,143 @@ import {
   SettingDropDown,
   SettingArrow,
 } from "@/components/setting/setting-comp";
-import { NewTag } from "../our-status-tag";
-import { OurPagination } from "../our-pagination";
-import { Button } from "@/components/ui/button";
-import { PlusCircleIcon, Settings2 } from "lucide-react";
-import { OurDataTable } from "../our-datatable";
-import { ColumnDef } from "@tanstack/react-table";
-import { TestDataTable } from "./test";
-// const invoices = [
-//   {
-//     type: (
-//       <div className="flex justify-start gap-[10px]">
-//         활동 알림 <NewTag />
-//       </div>
-//     ),
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">어쩌구저쩌구를 외 5개의 스크랩</p>
-//         <p>을 성공적으로 완료했습니다.</p>
-//       </div>
-//     ),
-//     button: <Button>확인하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-//   {
-//     type: (
-//       <div className="flex justify-start gap-[10px]">
-//         공지 사항 <NewTag />
-//       </div>
-//     ),
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">
-//           [24.07.24] 능지등급제를 실시했습니다.
-//         </p>
-//         <p>자세한 내용은 공지사항을 확인해주세요</p>
-//       </div>
-//     ),
-//     button: <Button>확인하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-//   {
-//     type: (
-//       <div className="flex justify-start gap-[10px]">
-//         업데이트 <NewTag />
-//       </div>
-//     ),
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">버전 1.0.3으로 업데이트 되었습니다.</p>
-//         <p>자세한 내용은 공지사항을 확인해주세요</p>
-//       </div>
-//     ),
-//     button: <Button>확인하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-//   {
-//     type: "이벤트",
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">잡아라 마형우측알을 잡아라!!</p>
-//         <p>새로운 이벤트가 게시되었습니다.</p>
-//       </div>
-//     ),
-//     button: <Button>확인하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-//   {
-//     type: "친구 요청",
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">
-//           @Dorte98 님이 친구 요청을 보냈습니다.
-//         </p>
-//         <p>수락하시겠습니까?</p>
-//       </div>
-//     ),
-//     button: <Button>수락하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-//   {
-//     type: "초대 요청",
-//     content: (
-//       <div>
-//         <p className="m-0 font-semibold">
-//           삼성전자 마케팅팀에서 초대 요청을 보냈습니다.
-//         </p>
-//         <p>수락하시겠습니까?</p>
-//       </div>
-//     ),
-//     button: <Button>수락하기</Button>,
-//     time: "24.07.24 18:33",
-//   },
-// ];
+import { SettingDataTable } from "@/components/setting/data-table";
+import { useState } from "react";
+import { Item } from "@radix-ui/react-accordion";
+
+// 데이터 타입 정의
+type ContentDataItem = {
+  id: number;
+  type: { name: string; tag: boolean };
+  contents: {
+    title: string;
+    content: string;
+    button: boolean;
+    profile?: string;
+  };
+  date: string;
+};
+
+// 샘플 데이터 정의
+const initialContentData: ContentDataItem[] = [
+  {
+    id: 1,
+    type: { name: "활동 알림", tag: true },
+    contents: {
+      title: "어쩌구저쩌구를 외 5개의 스크랩",
+      content: "을 성공적으로 완료했습니다.",
+      button: true,
+    },
+    date: "24.07.24 18:32",
+  },
+  {
+    id: 2,
+    type: { name: "공지사항", tag: true },
+    contents: {
+      title: "[24.07.24] 등급제를 실시했습니다.",
+      content: "자세한 내용은 공지사항을 확인해주세요",
+      button: true,
+    },
+    date: "24.07.24 18:23",
+  },
+  {
+    id: 3,
+    type: { name: "업데이트", tag: true },
+    contents: {
+      title: "버전 1.0.3으로 업데이트 되었습니다.",
+      content: "자세한 내용은 업데이트 노트를 확인해주세요",
+      button: true,
+    },
+    date: "24.07.24 18:31",
+  },
+  {
+    id: 4,
+    type: { name: "이벤트", tag: false },
+    contents: {
+      title: "잡아라 알을 잡아라!!",
+      content: "새로운 이벤트가 게시되었습니다.",
+      button: true,
+    },
+    date: "24.07.24 18:33",
+  },
+  {
+    id: 5,
+    type: { name: "친구 요청", tag: false },
+    contents: {
+      profile: "/images/avatar.png",
+      title: "@Dorte98 님이 친구 요청을 보냈습니다.",
+      content: "수락하시겠습니까?",
+      button: true,
+    },
+    date: "24.07.14 18:33",
+  },
+  {
+    id: 6,
+    type: { name: "초대 요청", tag: false },
+    contents: {
+      profile: "/images/avatar.png",
+      title: "삼성전자 마케팅팀에서 초대 요청을 보냈습니다",
+      content: "수락하시겠습니까?",
+      button: true,
+    },
+    date: "23.07.24 18:33",
+  },
+];
+
 const tableheader = [
   { title: "알림 유형", accessor: "type", sort: true },
-  { title: "알림 내용", accessor: "content", sort: false },
-  { title: "", accessor: "action", sort: true },
+  { title: "알림 내용", accessor: "contents", sort: true },
   { title: "알림 시간", accessor: "date", sort: true },
 ];
 
-const contentData = [
-  {
-    type: { name: "활동 알림", tag: true },
-    content: "어쩌구저쩌구...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: true },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
-  {
-    type: { name: "공지사항", tag: false },
-    content: "[24.07.24] 능지등급제...",
-    action: "확인하기",
-    date: "24.07.24 18:33",
-  },
+export const NotificationView: React.FC = () => {
+  // 상태 정의
+  const [contentData, setContentData] =
+    useState<ContentDataItem[]>(initialContentData);
 
-  // 추가 데이터...
-];
+  // 데이터 삭제 함수 정의
+  const handleDelete = async (id: number) => {
+    // UI에서 먼저 아이템을 제거합니다.
+    setContentData((prevItems) => {
+      const updatedItems = prevItems.filter((item) => item.id !== id);
+      console.log("Updated items:", updatedItems);
+      return updatedItems;
+    });
 
-export function NotificationView() {
+    try {
+      console.log(`Deleting item with id: ${id}`);
+      // API 호출을 통해 데이터를 삭제합니다.
+      const response = await fetch(`/api/items/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the item");
+      }
+
+      console.log(`Item with id: ${id} deleted successfully`);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      // 오류가 발생하면 UI를 원래 상태로 복구합니다.
+      setContentData((prevItems) => {
+        const restoredItems = [
+          ...prevItems,
+          initialContentData.find((item) => item.id === id)!,
+        ];
+        console.log("Restored items:", restoredItems);
+        return restoredItems;
+      });
+    }
+  };
+
+  // 메뉴 아이템 생성 함수 정의
+  const generateMenuItems = (id: number) => [
+    {
+      label: "삭제하기",
+      onClick: () => handleDelete(id),
+    },
+  ];
+
   return (
     <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
       <div className="flex w-full flex-grow flex-col gap-4">
@@ -188,41 +159,11 @@ export function NotificationView() {
             내 알림
           </DialogTitle>
         </DialogHeader>
-        {/* 필터 헤더 */}
-        {/* <div className="flex justify-between">
-          <div className="flex w-[602px] justify-start gap-[6px]">
-            <div className="inline-flex h-10 w-full max-w-[277px] items-center justify-start gap-2 rounded-md border border-slate-300 bg-white px-3 py-2">
-              <div className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400">
-                Filter tasks...
-              </div>
-            </div>
-            <Button className="gap-2 rounded-md border border-slate-200 bg-white text-[#0f172a] hover:bg-slate-200">
-              <PlusCircleIcon className="relative h-4 w-4" />
-              안읽은 알림
-            </Button>
-            <Button className="gap-2 rounded-md border border-slate-200 bg-white text-[#0f172a] hover:bg-slate-200">
-              <PlusCircleIcon className="relative h-4 w-4" />
-              Priority
-            </Button>
-          </div>
-          <Button className="gap-2 rounded-md border border-slate-200 bg-white text-[#0f172a] hover:bg-slate-200">
-            {" "}
-            <Settings2 className="relative h-4 w-4" /> View
-          </Button>
-        </div> */}
-        <TestDataTable tableheader={tableheader} contentData={contentData} />;
-        {/* <AccountTable
-          tableheader={["알림 유형", "알림 내용", "", "알림 시간", ""]}
-          arrowupdown={[true, true, false, true, false]}
-          contentData={invoices.map((invoice) => ({
-            content: [
-              invoice.type,
-              invoice.content,
-              invoice.button,
-              invoice.time,
-            ] as string[] | Element,
-          }))}
-        /> */}
+        <SettingDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          menuItems={generateMenuItems(contentData[0]?.id || 0)} // 첫 번째 아이템의 ID를 사용
+        />
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
@@ -239,14 +180,12 @@ export function NotificationView() {
           content="내 활동과 상태를 말합니다."
         />
         <SettingSwitch
-          title="공지사항 / 업데이트"
-          content="내 활동과 상태를 말합니다."
-        />
-        <SettingSwitch
-          title="친구요청/그룹초대 요청"
-          content="내 활동과 상태를 말합니다."
+          title="보안 알림"
+          content="계정 보안과 관련된 알림입니다."
         />
       </div>
     </div>
   );
-}
+};
+
+export default NotificationView;

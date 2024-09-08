@@ -1,5 +1,5 @@
 "use client";
-import { httpClientForCredentials } from "@/components/\baxios-header";
+import { httpClientForCredentials } from "@/app/api/axios-header";
 import { AxiosResponse, AxiosError } from "axios";
 
 export interface LoginData {

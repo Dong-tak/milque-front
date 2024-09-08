@@ -9,6 +9,11 @@ import { ProfileView } from "@/components/setting/view-profile";
 import { DetailedSettingsView } from "@/components/setting/view-detailed-settings";
 import { SocialAccountView } from "@/components/setting/view-social-account";
 import { NotificationView } from "@/components/setting/view-notification";
+import { FriendView } from "@/components/setting/view-friend";
+import { DownloadView } from "@/components/setting/view-download";
+import { ScrapView } from "@/components/setting/view-scrap";
+import { GroupView } from "@/components/setting/view-group";
+import { SiteView } from "@/components/setting/view-site";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -24,6 +29,11 @@ export function OurOption() {
     | "detailedsettings"
     | "socialaccount"
     | "notification"
+    | "download"
+    | "friend"
+    | "scrap"
+    | "group"
+    | "site"
     | "default";
 
   const renderContentView = (view: ViewType): JSX.Element => {
@@ -40,6 +50,21 @@ export function OurOption() {
       case "notification":
         console.log("notification");
         return <NotificationView />;
+      case "download":
+        console.log("download"); //scrap
+        return <DownloadView />;
+      case "friend":
+        console.log("friend");
+        return <FriendView />;
+      case "scrap":
+        console.log("scrap");
+        return <ScrapView />;
+      case "group":
+        console.log("group");
+        return <GroupView />;
+      case "site":
+        console.log("site");
+        return <SiteView />;
       default:
         console.log("default");
         return <ProfileView />;
@@ -66,7 +91,7 @@ export function OurOption() {
           <div
             className={`${
               isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
-            } fixed right-0 top-[30px] z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
+            } fixed right-0 top-[50px] z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
           >
             <OptionSidebar setView={setView} />
           </div>

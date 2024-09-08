@@ -17,6 +17,8 @@ import {
   DownloadCloud,
   Ghost,
   Settings2,
+  ScreenShareIcon,
+  Cast,
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 
@@ -78,7 +80,10 @@ export interface OurOptionSidebarProps {
       | "socialaccount"
       | "download"
       | "notification"
+      | "scrap"
       | "friend"
+      | "group"
+      | "site"
       | "share"
       | "display"
       | "template"
@@ -126,13 +131,22 @@ export function OptionSidebar({ setView }: OurOptionSidebarProps) {
             <Bell className="mr-2 h-4 w-4" />
             <span>알림 설정</span>
           </SidebarItem>
+          <SidebarItem onClick={() => setView("scrap")}>
+            <ScreenShareIcon className="mr-2 h-4 w-4" />
+            <span>스크랩 설정</span>
+          </SidebarItem>
+          <SidebarItem onClick={() => setView("site")}>
+            <Cast className="mr-2 h-4 w-4" />
+            <span>사이트 설정</span>
+          </SidebarItem>
         </CommandGroup>
         <CommandGroup>
           <SidebarItem onClick={() => setView("friend")}>
             <User className="mr-2 size-4" />
             <span>친구설정</span>
           </SidebarItem>
-          <SidebarItem disabled>
+          {/*  disabled 변경해야함 */}
+          <SidebarItem onClick={() => setView("group")}>
             <Network className="mr-2 h-4 w-4" />
             <span>그룹설정</span>
             <CommandShortcut>준비중</CommandShortcut>

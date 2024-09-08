@@ -21,7 +21,7 @@ import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임�
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 
 import { getCookie } from "@/components/cookie";
-import { OurOption } from "@/components/our-option";
+import { OurOption } from "@/components/setting/our-option";
 
 const convertFormDataToLoginData = (formData: FormData): LoginData => {
   const loginId = formData.get("loginId") as string;
