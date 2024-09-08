@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import OurProviders from "@/components/provider";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
 const pretnedard = localFont({
   src: "../lib/PretendardVariable.woff2",
@@ -32,8 +33,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="kr">
+      <GoogleTagManager
+        gtmId={process.env.NEXT_PUBLIC_GA_ID || "undefined-gtmId"}
+      />
       <body className={suit.className}>
         <OurProviders>{children}</OurProviders>
+        <GoogleAnalytics
+          gaId={process.env.NEXT_PUBLIC_GA_ID || "undefined-gaId"}
+        />
       </body>
     </html>
   );

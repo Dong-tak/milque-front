@@ -24,6 +24,7 @@ import { SettingDataTable } from "@/components/setting/data-table";
 import { buffer } from "stream/consumers";
 import { profile } from "console";
 import { channel } from "process";
+import { FolderChange } from "@/components/setting/download-dialog/folder-change";
 
 const tableheader = [
   { title: "채널/계정", accessor: "socials", sort: true },
@@ -104,8 +105,13 @@ export function DownloadView() {
       <SettingButton
         title="다운로드 폴더"
         content="MacintoshHD/Users/velroy/baepsaes/mileque/"
-        buttonTitle="폴더변경"
-        onClick={() => console.log("친구 요청하기")}
+        trigger={
+          <FolderChange
+            button={<Button variant="outline">폴더 변경</Button>}
+            dialogTitle="다운로드 폴더 변경"
+            dialogDescription="다운로드할 폴더를 선택하세요."
+          />
+        }
       />
       <SettingDropDown
         title="다운로드 범위"
@@ -132,7 +138,13 @@ export function DownloadView() {
             내 다운로드 히스토리
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable tableheader={tableheader} contentData={contentData} />
+        <SettingDataTable
+          tableheader={tableheader}
+          contentData={contentData}
+          menuItems={[
+            { label: "삭제하기", onClick: () => {} }, //수정 필요
+          ]}
+        />
       </div>
     </div>
   );
