@@ -7,13 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. 최신 버전을 다운로드 받습니다.
+      # 1. Checkout latest version
       - name: Checkout source code
         uses: actions/checkout@v4.1.1
 
-      # 2. Node modules 캐시 설정 (의존성 설치 속도 향상)
+      # 2. Cache node_modules for faster dependency installation
       - name: Cache node_modules
         uses: actions/cache@v2
         with:
@@ -22,19 +21,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
 
-      # 3. 환경 변수를 설정합니다.
-      - name: 환경 변수를 설정합니다.
+      # 3. Setup environment variables
+      - name: Set environment variables
         run: |
           echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
           echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
         env:
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
-          EXAMPLE: ${{ secrets.NEXT_PUBLIC_GA_ID }}
+          NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
 
-      # 4. Docker 빌드 및 푸시
-      - name: 도커 이미지를 생성하고 도커 허브에 업로드합니다.
+      # 4. Build and push Docker image
+      - name: Build and push Docker image
         run: |
-          set -e  # 오류 발생 시 스크립트를 중지시킴
+          set -e  # Stop script on any error
           docker login -u $DOCKER_ID -p $DOCKER_TOKEN
           docker build -t $DOCKER_REPO:frontdev ./
           docker push $DOCKER_REPO:frontdev
@@ -46,28 +45,25 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
-      # 5. SSH를 통해 NCP 서버에 접속하고 Docker 컨테이너 업데이트
-      - name: SSH Remote Commands
+      # 5. SSH into EC2 and deploy the new Docker container
+      - name: SSH and update Docker container
         uses: appleboy/ssh-action@master
         with:
           host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            set -e  # 오류 발생 시 스크립트를 중지시킴
+            set -e  # Stop script on any error
             sudo docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull ${{ secrets.DOCKER_REPO }}:frontdev
             sudo docker network ls | grep mileque-network || docker network create mileque-network
             sudo docker run -d --name front --network mileque-network -p 3000:3000 ${{ secrets.DOCKER_REPO }}:frontdev
-            sudo docker run -d -p 3000:3000 --name front ${{ secrets.DOCKER_REPO }}:frontdev
-            
 
   notify-success:
-    needs: [build, deploy]  # build와 deploy 모두 성공한 후 실행
+    needs: [build, deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Slack Notification on Success
@@ -111,7 +107,7 @@ jobs:
 
   notify-failure:
     runs-on: ubuntu-latest
-    if: failure()  # build 또는 deploy 실패 시 실행
+    if: failure()  # Triggered if build or deploy fails
     steps:
       - name: Slack Notification on Failure
         uses: slackapi/slack-github-action@v1.27.0
