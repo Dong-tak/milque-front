@@ -65,13 +65,13 @@ jobs:
             sudo docker run -d --name front --network mileque-network -p 3000:3000 ${{ secrets.DOCKER_REPO }}:frontdev
             sudo docker run -d -p 3000:3000 --name front ${{ secrets.DOCKER_REPO }}:frontdev
             
-  notify-success:
-    needs: deploy  # build와 deploy 둘 다 성공한 후 실행됨
-    runs-on: ubuntu-latest
 
+  notify-success:
+    needs: [build, deploy]  # build와 deploy 모두 성공한 후 실행
+    runs-on: ubuntu-latest
     steps:
       - name: Slack Notification on Success
-        if: success()  # 성공한 경우에만 실행
+        if: success()
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
@@ -88,51 +88,20 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Repository*\n${{ github.repository }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch*\n${{ github.ref }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Commit*\n${{ github.sha }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author*\n${{ github.actor }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Event Name*\n${{ github.event_name }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Workflow*\n${{ github.workflow }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job ID*\n${{ github.run_id }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Duration*\n${{ github.run_duration_ms }} ms"
-                    }
+                    { "type": "mrkdwn", "text": "*Repository*\n${{ github.repository }}" },
+                    { "type": "mrkdwn", "text": "*Branch*\n${{ github.ref }}" },
+                    { "type": "mrkdwn", "text": "*Commit*\n${{ github.sha }}" },
+                    { "type": "mrkdwn", "text": "*Author*\n${{ github.actor }}" },
+                    { "type": "mrkdwn", "text": "*Event Name*\n${{ github.event_name }}" },
+                    { "type": "mrkdwn", "text": "*Workflow*\n${{ github.workflow }}" },
+                    { "type": "mrkdwn", "text": "*Job ID*\n${{ github.run_id }}" },
+                    { "type": "mrkdwn", "text": "*Duration*\n${{ github.run_duration_ms }} ms" }
                   ]
                 },
                 {
                   "type": "actions",
                   "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Action"
-                      },
-                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }
+                    { "type": "button", "text": { "type": "plain_text", "text": "View Action" }, "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
                   ]
                 }
               ]
@@ -141,12 +110,10 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
 
   notify-failure:
-    needs: [build, deploy]  # build 또는 deploy 중 어느 단계에서든 실패하면 실행됨
     runs-on: ubuntu-latest
-
+    if: failure()  # build 또는 deploy 실패 시 실행
     steps:
       - name: Slack Notification on Failure
-        if: failure()  # 실패한 경우에만 실행
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
@@ -163,51 +130,20 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Repository*\n${{ github.repository }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch*\n${{ github.ref }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Commit*\n${{ github.sha }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author*\n${{ github.actor }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Event Name*\n${{ github.event_name }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Workflow*\n${{ github.workflow }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job ID*\n${{ github.run_id }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Duration*\n${{ github.run_duration_ms }} ms"
-                    }
+                    { "type": "mrkdwn", "text": "*Repository*\n${{ github.repository }}" },
+                    { "type": "mrkdwn", "text": "*Branch*\n${{ github.ref }}" },
+                    { "type": "mrkdwn", "text": "*Commit*\n${{ github.sha }}" },
+                    { "type": "mrkdwn", "text": "*Author*\n${{ github.actor }}" },
+                    { "type": "mrkdwn", "text": "*Event Name*\n${{ github.event_name }}" },
+                    { "type": "mrkdwn", "text": "*Workflow*\n${{ github.workflow }}" },
+                    { "type": "mrkdwn", "text": "*Job ID*\n${{ github.run_id }}" },
+                    { "type": "mrkdwn", "text": "*Duration*\n${{ github.run_duration_ms }} ms" }
                   ]
                 },
                 {
                   "type": "actions",
                   "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Action"
-                      },
-                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }
+                    { "type": "button", "text": { "type": "plain_text", "text": "View Action" }, "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
                   ]
                 }
               ]
