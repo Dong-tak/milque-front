@@ -34,8 +34,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker login -u $DOCKER_ID -p $DOCKER_TOKEN
-          docker build -t $DOCKER_REPO:frontdev ./
-          docker push $DOCKER_REPO:frontdev
+          docker build -t tothedock/tothedocks:frontdev ./
+          docker push tothedock/tothedocks:frontdev
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
@@ -50,9 +50,9 @@ jobs:
           script: |
             sudo docker stop front || true
             sudo docker rm front || true
-            sudo docker pull $DOCKER_REPO:frontdev
+            sudo docker pull tothedock/tothedocks:frontdev
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            sudo docker run -d --name front --network mileque-network -p 3000:3000 $DOCKER_REPO:frontdev
+            sudo docker run -d --name front --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
