@@ -66,12 +66,12 @@ jobs:
             sudo docker run -d -p 3000:3000 --name front ${{ secrets.DOCKER_REPO }}:frontdev
             
   notify-success:
-    needs: deploy
+    needs: deploy  # build와 deploy 둘 다 성공한 후 실행됨
     runs-on: ubuntu-latest
 
     steps:
       - name: Slack Notification on Success
-        if: success()
+        if: success()  # 성공한 경우에만 실행
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
@@ -82,7 +82,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":white_check_mark: *Build Test Success*"
+                    "text": ":white_check_mark: *Build and Deploy Success*"
                   }
                 },
                 {
@@ -139,15 +139,14 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      
+
   notify-failure:
-    needs: build
+    needs: [build, deploy]  # build 또는 deploy 중 어느 단계에서든 실패하면 실행됨
     runs-on: ubuntu-latest
 
     steps:
       - name: Slack Notification on Failure
-        if: failure()
+        if: failure()  # 실패한 경우에만 실행
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
@@ -158,7 +157,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Build Test Failure*"
+                    "text": ":x: *Build or Deploy Failure*"
                   }
                 },
                 {
@@ -215,4 +214,3 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
