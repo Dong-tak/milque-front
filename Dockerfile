@@ -33,8 +33,8 @@ COPY --from=builder /app/public ./public
 RUN npm ci
 
 # Set environment variables
-ENV NEXT_PUBLIC_POST_API_URL = "https://mileque.com/v1"
-ENV NEXT_PUBLIC_GA_ID = "G-701LXS786T"
+ENV NEXT_PUBLIC_POST_API_URL=https://mileque.com/v1
+ENV NEXT_PUBLIC_GA_ID=G-701LXS786T
 
 # Expose the port
 EXPOSE 3000
