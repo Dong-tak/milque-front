@@ -33,7 +33,7 @@ jobs:
       # 4. Build and push Docker image
       - name: Build and push Docker image
         run: |
-          docker login -u $DOCKER_ID -p $DOCKER_TOKEN
+          echo $DOCKER_TOKEN | docker login -u $DOCKER_ID --password-stdin
           docker build -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
           docker push $DOCKER_ID/$DOCKER_REPO:frontdev
         env:
@@ -48,7 +48,6 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo $DOCKER_TOKEN | sudo docker login -u $DOCKER_ID --password-stdin
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull $DOCKER_ID/$DOCKER_REPO:frontdev
