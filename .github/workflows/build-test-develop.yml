@@ -22,14 +22,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
 
-      # 3. Setup environment variables
-      - name: Set environment variables
+      # 3. Create .env file from GitHub Secret (ENV)
+      - name: Create .env file from GitHub Secrets
         run: |
-          echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
-          echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
+          echo "${{ secrets.ENV }}" > .env  # GitHub Secret에서 직접 .env 파일 생성
         env:
-          NEXT_PUBLIC_POST_API_URL: ${{ secrets.NEXT_PUBLIC_POST_API_URL }}
-          NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
+          ENV: ${{ secrets.ENV }}
+          
       # 4. Build and push Docker image
       - name: Build and push Docker image
         run: |
@@ -48,9 +47,6 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 서버에서 환경 변수 파일 전달
-            echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
-            echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull tothedock/tothedocks:frontdev
