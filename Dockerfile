@@ -40,4 +40,4 @@ ENV NEXT_PUBLIC_GA_ID=G-701LXS786T
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
