@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies with caching
-RUN npm ci --production
+RUN npm ci 
 
 # Copy the rest of the application code
 COPY . .
