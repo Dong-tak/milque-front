@@ -60,6 +60,11 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
 
 export const onLogIn = async (params: LoginData) => {
   try {
+    // NEXT_PUBLIC_POST_API_URL 값 출력
+    console.log(
+      "API URL:",
+      `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`,
+    );
     const response = await httpClientForCredentials.post<LoginResponse>(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`,
       params,
