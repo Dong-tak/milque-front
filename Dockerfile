@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json separately for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with caching
+RUN npm ci --production
 
 # Copy the rest of the application code
 COPY . .
@@ -23,11 +23,11 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy only necessary files from the builder stage
-COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
 
-# Install production dependencies (if needed)
+# Install only production dependencies (cached)
 RUN npm ci --production
 
 # Expose the port
