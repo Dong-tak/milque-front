@@ -28,18 +28,18 @@ jobs:
           echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
           echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
         env:
-          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_POST_API_URL: ${{ secrets.NEXT_PUBLIC_POST_API_URL }}
           NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
       # 4. Build and push Docker image
       - name: Build and push Docker image
         run: |
           docker login -u $DOCKER_ID -p $DOCKER_TOKEN
-          docker build -t tothedock/tothedocks:frontdev ./
-          docker push tothedock/tothedocks:frontdev
+          docker build -t $DOCKER_REPO_FRONTDEV ./
+          docker push $DOCKER_REPO_FRONTDEV
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+          DOCKER_REPO: ${{ secrets.DOCKER_REPO_FRONTDEV }}
 
       - name: SSH into EC2 and pull latest code
         uses: appleboy/ssh-action@master
@@ -50,13 +50,13 @@ jobs:
           script: |
             sudo docker stop front || true
             sudo docker rm front || true
-            sudo docker pull tothedock/tothedocks:frontdev
+            sudo docker pull $DOCKER_REPO_FRONTDEV
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            sudo docker run -d --name front --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
+            sudo docker run -d --name front --network mileque-network -p 3000:3000 $DOCKER_REPO_FRONTDEV
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+          DOCKER_REPO: ${{ secrets.DOCKER_REPO_FRONTDEV }}
 
       - name: Slack Notification on Success
         if: success()
