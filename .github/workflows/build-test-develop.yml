@@ -45,7 +45,7 @@ jobs:
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            sudo docker run -d --name front --network mileque-network -p 3000:3000 mileque-front:dev
+            sudo docker run -d --name front --network mileque-network --env-file .env -p 3000:3000 mileque-front:dev
             
       - name: Slack Notification on Success
         if: success()
