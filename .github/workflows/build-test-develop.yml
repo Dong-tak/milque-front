@@ -21,12 +21,19 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
+      # 3. Create .env file for build and runtime
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV }}" > .env
+          cat .env  # 빌드 타임에 확인을 위해 출력
           
-      # 3. Build and push Docker image
+      # 4. Build and push Docker image with .env file included
       - name: Build and push Docker image
         run: |
           echo $DOCKER_TOKEN | docker login -u $DOCKER_ID --password-stdin
-          docker build -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
+          docker build --build-arg NEXT_PUBLIC_POST_API_URL=${{ secrets.NEXT_PUBLIC_POST_API_URL }} \
+            --build-arg NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }} \
+            -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
           docker push $DOCKER_ID/$DOCKER_REPO:frontdev
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
