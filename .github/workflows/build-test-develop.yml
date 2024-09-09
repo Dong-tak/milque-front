@@ -37,6 +37,9 @@ jobs:
               echo "${{ secrets.ENV }}" > .env.tmp
               mv .env.tmp .env
             fi
+            # .env 파일 내용 확인 (디버깅용)
+            echo "Generated .env file contents:"
+            cat .env
             sudo docker system prune -a -f --volumes
             sudo docker build -t mileque-front:dev .
             sudo docker stop front || true
