@@ -107,11 +107,8 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
 
-  notify-failure:
-    runs-on: ubuntu-latest
-    if: failure()  
-    steps:
       - name: Slack Notification on Failure
+        if: failure()  
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
