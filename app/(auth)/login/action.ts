@@ -60,6 +60,9 @@ export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
 
 export const onLogIn = async (params: LoginData) => {
   try {
+    // 환경 변수 전체 출력
+    console.log("All ENV Variables:", process.env);
+
     // NEXT_PUBLIC_POST_API_URL 값 출력
     console.log(
       "API URL:",

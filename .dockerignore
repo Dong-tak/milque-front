@@ -4,6 +4,5 @@ logs
 tests
 coverage
 .git
-.env
 .DS_Store
 *.md
