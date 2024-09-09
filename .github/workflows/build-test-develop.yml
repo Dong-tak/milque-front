@@ -49,12 +49,11 @@ jobs:
     steps:
       # 5. SSH를 통해 NCP 서버에 접속하고 Docker 컨테이너 업데이트
       - name: SSH Remote Commands
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.NCP_IP }}
-          username: ${{ secrets.NCP_ID }}
-          password: ${{ secrets.NCP_PW }}
-          port: ${{ secrets.NCP_PORT }}
+          host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
             sudo docker stop front || true
@@ -63,6 +62,11 @@ jobs:
             sudo docker run -d --name front --network mileque-network -p 3000:3000 ${{ secrets.DOCKER_REPO }}:frontdev
             sudo docker run -d -p 3000:3000 --name front ${{ secrets.DOCKER_REPO }}:frontdev
             
+  notify-success:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
@@ -134,6 +138,11 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       
+  notify-failure:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Slack Notification on Failure
         if: failure()
         uses: slackapi/slack-github-action@v1.27.0
