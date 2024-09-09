@@ -5,7 +5,8 @@ on:
     branches:
       - "develop"      
 jobs:
-  build:
+  deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout latest version
@@ -42,10 +43,6 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
 
-  deploy:
-    name: Deploy to EC2
-    runs-on: ubuntu-latest
-    steps:
       - name: SSH into EC2 and pull latest code
         uses: appleboy/ssh-action@master
         with:
@@ -64,10 +61,7 @@ jobs:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-  notify-success:
-    needs: [build, deploy]
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
