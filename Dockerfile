@@ -1,5 +1,3 @@
-# Dockerfile
-
 # Base image
 FROM node:20-alpine AS builder
 
@@ -15,6 +13,9 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
+# Copy the .env file to the build context
+COPY .env .env
+
 # Build the application
 RUN npm run build
 
@@ -29,12 +30,11 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
+# Copy .env file for runtime
+COPY --from=builder /app/.env .env
+
 # Install production dependencies (if needed)
 RUN npm ci
-
-# Set environment variables
-ENV NEXT_PUBLIC_POST_API_URL=https://mileque.com/v1
-ENV NEXT_PUBLIC_GA_ID=G-701LXS786T
 
 # Expose the port
 EXPOSE 3000
