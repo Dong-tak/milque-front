@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 5. SSH into EC2 and deploy the new Docker container
-      - name: SSH and update Docker container
+      - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
