@@ -48,16 +48,21 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # 서버에서 환경 변수 파일 전달
+            echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
+            echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull tothedock/tothedocks:frontdev
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            sudo docker run -d --name front --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
+            sudo docker run -d --name front --env-file .env --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-
+          NEXT_PUBLIC_POST_API_URL: ${{ secrets.NEXT_PUBLIC_POST_API_URL }}
+          NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
+          
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
