@@ -51,7 +51,7 @@ export function OurOption() {
         console.log("notification");
         return <NotificationView />;
       case "download":
-        console.log("download"); //scrap
+        console.log("download");
         return <DownloadView />;
       case "friend":
         console.log("friend");

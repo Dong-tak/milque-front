@@ -20,12 +20,12 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex h-screen items-center justify-center gap-8">
       <OurSidebar />
       <OurBtmBar user_id="" />
       <OurTopBar user_id="" />
       <div>
-        <Button onClick={goLogin}>로그인하러가기</Button>
+        <Button onClick={goLogin}>로그인 하러가기</Button>
       </div>
       <div>
         <Button onClick={goSignup}>회원가입 하러가기</Button>
