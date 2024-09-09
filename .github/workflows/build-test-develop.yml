@@ -5,14 +5,15 @@ on:
     branches:
       - "develop"      
 jobs:
-  deploy:
-    name: Deploy to EC2
+  build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 최신 버전을 다운로드 받습니다.
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.1
 
+      # 2. Node modules 캐시 설정 (의존성 설치 속도 향상)
       - name: Cache node_modules
         uses: actions/cache@v2
         with:
@@ -21,33 +22,46 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
 
-      - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@master
+      # 3. 환경 변수를 설정합니다.
+      - name: 환경 변수를 설정합니다.
+        run: |
+          echo "NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL" >> .env
+          echo "NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID" >> .env
+        env:
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          EXAMPLE: ${{ secrets.NEXT_PUBLIC_GA_ID }}
+
+      # 4. Docker 빌드 및 푸시
+      - name: 도커 이미지를 생성하고 도커 허브에 업로드합니다.
+        run: |
+          docker login -u $DOCKER_ID -p $DOCKER_TOKEN
+          docker build -t $DOCKER_REPO:frontdev ./
+          docker push $DOCKER_REPO:frontdev
+        env:
+          DOCKER_ID: ${{ secrets.DOCKER_ID }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # 5. SSH를 통해 NCP 서버에 접속하고 Docker 컨테이너 업데이트
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.NCP_IP }}
+          username: ${{ secrets.NCP_ID }}
+          password: ${{ secrets.NCP_PW }}
+          port: ${{ secrets.NCP_PORT }}
           script: |
-                cd milque-front
-                git reset --hard HEAD
-                git pull origin develop
-                if [ ! -f .env ]; then
-                  echo "${{ secrets.ENV }}" > .env
-                else
-                  echo "${{ secrets.ENV }}" > .env.tmp
-                  mv .env.tmp .env
-                fi
-                # .env 파일 내용 확인 (디버깅용)
-                echo "Generated .env file contents:"
-                cat .env
-                # Docker 빌드 (빌드 시 .env 파일 사용 안함)
-                sudo docker system prune -a -f --volumes
-                sudo docker build -t mileque-front:dev --file Dockerfile .
-                sudo docker stop front || true
-                sudo docker rm front || true
-                sudo docker network ls | grep mileque-network || docker network create mileque-network
-                # Docker 컨테이너 실행 시 .env 파일 전달
-                sudo docker run -d --name front --network mileque-network --env-file .env -p 3000:3000 mileque-front:dev
+            sudo docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
+            sudo docker stop front || true
+            sudo docker rm front || true
+            sudo docker pull ${{ secrets.DOCKER_REPO }}:frontdev
+            sudo docker run -d --name front --network mileque-network -p 3000:3000 ${{ secrets.DOCKER_REPO }}:frontdev
+            sudo docker run -d -p 3000:3000 --name front ${{ secrets.DOCKER_REPO }}:frontdev
             
       - name: Slack Notification on Success
         if: success()
