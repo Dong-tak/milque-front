@@ -51,7 +51,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e  # Stop script on any error
-            sudo docker login -u $DOCKER_ID -p $DOCKER_TOKEN
+            echo $DOCKER_TOKEN | sudo docker login -u $DOCKER_ID --password-stdin
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull $DOCKER_ID/$DOCKER_REPO:frontdev
@@ -100,7 +100,8 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
-
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      
       - name: Slack Notification on Failure
         if: failure()  
         uses: slackapi/slack-github-action@v1.27.0
@@ -139,3 +140,4 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
