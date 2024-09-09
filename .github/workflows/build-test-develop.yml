@@ -50,9 +50,9 @@ jobs:
           script: |
             sudo docker stop front || true
             sudo docker rm front || true
-            sudo docker pull $DOCKER_ID/$DOCKER_REPO:frontdev
+            sudo docker pull tothedock/tothedocks:frontdev
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            sudo docker run -d --name front --network mileque-network -p 3000:3000 $DOCKER_ID/$DOCKER_REPO:frontdev
+            sudo docker run -d --name front --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
         env:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
