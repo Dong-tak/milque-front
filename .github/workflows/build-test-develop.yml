@@ -40,7 +40,9 @@ jobs:
             # .env 파일 내용 확인 (디버깅용)
             echo "Generated .env file contents:"
             cat .env
+            # Docker 빌드 시 .env 파일 복사
             sudo docker system prune -a -f --volumes
+            sudo docker build -t mileque-front:dev --file Dockerfile .
             sudo docker build -t mileque-front:dev .
             sudo docker stop front || true
             sudo docker rm front || true
