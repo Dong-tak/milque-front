@@ -34,7 +34,6 @@ jobs:
       # 4. Build and push Docker image
       - name: Build and push Docker image
         run: |
-          set -e  # Stop script on any error
           docker login -u $DOCKER_ID -p $DOCKER_TOKEN
           docker build -t $DOCKER_REPO:frontdev ./
           docker push $DOCKER_REPO:frontdev
@@ -49,10 +48,7 @@ jobs:
           host: ec2-3-37-138-4.ap-northeast-2.compute.amazonaws.com
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          request_pty: false  
           script: |
-            set -e  # Stop script on any error
-            echo $DOCKER_TOKEN | sudo docker login -u $DOCKER_ID --password-stdin
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull $DOCKER_REPO:frontdev
