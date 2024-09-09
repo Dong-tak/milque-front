@@ -48,6 +48,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo $DOCKER_TOKEN | sudo docker login -u $DOCKER_ID --password-stdin
             sudo docker stop front || true
             sudo docker rm front || true
             sudo docker pull $DOCKER_ID/$DOCKER_REPO:frontdev
