@@ -117,11 +117,14 @@ export default function GroupPage() {
             <div className="sticky top-12 flex items-center justify-between border-b bg-background px-4 py-2 md:top-0">
               <AccordionTrigger>
                 2024.07.30 ~ 2024.08.06
-                <Button className="h-7 gap-1">
+                <div className="font-othersmedium-tag relative box-border flex min-h-[24px] shrink-0 flex-row items-center justify-center gap-1 overflow-hidden rounded-md border bg-primary px-2 py-0 text-left text-xs text-primary-foreground">
                   <CircleDot className="size-4" />
-                  LIVE
-                </Button>
+                  <div className="relative font-semibold leading-[16px]">
+                    LIVE
+                  </div>
+                </div>
               </AccordionTrigger>
+
               <div className="flex gap-1">
                 <Button className="font-['SUIT Variable'] gap-2 bg-background text-center text-sm font-semibold leading-tight text-slate-900 hover:bg-slate-300">
                   <DownloadCloud className="size-4" />
