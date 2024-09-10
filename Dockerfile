@@ -4,10 +4,6 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Build-time variables (if needed)
-ARG NEXT_PUBLIC_POST_API_URL
-ARG NEXT_PUBLIC_GA_ID
-ARG NEXT_PUBLIC_GTM_ID
 # Copy package.json and package-lock.json separately for better caching
 COPY package*.json ./
 
@@ -17,12 +13,11 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Use the environment variables during the build process
-ENV NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL
-ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
-ENV NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID
-# Build the application
-RUN npm run build
+# Copy .env file into the build stage
+COPY .env .env
+
+# Load environment variables from the .env file
+RUN export $(grep -v '^#' .env | xargs) && npm run build
 
 # Use a minimal image for production
 FROM node:20-alpine
@@ -37,6 +32,9 @@ COPY --from=builder /app/package*.json ./
 
 # Install only production dependencies (cached)
 RUN npm ci --production
+
+# Copy the .env file to the production image (optional)
+COPY .env .env
 
 # Expose the port
 EXPOSE 3000
