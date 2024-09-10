@@ -33,6 +33,7 @@ jobs:
           echo $DOCKER_TOKEN | docker login -u $DOCKER_ID --password-stdin
           docker build --build-arg NEXT_PUBLIC_POST_API_URL=${{ secrets.NEXT_PUBLIC_POST_API_URL }} \
             --build-arg NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }} \
+            --build-arg NEXT_PUBLIC_GTM_ID=${{ secrets.NEXT_PUBLIC_GTM_ID }} \
             -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
           docker push $DOCKER_ID/$DOCKER_REPO:frontdev
         env:
