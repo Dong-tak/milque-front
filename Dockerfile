@@ -7,7 +7,7 @@ WORKDIR /app
 # Build-time variables (if needed)
 ARG NEXT_PUBLIC_POST_API_URL
 ARG NEXT_PUBLIC_GA_ID
-
+ARG NEXT_PUBLIC_GTM_ID
 # Copy package.json and package-lock.json separately for better caching
 COPY package*.json ./
 
@@ -20,7 +20,7 @@ COPY . .
 # Use the environment variables during the build process
 ENV NEXT_PUBLIC_POST_API_URL=$NEXT_PUBLIC_POST_API_URL
 ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
-
+ENV NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID
 # Build the application
 RUN npm run build
 
