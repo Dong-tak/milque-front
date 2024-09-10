@@ -25,12 +25,14 @@ jobs:
       # 3. Create .env file for build and runtime
       - name: Create .env file
         run: |
+          set -e
           echo "${{ secrets.ENV }}" > .env
           cat .env  # 빌드 타임에 확인을 위해 출력
           
       # 4. Build and push Docker image with .env file included
       - name: Build and push Docker image
         run: |
+          set -e
           echo $DOCKER_TOKEN | docker login -u $DOCKER_ID --password-stdin
           docker build --build-arg ENV_FILE=.env \
             -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
@@ -48,7 +50,8 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker system prune -a
+            set -e
+            sudo docker system prune -a -f --volumes
 
             # .env 파일이 이미 있으면 삭제
             rm -f /home/ec2-user/milque-front/.env
