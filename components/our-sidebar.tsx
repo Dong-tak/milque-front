@@ -65,6 +65,7 @@ interface SidebarBtnProps {
   disabled?: boolean;
   isActive?: boolean;
   asChild?: boolean;
+  id?: string;
 }
 
 export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
@@ -76,6 +77,7 @@ export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
       disabled,
       asChild = false,
       isActive = false,
+      id,
     },
     ref,
   ) => {
@@ -242,11 +244,7 @@ export function OurSidebar({
           <Dialog>
             <DialogTrigger asChild>
               {user_id ? (
-                <SidebarBtn
-                  onClick={() => {
-                    sendGTMEvent({ event: "buttonClicked", value: "xyz" });
-                  }}
-                >
+                <SidebarBtn id="scrap-sidebar">
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
