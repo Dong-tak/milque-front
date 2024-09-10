@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="kr">
       <GoogleTagManager
-        gtmId={process.env.NEXT_PUBLIC_GA_ID || "undefined-gtmId"}
+        gtmId={process.env.NEXT_PUBLIC_GTM_ID || "undefined-gtmId"}
       />
       <body className={suit.className}>
         <OurProviders>{children}</OurProviders>
