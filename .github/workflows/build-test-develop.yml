@@ -21,6 +21,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
+
       # 3. Create .env file for build and runtime
       - name: Create .env file
         run: |
@@ -31,9 +32,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           echo $DOCKER_TOKEN | docker login -u $DOCKER_ID --password-stdin
-          docker build --build-arg NEXT_PUBLIC_POST_API_URL=${{ secrets.NEXT_PUBLIC_POST_API_URL }} \
-            --build-arg NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }} \
-            --build-arg NEXT_PUBLIC_GTM_ID=${{ secrets.NEXT_PUBLIC_GTM_ID }} \
+          docker build --build-arg ENV_FILE=.env \
             -t $DOCKER_ID/$DOCKER_REPO:frontdev ./
           docker push $DOCKER_ID/$DOCKER_REPO:frontdev
         env:
@@ -41,7 +40,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
 
-      # 4. SSH into EC2, create .env file and deploy Docker container
+      # 5. SSH into EC2, create .env file and deploy Docker container
       - name: SSH into EC2 and deploy Docker container
         uses: appleboy/ssh-action@master
         with:
@@ -50,26 +49,26 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker system prune -a
-            
+
             # .env 파일이 이미 있으면 삭제
             rm -f /home/ec2-user/milque-front/.env
-            
+
             # .env 파일 생성
             echo "${{ secrets.ENV }}" > /home/ec2-user/milque-front/.env
             chmod 600 /home/ec2-user/milque-front/.env  # 보안 위해 파일 권한 설정
-      
+
             # 기존 front 컨테이너 중지 및 제거
             if [ $(docker ps -aq -f name=front) ]; then
               sudo docker stop front
               sudo docker rm front
             fi
-            
+
             # 새로운 이미지 pull
             sudo docker pull tothedock/tothedocks:frontdev
-            
+
             # 네트워크 생성 (필요한 경우)
             sudo docker network ls | grep mileque-network || docker network create mileque-network
-            
+
             # 새로운 컨테이너 실행
             sudo docker run -d --name front --env-file /home/ec2-user/milque-front/.env --network mileque-network -p 3000:3000 tothedock/tothedocks:frontdev
         env:
