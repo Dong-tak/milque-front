@@ -84,6 +84,7 @@ export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
     const Comp = asChild ? Slot : Button;
     return (
       <Comp
+        id={id}
         variant="sidebar"
         size="sidebar"
         onClick={onClick}
@@ -249,7 +250,7 @@ export function OurSidebar({
                   <span>스크랩</span>
                 </SidebarBtn>
               ) : (
-                <SidebarBtn disabled>
+                <SidebarBtn id="scrap-sidebar-disabled" disabled>
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
