@@ -279,7 +279,11 @@ export function OurSidebar({
                   <ArrowLeft className="icon mr-2 size-4" />
                   뒤로가기
                 </Button>
-                <Button type="submit" onClick={handleSaveClick}>
+                <Button
+                  id="scrap-save-btn"
+                  type="submit"
+                  onClick={handleSaveClick}
+                >
                   저장하기
                   <Pin className="icon ml-2 size-4" />
                 </Button>

@@ -159,6 +159,7 @@ export function OurAccordion({
                   key={post.postId}
                   className="flex gap-4 rounded-md p-2 hover:cursor-pointer hover:bg-card"
                   onClick={() => handlePostClick(post.postId)}
+                  id="accordion-content"
                 >
                   <Image
                     src={post.thumbnail || "/netflex.jpg"}
