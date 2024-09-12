@@ -374,6 +374,7 @@ export default function DetailComment({
               variant="ghost"
               className="text-primary"
               onClick={handleSaveClick}
+              id="comment-submit"
             >
               등록
             </Button>
