@@ -20,6 +20,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "github.githubassets.com",
+      },
+      {
+        protocol: "https",
         hostname: "blogthumb.pstatic.net",
       },
 
@@ -34,6 +38,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "static.toss.im",
+      },
+      {
+        protocol: "https",
+        hostname: "static.toss-internal.com",
       },
       {
         protocol: "https",
