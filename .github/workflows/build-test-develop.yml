@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "develop"      
+
 jobs:
   deploy:
     name: Deploy to EC2
@@ -65,7 +66,6 @@ jobs:
               sudo docker stop front
               sudo docker rm front
             fi
-
             # 새로운 이미지 pull
             sudo docker pull tothedock/tothedocks:frontdev
 
