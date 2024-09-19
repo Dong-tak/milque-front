@@ -4,14 +4,6 @@ on:
   push:
     branches:
       - "main"
-  pull_request:
-    branches:
-      - "main"
-    paths:
-      - 'develop'
-      - 'feat/**'
-      - 'release/**'
-      - 'release'
 
 jobs:
   push:
@@ -48,16 +40,6 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Get current time
-        uses: 1466587594/get-current-time@v2
-        id: current-time
-        with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"
-
-      - name: Show Current Time
-        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -71,15 +53,9 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t mileque-front:${{steps.current-time.outputs.formattedTime}} .
-          docker tag mileque-front:${{steps.current-time.outputs.formattedTime}} 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:${{steps.current-time.outputs.formattedTime}}
-          docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:${{steps.current-time.outputs.formattedTime}}
-
-      - name: Post job cleanup
-        run: |
-          echo "Cleaning up caches"
-          rm -rf .next/cache
-          rm -rf **/node_modules
+          docker build -t mileque-front:latest .
+          docker tag mileque-front:latest 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:latest
+          docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:latest
           
       - name: Slack Notification on Success
         if: success()
