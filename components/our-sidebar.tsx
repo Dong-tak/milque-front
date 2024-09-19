@@ -57,6 +57,7 @@ import {
 import { Input } from "./ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { postDataInClient } from "./postdata-client";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -162,52 +163,20 @@ export function OurSidebar({
   const router = useRouter();
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
+  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`;
+  const bodyData = [
+    {
+      content_url: contentUrl,
+      comment: "Comment를 입력하세요.",
+    },
+  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentUrl(e.target.value);
   };
 
   const handleSaveClick = async () => {
-    try {
-      const cookies = cookie.parse(document.cookie);
-      console.log("Cookie:", cookies);
-      const accessToken = cookies.accessToken;
-      const refreshToken = cookies.refreshToken;
-      // // const accessCookies = document.cookie.split("accessToken=")[1];
-      // // const refreshCookies = document.cookie.split("refreshToken=")[1];
-      // // const accessToken = accessCookies;
-      // // const refreshToken = refreshCookies;
-      // console.log("accessToken:", accessToken);
-      // console.log("refreshToken:", refreshToken);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-          body: JSON.stringify([
-            {
-              content_url: contentUrl,
-              comment: "Comment를 입력하세요.",
-            },
-          ]),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to save the content");
-      }
-
-      const data = await response.json();
-      console.log("Data saved successfully:", data);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
+    await postDataInClient({ apiUrl, bodyData });
   };
 
   const navToHome = () => {

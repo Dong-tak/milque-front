@@ -18,16 +18,7 @@ import { Github, Instagram, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
-import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
-
-import { getCookie } from "@/components/cookie";
 import { OurOption } from "@/components/setting/our-option";
-
-const convertFormDataToLoginData = (formData: FormData): LoginData => {
-  const loginId = formData.get("loginId") as string;
-  const password = formData.get("password") as string;
-  return { loginId, password };
-};
 
 export default function Login() {
   const [email, setEmail] = useState("");

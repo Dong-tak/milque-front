@@ -3,10 +3,6 @@ import { OurBtmBar } from "@/components/our-btmbar";
 import { OurSidebar } from "@/components/our-sidebar";
 import { OurTopBar } from "@/components/our-topbar";
 import { getPostData } from "@/app/api/feed-api";
-import { useEffect, useState } from "react";
-import { ApiResponse } from "@/lib/types";
-import cookie from "cookie";
-import { cookies } from "next/headers";
 
 export default async function HomePage({ params }: { params: { id: string } }) {
   const userId = params.id;

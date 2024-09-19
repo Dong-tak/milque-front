@@ -1,11 +1,9 @@
 "use client";
 
-import { OurAccordion } from "@/components/our-accordion";
 import { OurBtmBar } from "@/components/our-btmbar";
 import { OurSidebar } from "@/components/our-sidebar";
 import { OurTopBar } from "@/components/our-topbar";
 
-import { getPostData } from "./api/feed-api";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 

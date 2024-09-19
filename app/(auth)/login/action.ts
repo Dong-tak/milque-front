@@ -30,20 +30,6 @@ interface ErrorResponse {
   message?: string; // message 속성을 선택적으로 변경
 }
 
-// Function to set the Authorization headerexport
-// const setAuthorizationHeader = (access: string) => {
-//   console.log("Setting Authorization Header with token:", access);
-
-//   httpClientForCredentials.defaults.headers.common["Authorization"] =
-//     `Bearer ${access}`;
-
-//   // Log immediately after setting to ensure it is set
-//   console.log(
-//     "Authorization Header after setting:",
-//     httpClientForCredentials.defaults.headers.common["Authorization"],
-//   );
-// };
-
 export const onLogInSuccess = (response: AxiosResponse<LoginResponse>) => {
   console.log("로그인 성공:", response);
   const { id } = response.data.user;
@@ -63,11 +49,6 @@ export const onLogIn = async (params: LoginData) => {
     // 환경 변수 전체 출력
     console.log("All ENV Variables:", process.env);
 
-    // NEXT_PUBLIC_POST_API_URL 값 출력
-    console.log(
-      "API URL:",
-      `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`,
-    );
     const response = await httpClientForCredentials.post<LoginResponse>(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`,
       params,
