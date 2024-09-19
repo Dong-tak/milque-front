@@ -2,28 +2,40 @@ import cookie from "cookie";
 
 interface PostDataInClientProps {
   apiUrl: string;
-  bodyData: Record<string, any>;
+  bodyData?: Record<string, any>;
+  isReload?: boolean;
+  method?: string;
+  goHome?: string;
 }
 
-export const postDataInClient = async ({
+export const DataFetchInClient = async ({
   apiUrl,
   bodyData,
+  isReload = false,
+  goHome,
+  method = "POST",
 }: PostDataInClientProps) => {
   try {
-    const cookies = cookie.parse(document.cookie);
-    console.log("Cookie:", cookies);
-    const accessToken = cookies.accessToken;
-    const refreshToken = cookies.refreshToken;
+    const accessCookies = document.cookie.split("accessToken=")[1];
+    const refreshCookies = document.cookie.split("refreshToken=")[1];
+    const accessToken = accessCookies;
+    const refreshToken = refreshCookies;
 
-    const response = await fetch(`${apiUrl}`, {
-      method: "POST",
+    const fetchOptions: RequestInit = {
+      method,
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken} ${refreshToken}`,
       },
-      body: JSON.stringify(bodyData),
-    });
+    };
+
+    // bodyData가 있을 경우에만 body를 추가
+    if (bodyData) {
+      fetchOptions.body = JSON.stringify(bodyData);
+    }
+
+    const response = await fetch(`${apiUrl}`, fetchOptions);
 
     if (!response.ok) {
       throw new Error("Failed to save the content");
@@ -33,7 +45,11 @@ export const postDataInClient = async ({
     console.log("Data saved successfully:", data);
 
     // Reload the page or perform other actions if necessary
-    window.location.reload();
+    if (isReload) {
+      window.location.reload();
+    } else if (goHome) {
+      window.location.href = goHome;
+    }
 
     return data; // Return the response data
   } catch (error) {

@@ -5,31 +5,27 @@ import {
   CloudDownload,
   Copy,
   Dot,
-  Ellipsis,
   Eye,
   Share2,
   SquarePen,
   Trash2,
 } from "lucide-react";
-import { DetailTopNav } from "./detail-top-nav";
-import DetailBtmNav from "./detail-btm-nav";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
   Drawer,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
-import InstagramFeedEmbed from "./insta-feed";
 import { useRef, useState } from "react";
 import { Comment, PostFeed } from "@/lib/types";
 import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
 import cookie from "cookie";
+import { DataFetchInClient } from "./postdata-client";
 
 export default function DetailComment({
   params,
@@ -54,40 +50,11 @@ export default function DetailComment({
   };
 
   const handleDeleteComment = async (commentId: number) => {
-    try {
-      // window.location.reload();
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId),
-      );
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the comment");
-      }
-
-      const data = await response.json();
-      console.log("Comment deleted successfully:", data);
-
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
+    const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`;
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId),
+    );
+    await DataFetchInClient({ apiUrl, method: "DELETE" });
   };
 
   const handleDeletePost = async ({
@@ -97,65 +64,45 @@ export default function DetailComment({
     userId: string;
     postId: string;
   }) => {
-    try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
+    const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`;
+    const goHome = `/home/${userId}`;
+    await DataFetchInClient({ apiUrl, method: "DELETE", goHome });
+    // try {
+    //   const accessCookies = document.cookie.split("accessToken=")[1];
+    //   const refreshCookies = document.cookie.split("refreshToken=")[1];
+    //   const accessToken = accessCookies;
+    //   const refreshToken = refreshCookies;
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-        },
-      );
+    //   const response = await fetch(
+    //     `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
+    //     {
+    //       method: "DELETE",
+    //       credentials: "include",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${accessToken} ${refreshToken}`,
+    //       },
+    //     },
+    //   );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete the post");
-      }
-      window.location.href = `/home/${userId}`;
-      const data = await response.json();
-      console.log("post deleted successfully:", data);
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
+    //   if (!response.ok) {
+    //     throw new Error("Failed to delete the post");
+    //   }
+    //   window.location.href = `/home/${userId}`;
+    //   const data = await response.json();
+    //   console.log("post deleted successfully:", data);
+    // } catch (error) {
+    //   console.error("Error saving data:", error);
+    // }
   };
 
   const handleSaveClick = async () => {
-    console.log("newComment:", newComment);
-    try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-          body: JSON.stringify({
-            comment: newComment,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to save the content");
-      }
-
-      const data = await response.json();
-      console.log("Data saved successfully:", data);
-
+    const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`;
+    const bodyData = {
+      comment: newComment,
+    };
+    const data = await DataFetchInClient({ apiUrl, bodyData, method: "POST" });
+    if (data) {
       const newCommentObject = {
         id: data.data.id,
         comment: newComment,
@@ -171,58 +118,33 @@ export default function DetailComment({
       if (comments[0].comment === "Comment를 입력하세요.") {
         handleDeleteComment(comments[0].id);
       }
-    } catch (error) {
-      console.error("Error saving data:", error);
     }
   };
 
   const handleBlur = async (commentId: number) => {
     const updatedContent = contentEditableRef.current?.innerText;
     setIsEditing(null);
+    const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`;
+    const bodyData = {
+      comment: updatedContent,
+    };
 
     if (!updatedContent) return;
 
-    try {
-      const accessCookies = document.cookie.split("accessToken=")[1];
-      const refreshCookies = document.cookie.split("refreshToken=")[1];
-      const accessToken = accessCookies;
-      const refreshToken = refreshCookies;
-      console.log(accessToken);
-      console.log(refreshToken);
+    await DataFetchInClient({
+      apiUrl,
+      bodyData,
+      method: "PATCH",
+      isReload: false,
+    });
 
-      // if (!accessToken) {
-      //   throw new Error("Access token not found in cookies");
-      // }
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-          body: JSON.stringify({
-            comment: updatedContent,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update the comment");
-      }
-
-      // Optionally, you can reload the page or update the state to reflect the new comment
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, comment: updatedContent }
-            : comment,
-        ),
-      );
-    } catch (error) {
-      console.error("Failed to update the comment:", error);
-    }
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, comment: updatedContent }
+          : comment,
+      ),
+    );
   };
 
   const handleCopyClick = (text: string) => {

@@ -57,7 +57,7 @@ import {
 import { Input } from "./ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 import { sendGTMEvent } from "@next/third-parties/google";
-import { postDataInClient } from "./postdata-client";
+import { DataFetchInClient } from "./postdata-client";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -176,7 +176,7 @@ export function OurSidebar({
   };
 
   const handleSaveClick = async () => {
-    await postDataInClient({ apiUrl, bodyData });
+    await DataFetchInClient({ apiUrl, bodyData, isReload: true });
   };
 
   const navToHome = () => {
