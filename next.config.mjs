@@ -1,51 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**.tiktokcdn.com",
-      },
-      {
-        protocol: "https",
-        hostname: "**.cdninstagram.com",
-      },
-      {
-        protocol: "https",
-        hostname: "i.ytimg.com",
-      },
-      {
-        protocol: "https",
-        hostname: "github.com",
-      },
-      {
-        protocol: "https",
-        hostname: "blogthumb.pstatic.net",
-      },
-
-      {
-        protocol: "https",
-        hostname: "velog.velcdn.com",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.sstatic.net",
-      },
-      {
-        protocol: "https",
-        hostname: "static.toss.im",
-      },
-      {
-        protocol: "https",
-        hostname: "img1.daumcdn.net",
-      },
-      {
-        protocol: "https",
-        hostname: "techplay.blog",
-      },
-    ],
+    domains: [], // 비워두면 다양한 도메인에서 이미지를 가져올 수 있음
+    // 또는 특정 도메인을 추가해 허용할 수 있음
   },
-  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;
