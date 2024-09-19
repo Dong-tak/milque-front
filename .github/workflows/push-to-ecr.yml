@@ -22,7 +22,7 @@ jobs:
         id: cache-node-modules
         uses: actions/cache@v2
         with:
-          path: '**/node_modules'
+          path: "**/node_modules"
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
@@ -51,12 +51,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build Frontend Docker image
         run: |
-          docker build -t mileque-front:latest .
-          docker tag mileque-front:latest 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:latest
-          docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque-front:latest
-          
+          docker build -f Dockerfile.prod -t 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front:latest .
+
+      - name: Build Frontend Nginx Docker image
+        run: |
+          docker build -t 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front-nginx:latest ./nginx
+
+      - name: Push Frontend Docker images to ECR
+        run: |
+          docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front:latest
+          docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front-nginx:latest
+
+      # - name: Update ECS Service
+      #   run: |
+      #     aws ecs update-service --cluster your-ecs-cluster-name --service front-service --force-new-deployment
+
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
@@ -127,7 +138,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.DEVOPS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      
+
       - name: Slack Notification on Failure
         if: failure()
         uses: slackapi/slack-github-action@v1.27.0

@@ -1,0 +1,37 @@
+# frontend/Dockerfile
+
+# Build Stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the Next.js application
+RUN npm run build
+
+# Production Stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy the build output and package files
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+
+# Install only production dependencies
+RUN npm ci --production
+
+# Expose the port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "run", "start"]
