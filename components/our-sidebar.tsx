@@ -31,6 +31,7 @@ import {
 
 import React, { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import cookie from "cookie";
 
 import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
@@ -55,6 +56,7 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface SidebarBtnProps {
   children: React.ReactNode;
@@ -63,6 +65,7 @@ interface SidebarBtnProps {
   disabled?: boolean;
   isActive?: boolean;
   asChild?: boolean;
+  id?: string;
 }
 
 export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
@@ -74,12 +77,14 @@ export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
       disabled,
       asChild = false,
       isActive = false,
+      id,
     },
     ref,
   ) => {
     const Comp = asChild ? Slot : Button;
     return (
       <Comp
+        id={id}
         variant="sidebar"
         size="sidebar"
         onClick={onClick}
@@ -114,7 +119,7 @@ function SidebarDropdownBtn() {
     router.push("/bookmark");
   };
   return (
-    <div className="dropdown flex">
+    <div className="dropdown relative flex">
       <DropdownMenu>
         <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
           <SidebarBtn asChild>
@@ -124,7 +129,7 @@ function SidebarDropdownBtn() {
             </div>
           </SidebarBtn>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="mt-1 flex flex-col">
+        <DropdownMenuContent className="absolute bottom-1 left-7 mt-1 flex flex-col">
           <DropdownMenuItem onSelect={navToLink}>
             <Link className="icon mr-2 h-4 w-4" />
             <span>계정연동</span>
@@ -164,12 +169,25 @@ export function OurSidebar({
 
   const handleSaveClick = async () => {
     try {
+      const cookies = cookie.parse(document.cookie);
+      console.log("Cookie:", cookies);
+      const accessToken = cookies.accessToken;
+      const refreshToken = cookies.refreshToken;
+      // // const accessCookies = document.cookie.split("accessToken=")[1];
+      // // const refreshCookies = document.cookie.split("refreshToken=")[1];
+      // // const accessToken = accessCookies;
+      // // const refreshToken = refreshCookies;
+      // console.log("accessToken:", accessToken);
+      // console.log("refreshToken:", refreshToken);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
           },
           body: JSON.stringify([
             {
@@ -186,38 +204,14 @@ export function OurSidebar({
 
       const data = await response.json();
       console.log("Data saved successfully:", data);
+      window.location.reload();
     } catch (error) {
       console.error("Error saving data:", error);
     }
   };
 
   const navToHome = () => {
-    router.push("/");
-    console.log("click!!!");
-  };
-  const navToAdd = () => {
-    router.push("/add");
-  };
-  const navToGroup = () => {
-    router.push("/group");
-  };
-  const navToProfile = () => {
-    router.push("/profile");
-  };
-  const navToSetting = () => {
-    router.push("/setting");
-  };
-  const navToLink = () => {
-    router.push("/link");
-  };
-  const navToInvite = () => {
-    router.push("/invite");
-  };
-  const navToDownload = () => {
-    router.push("/download");
-  };
-  const navToMark = () => {
-    router.push("/bookmark");
+    router.push(`/home/${user_id}`);
   };
 
   return (
@@ -241,11 +235,7 @@ export function OurSidebar({
             <Calendar className="icon mr-2 size-4" />
             <span>홈</span>
           </SidebarBtn>
-          <SidebarBtn
-            disabled
-            onClick={navToHome}
-            className="flex justify-between"
-          >
+          <SidebarBtn disabled className="flex justify-between">
             <div className="flex items-center">
               <Compass className="icon mr-2 size-4" />
               <span>탐색</span>
@@ -255,18 +245,18 @@ export function OurSidebar({
           <Dialog>
             <DialogTrigger asChild>
               {user_id ? (
-                <SidebarBtn isActive={pathname === "/add"}>
+                <SidebarBtn id="scrap-sidebar">
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
               ) : (
-                <SidebarBtn disabled isActive={pathname === "/add"}>
+                <SidebarBtn id="scrap-sidebar-disabled" disabled>
                   <SquarePlus className="icon mr-2 size-4" />
                   <span>스크랩</span>
                 </SidebarBtn>
               )}
             </DialogTrigger>
-            <DialogContent className="w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+            <DialogContent className="max-h-[200px] w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
                 <DialogTitle className="w-full pb-2 display-undefine-display-01">
                   스크랩할 페이지를 입력하세요
@@ -289,7 +279,11 @@ export function OurSidebar({
                   <ArrowLeft className="icon mr-2 size-4" />
                   뒤로가기
                 </Button>
-                <Button type="submit" onClick={handleSaveClick}>
+                <Button
+                  id="scrap-save-btn"
+                  type="submit"
+                  onClick={handleSaveClick}
+                >
                   저장하기
                   <Pin className="icon ml-2 size-4" />
                 </Button>
@@ -297,7 +291,6 @@ export function OurSidebar({
             </DialogContent>
           </Dialog>
           <SidebarBtn
-            onClick={navToHome}
             className="flex justify-between"
             isActive={pathname === "/group"}
           >
@@ -313,19 +306,19 @@ export function OurSidebar({
           <Label className="sidebar-label px-4 py-2 others-medium-button">
             바로가기
           </Label>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Link className="mr-2 size-4" />
             <span>계정 연동</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <FileDown className="mr-2 size-4" />
             <span>다운로드</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Bookmark className="mr-2 size-4" />
             <span>북마크</span>
           </SidebarBtn>
@@ -334,11 +327,11 @@ export function OurSidebar({
       <div>
         <Separator />
         <div className="flex flex-col p-2">
-          <SidebarBtn onClick={navToHome}>
+          <SidebarBtn>
             <Ghost className="icon mr-2 size-4" />
             <span>프로필</span>
           </SidebarBtn>
-          <SidebarBtn onClick={navToHome} className="flex justify-between">
+          <SidebarBtn className="flex justify-between">
             <div className="flex items-center">
               <Bell className="icon mr-2 size-4" />
               <span>알림</span>

@@ -4,7 +4,13 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ApiResponse, PostDetail } from "@/lib/types";
 import SnsEmbed from "../../../../components/sns-embed";
 import { getPostDetailData } from "@/app/api/detail-api";
-import RouteBack from "@/components/route-back";
+import RouteHome, { RouteDetail } from "@/components/route-back";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import {
+  DetailNavigationLeft,
+  DetailNavigationRight,
+} from "@/components/detail-navigation";
 
 export default async function DetailPage({
   params,
@@ -19,22 +25,18 @@ export default async function DetailPage({
 
   const post = posts?.data;
 
-  let backgroundColor = "";
+  let backgroundColor = "bg-card";
   let itemsArray = "items-start";
   let justifyArray = "justify-end";
   let width = "w-full";
 
   const form = post.media + post.type;
-  console.log(post);
-  console.log("post.media", post.media);
-  console.log("post.type", post.type);
-  console.log("form", form);
 
   if (form === "youtubevideo") {
     backgroundColor = "bg-card";
     itemsArray = "items-center";
     justifyArray = "justify-center";
-  } else if (form === "tiktokshorts") {
+  } else if (form === "tiktokvideo") {
     backgroundColor = "bg-none";
     itemsArray = "items-center";
     justifyArray = "";
@@ -45,11 +47,9 @@ export default async function DetailPage({
     <div className="flex h-screen items-center justify-center bg-neutral-500 py-6">
       <div className="hidden md:block">
         <div className="fixed right-8 top-6 size-8 text-background hover:cursor-pointer hover:text-gray-400">
-          <RouteBack />
+          <RouteHome userId={userId} />
         </div>
-        <Button variant="outline" size={"icon"} className="mx-5">
-          <ChevronLeft className="size-4" />
-        </Button>
+        <DetailNavigationLeft userId={userId} postId={postId} />
       </div>
       <div className="flex w-full max-w-[1200px] items-center justify-center">
         <div
@@ -62,13 +62,11 @@ export default async function DetailPage({
           </div>
         </div>
         <div className="flex w-auto md:min-w-0">
-          <DetailComment post={post} />
+          <DetailComment post={post} params={{ userId, postId }} />
         </div>
       </div>
       <div className="hidden md:block">
-        <Button variant="outline" size={"icon"} className="mx-5">
-          <ChevronRight className="size-4" />
-        </Button>
+        <DetailNavigationRight userId={userId} postId={postId} />
       </div>
     </div>
   );

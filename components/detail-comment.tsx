@@ -29,26 +29,178 @@ import { Comment, PostFeed } from "@/lib/types";
 import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
+import cookie from "cookie";
 
-export default function DetailComment({ post }: { post: PostFeed }) {
-  const [isEditing, setIsEditing] = useState(false);
+export default function DetailComment({
+  params,
+  post,
+}: {
+  post: PostFeed;
+  params: { userId: string; postId: string };
+}) {
+  const [isEditing, setIsEditing] = useState<number | null>(null);
   const contentEditableRef = useRef<HTMLDivElement>(null);
+  const [newComment, setnewComment] = useState("");
+  const [comments, setComments] = useState<Comment[]>(post.comments || []);
   const router = useRouter();
+  const { userId, postId } = params;
 
-  const handleEditClick = () => {
-    setIsEditing(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setnewComment(e.target.value);
   };
 
-  const handleBlur = async () => {
-    const updatedContent = contentEditableRef.current?.innerText;
-    setIsEditing(false);
+  const handleEditClick = (commentId: number) => {
+    setIsEditing(commentId);
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
     try {
+      // window.location.reload();
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId),
+      );
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
+      console.log(accessToken);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/delete/`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the comment");
+      }
+
+      const data = await response.json();
+      console.log("Comment deleted successfully:", data);
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleDeletePost = async ({
+    userId,
+    postId,
+  }: {
+    userId: string;
+    postId: string;
+  }) => {
+    try {
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the post");
+      }
+      window.location.href = `/home/${userId}`;
+      const data = await response.json();
+      console.log("post deleted successfully:", data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleSaveClick = async () => {
+    console.log("newComment:", newComment);
+    try {
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${post.postId}/add/`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
+          },
+          body: JSON.stringify({
+            comment: newComment,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+
+      const newCommentObject = {
+        id: data.data.id,
+        comment: newComment,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_deleted: false,
+      };
+
+      // 새로운 댓글을 UI에 즉시 추가
+      setComments((prevComments) => [...prevComments, newCommentObject]);
+      setnewComment("");
+
+      if (comments[0].comment === "Comment를 입력하세요.") {
+        handleDeleteComment(comments[0].id);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleBlur = async (commentId: number) => {
+    const updatedContent = contentEditableRef.current?.innerText;
+    setIsEditing(null);
+
+    if (!updatedContent) return;
+
+    try {
+      const accessCookies = document.cookie.split("accessToken=")[1];
+      const refreshCookies = document.cookie.split("refreshToken=")[1];
+      const accessToken = accessCookies;
+      const refreshToken = refreshCookies;
+      console.log(accessToken);
+      console.log(refreshToken);
+
+      // if (!accessToken) {
+      //   throw new Error("Access token not found in cookies");
+      // }
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken} ${refreshToken}`,
           },
           body: JSON.stringify({
             comment: updatedContent,
@@ -61,10 +213,31 @@ export default function DetailComment({ post }: { post: PostFeed }) {
       }
 
       // Optionally, you can reload the page or update the state to reflect the new comment
-      router.refresh();
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, comment: updatedContent }
+            : comment,
+        ),
+      );
     } catch (error) {
       console.error("Failed to update the comment:", error);
     }
+  };
+
+  const handleCopyClick = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        alert("Comment copied to clipboard!"); // You can customize this alert or use a toast notification instead
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
+
+  const handleBackClick = () => {
+    router.back();
   };
 
   return (
@@ -73,7 +246,10 @@ export default function DetailComment({ post }: { post: PostFeed }) {
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
           <div className="flex items-center">
-            <div className="p-3 md:hidden">
+            <div
+              className="p-3 hover:bg-card md:hidden"
+              onClick={handleBackClick}
+            >
               <ChevronLeft className="size-6" />
             </div>
             <span className="accordhead others-medium-title">
@@ -86,6 +262,7 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 variant={"ghost"}
                 size={"icon"}
                 className="hidden p-1 md:block"
+                disabled
               >
                 <CloudDownload className="size-4" />
               </Button>
@@ -93,6 +270,7 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 variant={"ghost"}
                 size={"icon"}
                 className="rounded-none md:rounded-md md:p-1"
+                disabled
               >
                 <Share2 className="size-6 md:size-4" />
               </Button>
@@ -101,7 +279,10 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                 size={"icon"}
                 className="hidden p-1 md:block"
               >
-                <Trash2 className="size-4" />
+                <Trash2
+                  className="size-4"
+                  onClick={() => handleDeletePost({ userId, postId })}
+                />
               </Button>
             </div>
             <Drawer>
@@ -129,9 +310,9 @@ export default function DetailComment({ post }: { post: PostFeed }) {
           </div>
         </div>
         {/* comment nav */}
-        {post.comments ? (
+        {comments.length > 0 ? (
           <div className="flex w-full flex-grow flex-col gap-[2px] overflow-y-auto py-[48px]">
-            {post.comments.map((comment) => (
+            {comments.map((comment) => (
               <div
                 key={comment.id}
                 className="flex flex-col gap-2 border-b-2 border-card bg-background p-4"
@@ -145,27 +326,35 @@ export default function DetailComment({ post }: { post: PostFeed }) {
                     </div>
                   </div>
                   <div className="flex gap-2 text-secondary-foreground">
-                    <Copy className="size-4 hover:text-muted-foreground" />
+                    <Copy
+                      className="size-4 hover:text-muted-foreground"
+                      onClick={() => handleCopyClick(comment.comment)}
+                    />
                     <SquarePen
-                      onClick={handleEditClick}
+                      onClick={() => handleEditClick(comment.id)}
                       className="size-4 hover:text-muted-foreground"
                     />
-                    <Ellipsis className="size-4 hover:text-muted-foreground" />
+                    <Trash2
+                      className="size-4 hover:text-muted-foreground"
+                      onClick={() => handleDeleteComment(comment.id)}
+                    />
                   </div>
                 </div>
                 <div className="body-normal-body-long-01">
-                  {isEditing ? (
+                  {isEditing === comment.id ? (
                     <div
+                      ref={contentEditableRef}
                       contentEditable
                       suppressContentEditableWarning
-                      ref={contentEditableRef}
-                      onBlur={handleBlur}
-                      className="w-full rounded border border-gray-300 p-2"
+                      onBlur={() => handleBlur(comment.id)}
+                      className="w-full border-b p-2"
                     >
                       {comment.comment}
                     </div>
                   ) : (
-                    <span onClick={handleEditClick}>{comment.comment}</span>
+                    <span onClick={() => handleEditClick(comment.id)}>
+                      {comment.comment}
+                    </span>
                   )}
                 </div>
               </div>
@@ -177,9 +366,16 @@ export default function DetailComment({ post }: { post: PostFeed }) {
           <div className="flex w-full gap-4 px-4">
             <Input
               placeholder="새로운 커멘트 남기기"
+              value={newComment}
               className="w-full border-none"
+              onChange={handleInputChange}
             />
-            <Button variant="ghost" className="text-primary">
+            <Button
+              variant="ghost"
+              className="text-primary"
+              onClick={handleSaveClick}
+              id="comment-submit"
+            >
               등록
             </Button>
           </div>

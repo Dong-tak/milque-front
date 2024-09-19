@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Bell,
   Bookmark,
   Calculator,
@@ -15,6 +16,7 @@ import {
   Link,
   LogIn,
   LogOut,
+  Pin,
   Plus,
   Scan,
   Settings,
@@ -25,6 +27,7 @@ import {
   Users,
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
+import cookie from "cookie";
 
 import {
   Command,
@@ -37,7 +40,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
 import { OurAvatar } from "./our-avatar";
@@ -54,6 +57,17 @@ import {
   DropdownMenuSubTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { SidebarBtn } from "./our-sidebar";
+import { Input } from "./ui/input";
 
 interface SidebarItemProps {
   children: React.ReactNode;
@@ -85,19 +99,16 @@ function SidebarList({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavButton({
-  children,
-  onClick,
-  disabled,
-  isActive = false,
-  className,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-  isActive?: boolean;
-  className?: string;
-}) {
+const NavButton = React.forwardRef<
+  HTMLButtonElement,
+  {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    isActive?: boolean;
+    className?: string;
+  }
+>(({ children, onClick, disabled, isActive = false, className }, ref) => {
   return (
     <Button
       variant="background"
@@ -109,19 +120,59 @@ function NavButton({
         className,
       )}
       onClick={onClick}
+      ref={ref}
     >
       {children}
     </Button>
   );
-}
+});
+NavButton.displayName = "NavButton";
 
-export function OurBtmBar() {
+export function OurBtmBar({ user_id }: { user_id: string }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [contentUrl, setContentUrl] = useState("");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentUrl(e.target.value);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const cookies = cookie.parse(document.cookie);
+      const accessToken = cookies.accessToken;
+      console.log(accessToken);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify([
+            {
+              content_url: contentUrl,
+              comment: "Comment를 입력하세요.",
+            },
+          ]),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save the content");
+      }
+
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
   const navToHome = () => {
-    router.push("/");
-    console.log("click!!!");
+    router.push(`/home/${user_id}`);
   };
   const navToAdd = () => {
     router.push("/add");
@@ -156,9 +207,48 @@ export function OurBtmBar() {
       <NavButton onClick={navToHome} disabled>
         <Compass className="size-6" />
       </NavButton>
-      <NavButton onClick={navToAdd} isActive={pathname === "/add"}>
-        <SquarePlus className="size-6" />
-      </NavButton>
+      <Dialog>
+        <DialogTrigger asChild>
+          {user_id ? (
+            <NavButton>
+              <SquarePlus className="icon mr-2 size-6" />
+            </NavButton>
+          ) : (
+            <NavButton disabled>
+              <SquarePlus className="icon mr-2 size-6" />
+            </NavButton>
+          )}
+        </DialogTrigger>
+        <DialogContent className="fixed inset-0 flex h-[220px] w-full max-w-[512px] flex-col justify-center gap-5 rounded-md bg-popover p-6">
+          <DialogHeader>
+            <DialogTitle className="w-full pb-2 display-undefine-display-01">
+              스크랩할 페이지를 입력하세요
+            </DialogTitle>
+            <DialogDescription className="w-full body-normal-body-02">
+              링크를 입력하고 바로 저장하세요!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="items-center gap-4">
+            <Input
+              id="url"
+              value={contentUrl}
+              onChange={handleInputChange}
+              className="w-full"
+              placeholder="링크를 입력하세요"
+            />
+          </div>
+          <DialogFooter className="flex items-end justify-end gap-2">
+            <Button variant={"outline"}>
+              <ArrowLeft className="icon mr-2 size-4" />
+              뒤로가기
+            </Button>
+            <Button type="submit" onClick={handleSaveClick}>
+              저장하기
+              <Pin className="icon ml-2 size-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <NavButton onClick={navToGroup} isActive={pathname === "/group"}>
         <HeartHandshake className="size-6" />
       </NavButton>

@@ -7,3 +7,4 @@ export const httpClientForCredentials = axios.create({
 
   withCredentials: true, // 서로 다른 도메인 간 쿠키 공유를 위해 설정
 });
+

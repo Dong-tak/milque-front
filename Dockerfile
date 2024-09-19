@@ -1,32 +1,43 @@
-# Use the official Node.js 20 image
-FROM node:20-alpine
+# Base image
+FROM node:20-alpine AS builder
 
-# Create and set the working directory
-WORKDIR /deploy
+# Set working directory
+WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json separately for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with caching
+RUN npm ci 
 
 # Copy the rest of the application code
 COPY . .
 
-# # Build arguments
-# ARG NEXT_PUBLIC_URI
+# Copy .env file into the build stage
+COPY .env .env
 
-# # Environment variables
-# ENV NEXT_PUBLIC_URI=$NEXT_PUBLIC_URI
+# Load environment variables from the .env file
+RUN export $(grep -v '^#' .env | xargs) && npm run build
 
-# Build the Next.js application
-RUN npm run build
+# Use a minimal image for production
+FROM node:20-alpine
 
-# Set the user to 'node' for better security practices
-USER node
+# Set the working directory
+WORKDIR /app
 
-# Expose the port that the Next.js app will run on
+# Copy only necessary files from the builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+
+# Install only production dependencies (cached)
+RUN npm ci --production
+
+# Copy the .env file to the production image (optional)
+COPY .env .env
+
+# Expose the port
 EXPOSE 3000
 
-# Command to start the application
+# Start the application
 CMD ["npm", "run", "start"]
