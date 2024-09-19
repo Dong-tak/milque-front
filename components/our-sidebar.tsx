@@ -57,7 +57,7 @@ import {
 import { Input } from "./ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 import { sendGTMEvent } from "@next/third-parties/google";
-import { DataFetchInClient } from "./postdata-client";
+import { DataFetchInClient } from "../app/api/postdata-client";
 
 interface SidebarBtnProps {
   children: React.ReactNode;

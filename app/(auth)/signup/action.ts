@@ -1,6 +1,6 @@
 "use client"; // Ensure this runs in the client-side environment
 
-import { DataFetchInClient } from "@/components/postdata-client";
+import { DataFetchInClient } from "@/app/api/postdata-client";
 import dotenv from "dotenv";
 
 dotenv.config();

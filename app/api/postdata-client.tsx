@@ -1,4 +1,4 @@
-import cookie from "cookie";
+"use client";
 
 interface PostDataInClientProps {
   apiUrl: string;

@@ -1,6 +1,6 @@
 "use client";
 import { httpClientForCredentials } from "@/app/api/axios-header";
-import { DataFetchInClient } from "@/components/postdata-client";
+import { DataFetchInClient } from "@/app/api/postdata-client";
 import { AxiosResponse, AxiosError } from "axios";
 
 export interface LoginData {

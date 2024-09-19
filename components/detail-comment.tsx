@@ -25,7 +25,7 @@ import { DateCalc } from "./date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "./sns-embed";
 import cookie from "cookie";
-import { DataFetchInClient } from "./postdata-client";
+import { DataFetchInClient } from "../app/api/postdata-client";
 
 export default function DetailComment({
   params,

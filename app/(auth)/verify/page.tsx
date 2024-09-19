@@ -23,7 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
-import { verifyEmail } from "@/app/api/utils/api";
+import { verifyEmail } from "./action";
 
 interface FormState {
   fieldErrors?: {
