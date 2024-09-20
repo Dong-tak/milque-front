@@ -1,6 +1,5 @@
 "use client";
 import { DataFetchInClient } from "@/app/api/postdata-client";
-import { AxiosResponse, AxiosError } from "axios";
 
 export interface LoginData {
   loginId: string;
@@ -19,13 +18,11 @@ interface User {
 }
 
 interface LoginResponse {
-  data: {
-    user: User;
-    message: string;
-    token: Token;
-    access: Token;
-    refresh: Token;
-  };
+  user: User;
+  message: string;
+  token: Token;
+  access: Token;
+  refresh: Token;
 }
 
 interface ErrorResponse {
@@ -34,9 +31,9 @@ interface ErrorResponse {
 
 export const onLogInSuccess = (response: LoginResponse) => {
   console.log("로그인 성공:", response);
-  const { id } = response.data.user;
+  const { id } = response.user;
   console.log(id);
-  const access = response.data.access;
+  const access = response.access;
   const accessToken = access.toString();
 
   // localStorage.setItem("accessToken", accessToken);
