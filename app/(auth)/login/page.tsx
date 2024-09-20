@@ -122,9 +122,6 @@ export default function Login() {
           </Link>
         </CardContent>
       </Card>
-      <div className="flex flex-col items-center space-y-5">
-        <OurOption />
-      </div>
     </div>
   );
 }

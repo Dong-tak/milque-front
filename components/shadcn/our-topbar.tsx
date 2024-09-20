@@ -8,6 +8,7 @@ import { MilequeSmallLogo } from "@/public/svgBag";
 import { NavButton } from "./navigation-btn";
 import { SidebarDropdownBtn } from "./sidebar-dropdown";
 import { RoutePage } from "../route-setting";
+import { OurOption } from "../setting/our-option";
 
 export function OurTopBar(user_id: { user_id: number }) {
   const router = useRouter();
@@ -31,9 +32,14 @@ export function OurTopBar(user_id: { user_id: number }) {
           <Bell className="size-6" />
           <div className="absolute right-[14px] top-[10px] flex h-2 w-2 items-center justify-center rounded-full bg-destructive" />
         </NavButton>
-        <NavButton onClick={navToSetting}>
-          <Settings className="size-6" />
-        </NavButton>
+        <OurOption
+          button={
+            <NavButton>
+              <Settings className="size-6" />
+            </NavButton>
+          }
+          user_id={user_id.user_id}
+        />
       </div>
     </div>
   );

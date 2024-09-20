@@ -37,6 +37,7 @@ import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 import { DataFetchInClient } from "../../app/api/postdata-client";
 import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
+import { OurOption } from "../setting/our-option";
 
 export function OurSidebar({
   noti,
@@ -190,10 +191,15 @@ export function OurSidebar({
             </div>
             {noti ? <Badge variant={"default"}>{noti}</Badge> : null}
           </SidebarBtn>
-          <SidebarBtn>
-            <Settings className="icon mr-2 size-4" />
-            <span>설정</span>
-          </SidebarBtn>
+          <OurOption
+            button={
+              <SidebarBtn>
+                <Settings className="icon mr-2 size-4" />
+                <span>설정</span>
+              </SidebarBtn>
+            }
+            user_id={user_id}
+          />
         </div>
       </div>
     </div>

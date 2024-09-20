@@ -12,7 +12,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-import { SqBadge } from "../ui/badge";
 import { PostFeed } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";

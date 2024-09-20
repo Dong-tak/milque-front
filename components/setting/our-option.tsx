@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
@@ -17,7 +17,12 @@ import { SiteView } from "@/components/setting/view-site";
 
 const DialogClose = DialogPrimitive.Close;
 
-export function OurOption() {
+interface OurOptionProps {
+  button: ReactNode; // 버튼으로 사용할 컴포넌트 (ex: SidebarBtn)
+  user_id?: number;
+}
+
+export function OurOption({ button, user_id }: OurOptionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태 관리
   const [view, setView] = useState("profile");
@@ -72,10 +77,9 @@ export function OurOption() {
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* button prop을 DialogTrigger에 넣어 트리거로 사용 */}
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setIsOpen(true)}>
-          옵션설정
-        </Button>
+        <div onClick={() => setIsOpen(true)}>{button}</div>
       </DialogTrigger>
       {isOpen && (
         <DialogContent className="flex h-full w-full max-w-[1136px] flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[767px] md:flex-row">

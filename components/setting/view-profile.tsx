@@ -1,31 +1,12 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import React from "react";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   SettingButton,
   SettingSwitch,
-  SettingDropDown,
   SettingProfile,
   SettingArrow,
 } from "@/components/setting/setting-comp";
-import {
-  SettingAlertDialog,
-  SettingTwoLabel,
-  SettingAlertLink,
-  SettingOneLabel,
-  SettingMediaSlect,
-} from "@/components/setting/alert-dialog";
 import { PasswordDialog } from "@/components/setting/profile-dialog/password-view";
 import { ChevronRight } from "lucide-react";
 import { DeleteAccountDialog } from "./profile-dialog/delete-account-view";
