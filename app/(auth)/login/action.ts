@@ -51,7 +51,9 @@ export const onLogIn = async (params: LoginData) => {
   };
 
   const data = await DataFetchInClient({ apiUrl, bodyData });
-  if (data) {
+  if (data.message) {
     onLogInSuccess(data);
+  } else {
+    throw new Error(data.error);
   }
 };

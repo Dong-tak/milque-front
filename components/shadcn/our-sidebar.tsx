@@ -146,6 +146,7 @@ export function OurSidebar({
           <SidebarBtn
             className="flex justify-between"
             isActive={pathname === "/group"}
+            onClick={RoutePage(`/group/${user_id}`)}
           >
             <div className="flex items-center">
               <HeartHandshake className="icon mr-2 size-4" />

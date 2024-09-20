@@ -53,7 +53,7 @@ export const DataFetchInClient = async ({
 
     return data; // Return the response data
   } catch (error) {
-    console.error("Error saving data:", error);
+    console.error("Error:", error);
     throw error; // Re-throw error so that the caller can handle it
   }
 };

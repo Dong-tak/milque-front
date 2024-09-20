@@ -38,8 +38,8 @@ export default function GroupPage() {
   return (
     <div className="flex h-screen w-full items-start justify-start overflow-hidden overflow-x-scroll">
       <OurSidebar />
-      <OurBtmBar user_id="" />
-      <OurTopBar user_id="" />
+      <OurBtmBar user_id={1} />
+      <OurTopBar user_id={1} />
       <div className="ml-0 flex h-screen w-full flex-col pt-[68px] md:ml-[69px] md:pt-5 xl:ml-[250px]">
         {/* 그룹 프로필 */}
         <div className="font-['SUIT Variable'] relative box-border flex w-full flex-row items-start justify-start border-b-[1px] border-solid border-border px-4 pb-10 pt-6 text-left text-5xl text-black">

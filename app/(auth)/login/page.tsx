@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
 import { OurOption } from "@/components/setting/our-option";
+import { DataFetchInClient } from "@/app/api/postdata-client";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -40,8 +41,19 @@ export default function Login() {
     };
 
     try {
-      await onLogIn(loginData);
-      // router.push("/"); // 로그인 성공 시 홈 페이지로 이동
+      const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`;
+      const bodyData = {
+        loginId: loginData.loginId,
+        password: loginData.password,
+      };
+      const data = await DataFetchInClient({ apiUrl, bodyData });
+      if (data) {
+        const { id } = data.user;
+        console.log(id);
+        router.push(`/home/${id}`);
+      } else if (data.error) {
+        setError("로그인 실패: " + data.error);
+      }
     } catch (err) {
       const errorMessage = (err as Error).message; // 명시적 형변환
       setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
