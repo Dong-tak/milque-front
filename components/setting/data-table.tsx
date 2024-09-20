@@ -49,10 +49,10 @@ import {
   RecommendTag,
   StopTag,
   WarningTag,
-} from "@/components/our-status-tag";
+} from "@/components/shadcn/our-status-tag";
 import { Column, Row } from "@tanstack/react-table";
 import Image from "next/image";
-import { SocialTag } from "../our-social-tag";
+import { SocialTag } from "../shadcn/our-social-tag";
 import { DropDownArrow } from "./dropdown-arrow";
 
 interface DataTableProps {

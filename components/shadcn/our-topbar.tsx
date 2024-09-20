@@ -44,14 +44,14 @@ import { cn } from "@/lib/utils";
 import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
 import { OurAvatar } from "./our-avatar";
 import { useRouter } from "next/navigation";
-import { Badge, SqBadge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge, SqBadge } from "../ui/badge";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { SidebarBtn } from "./our-sidebar";
 import { MilequeSmallLogo } from "@/public/svgBag";
 

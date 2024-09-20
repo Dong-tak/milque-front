@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
 import { OurAvatar } from "./our-avatar";
 import { usePathname, useRouter } from "next/navigation";
-import { Badge, SqBadge } from "./ui/badge";
+import { Badge, SqBadge } from "../ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,7 +56,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -65,9 +65,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "../ui/dialog";
 import { SidebarBtn } from "./our-sidebar";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
 interface SidebarItemProps {
   children: React.ReactNode;

@@ -14,11 +14,11 @@ import {
   SettingDropDown,
   SettingArrow,
 } from "@/components/setting/setting-comp";
-import { NewTag } from "../our-status-tag";
-import { OurPagination } from "../our-pagination";
+import { NewTag } from "../shadcn/our-status-tag";
+import { OurPagination } from "../shadcn/our-pagination";
 import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, Settings2 } from "lucide-react";
-import { OurDataTable } from "../our-datatable";
+import { OurDataTable } from "../shadcn/our-datatable";
 import { ColumnDef } from "@tanstack/react-table";
 import { SettingDataTable } from "./data-table";
 import { buffer } from "stream/consumers";

@@ -23,7 +23,7 @@ import {
   HotTag,
   PrivateTag,
   PublicTag,
-} from "../our-status-tag";
+} from "../shadcn/our-status-tag";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingDataTable } from "@/components/setting/data-table";

@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { RouteDetail } from "./route-back";
+import { RouteDetail } from "../route-back";
 import { useRouter } from "next/navigation";
 
 export function DetailNavigationLeft({

@@ -1,8 +1,8 @@
 "use client";
 
-import { OurBtmBar } from "@/components/our-btmbar";
-import { OurSidebar } from "@/components/our-sidebar";
-import { OurTopBar } from "@/components/our-topbar";
+import { OurBtmBar } from "@/components/shadcn/our-btmbar";
+import { OurSidebar } from "@/components/shadcn/our-sidebar";
+import { OurTopBar } from "@/components/shadcn/our-topbar";
 
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";

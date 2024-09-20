@@ -35,15 +35,15 @@ import cookie from "cookie";
 
 import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "./ui/button";
-import { SqBadge, Badge } from "./ui/badge";
-import { Label } from "./ui/label";
+import { Button } from "../ui/button";
+import { SqBadge, Badge } from "../ui/badge";
+import { Label } from "../ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { Slot } from "@radix-ui/react-slot";
 import {
   Dialog,
@@ -53,11 +53,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
+} from "../ui/dialog";
+import { Input } from "../ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
 import { sendGTMEvent } from "@next/third-parties/google";
-import { DataFetchInClient } from "../app/api/postdata-client";
+import { DataFetchInClient } from "../../app/api/postdata-client";
 
 interface SidebarBtnProps {
   children: React.ReactNode;

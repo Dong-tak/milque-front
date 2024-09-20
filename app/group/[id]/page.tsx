@@ -1,9 +1,9 @@
 "use client";
 
-import { OurAccordion } from "@/components/our-accordion";
-import { OurBtmBar } from "@/components/our-btmbar";
-import { OurSidebar } from "@/components/our-sidebar";
-import { OurTopBar } from "@/components/our-topbar";
+import { OurAccordion } from "@/components/shadcn/our-accordion";
+import { OurBtmBar } from "@/components/shadcn/our-btmbar";
+import { OurSidebar } from "@/components/shadcn/our-sidebar";
+import { OurTopBar } from "@/components/shadcn/our-topbar";
 
 import {
   Accordion,

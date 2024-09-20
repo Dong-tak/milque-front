@@ -1,8 +1,8 @@
-import DetailComment from "@/components/detail-comment";
+import DetailComment from "@/components/detail-view/detail-comment";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ApiResponse, PostDetail } from "@/lib/types";
-import SnsEmbed from "../../../../components/sns-embed";
+import SnsEmbed from "../../../../components/embed/sns-embed";
 import { getPostDetailData } from "@/app/api/detail-api";
 import RouteHome, { RouteDetail } from "@/components/route-back";
 import { useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import { RootState } from "@/store";
 import {
   DetailNavigationLeft,
   DetailNavigationRight,
-} from "@/components/detail-navigation";
+} from "@/components/detail-view/detail-navigation";
 
 export default async function DetailPage({
   params,

@@ -10,22 +10,22 @@ import {
   SquarePen,
   Trash2,
 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "./ui/drawer";
+} from "../ui/drawer";
 import { useRef, useState } from "react";
 import { Comment, PostFeed } from "@/lib/types";
-import { DateCalc } from "./date-calc";
+import { DateCalc } from "../shadcn/date-calc";
 import { useRouter } from "next/navigation";
-import SnsEmbed from "./sns-embed";
+import SnsEmbed from "../embed/sns-embed";
 import cookie from "cookie";
-import { DataFetchInClient } from "../app/api/postdata-client";
+import { DataFetchInClient } from "../../app/api/postdata-client";
 
 export default function DetailComment({
   params,
