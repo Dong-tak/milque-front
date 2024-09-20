@@ -43,7 +43,7 @@ export function OurSidebar({
   user_id,
 }: {
   noti?: number;
-  user_id?: string;
+  user_id?: number;
 }) {
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
@@ -152,7 +152,7 @@ export function OurSidebar({
             </div>
             <SqBadge variant={"outlineDefault"}>NEW</SqBadge>
           </SidebarBtn>
-          <SidebarDropdownBtn />
+          <SidebarDropdownBtn pos="left" />
         </div>
         <div className="direct flex flex-col p-2">
           <Label className="sidebar-label px-4 py-2 others-medium-button">

@@ -4,7 +4,7 @@ import { OurSidebar } from "@/components/shadcn/our-sidebar";
 import { OurTopBar } from "@/components/shadcn/our-topbar";
 import { getPostData } from "@/app/api/feed-api";
 
-export default async function HomePage({ params }: { params: { id: string } }) {
+export default async function HomePage({ params }: { params: { id: number } }) {
   const userId = params.id;
 
   const data = await getPostData({ userId });

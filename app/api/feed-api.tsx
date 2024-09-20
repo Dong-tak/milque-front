@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 interface getDataProps {
-  userId: string;
+  userId: number;
 }
 
 export const getPostData = async ({ userId }: getDataProps) => {

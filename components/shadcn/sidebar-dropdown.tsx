@@ -1,4 +1,11 @@
-import { Bookmark, FileDown, Link, Star, UserPlus } from "lucide-react";
+import {
+  Bookmark,
+  ChevronDown,
+  FileDown,
+  Link,
+  Star,
+  UserPlus,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,14 +15,18 @@ import {
 import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
 
-export function SidebarDropdownBtn() {
+export function SidebarDropdownBtn({ pos }: { pos: string }) {
   return (
     <div className="dropdown relative flex">
       <DropdownMenu>
         <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
           <SidebarBtn asChild>
             <div className="flex items-center">
-              <Star className="icon mr-2 size-4" />
+              {pos === "left" ? (
+                <Star className="icon mr-2 size-4" />
+              ) : (
+                <ChevronDown className="icon mr-2 size-4" />
+              )}
               <span>모음집</span>
             </div>
           </SidebarBtn>

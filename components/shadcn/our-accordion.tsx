@@ -106,7 +106,7 @@ export function OurAccordion({
   userId,
 }: {
   posts: PostFeed[];
-  userId: string;
+  userId: number;
 }) {
   const [isShared, setIsShared] = useState(false);
   const handleShare = () => {

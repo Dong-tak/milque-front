@@ -27,7 +27,7 @@ import { DataFetchInClient } from "@/app/api/postdata-client";
 import { RoutePage } from "../route-setting";
 import { NavButton } from "./navigation-btn";
 
-export function OurBtmBar({ user_id }: { user_id: string }) {
+export function OurBtmBar({ user_id }: { user_id: number }) {
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
