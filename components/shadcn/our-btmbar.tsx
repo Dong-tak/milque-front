@@ -68,7 +68,7 @@ export function OurBtmBar({ user_id }: { user_id: number }) {
             </NavButton>
           )}
         </DialogTrigger>
-        <DialogContent className="fixed inset-0 flex h-[220px] w-full max-w-[512px] flex-col justify-center gap-5 rounded-md bg-popover p-6">
+        <DialogContent className="flex max-h-[220px] w-full flex-col justify-center gap-2 rounded-md bg-popover p-6">
           <DialogHeader>
             <DialogTitle className="w-full pb-2 display-undefine-display-01">
               스크랩할 페이지를 입력하세요

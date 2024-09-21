@@ -1,7 +1,6 @@
 "use client";
 import { ReactNode, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X, Menu, ChevronLeft } from "lucide-react";
@@ -82,7 +81,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
         <div onClick={() => setIsOpen(true)}>{button}</div>
       </DialogTrigger>
       {isOpen && (
-        <DialogContent className="flex h-full w-full max-w-[1136px] flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[767px] md:flex-row">
+        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[767px] md:flex-row lg:max-w-[100%]">
           {/* 상단바 (작은 화면에서만 보임) */}
           <div className="relative z-50 flex max-h-[48px] w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
             <DialogPrimitive.Close>

@@ -20,8 +20,8 @@ export default function Page() {
   return (
     <div className="flex h-screen items-center justify-center gap-8">
       <OurSidebar />
-      <OurBtmBar user_id="" />
-      <OurTopBar user_id="" />
+      <OurBtmBar user_id={1} />
+      <OurTopBar user_id={1} />
       <div>
         <Button onClick={goLogin}>로그인 하러가기</Button>
       </div>

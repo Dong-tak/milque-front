@@ -109,7 +109,7 @@ export function OurSidebar({
                 </SidebarBtn>
               )}
             </DialogTrigger>
-            <DialogContent className="max-h-[200px] w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+            <DialogContent className="w-full gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
                 <DialogTitle className="w-full pb-2 display-undefine-display-01">
                   스크랩할 페이지를 입력하세요
