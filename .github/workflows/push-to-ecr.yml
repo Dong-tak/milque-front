@@ -51,9 +51,18 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Create .env file
+        run: |
+          set -e
+          echo "${{ secrets.ENV }}" > .env
+          cat .env
+
       - name: Build Frontend Docker image
         run: |
-          docker build -f Dockerfile.prod -t 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front:latest .
+          docker build --no-cache \
+            --build-arg ENV_FILE=.env \
+            -f Dockerfile.prod \
+            -t 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front:latest .
 
       - name: Build Frontend Nginx Docker image
         run: |
