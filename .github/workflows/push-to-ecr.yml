@@ -64,9 +64,9 @@ jobs:
           docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front:latest
           docker push 211125602993.dkr.ecr.ap-northeast-2.amazonaws.com/mileque/front-nginx:latest
 
-      # - name: Update ECS Service
-      #   run: |
-      #     aws ecs update-service --cluster your-ecs-cluster-name --service front-service --force-new-deployment
+      - name: Update ECS Service
+        run: |
+          aws ecs update-service --cluster mileque-cluster --service mileque-front-service --force-new-deployment
 
       - name: Slack Notification on Success
         if: success()
