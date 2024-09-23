@@ -99,9 +99,9 @@ export function GroupView() {
   );
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+    <div className="setting-frame">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
             그룹 프로필
           </DialogTitle>
@@ -128,23 +128,25 @@ export function GroupView() {
           </div>
         </div>
       </div>
-      <div>
+      <div className="overflow-y-visible">
         <DialogTitle className="font-['SUIT Variable'] h-auto w-full py-3 text-xl font-bold leading-7 text-slate-900">
           그룹 멤버
         </DialogTitle>
-        <SettingDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          header={false}
-          footer={false}
-          menuItems={[
-            { label: "삭제하기", onClick: () => {} }, //수정필요
-            { label: "수정하기", onClick: () => {} }, //수정필요
-          ]}
-        />
+        <div className="overflow-x-auto">
+          <SettingDataTable
+            tableheader={tableheader}
+            contentData={contentData}
+            header={false}
+            footer={false}
+            menuItems={[
+              { label: "삭제하기", onClick: () => {} }, //수정필요
+              { label: "수정하기", onClick: () => {} }, //수정필요
+            ]}
+          />
+        </div>
       </div>
       <div className="flex-col space-y-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+        <DialogHeader className="setting-header">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
             그룹 관리
           </DialogTitle>

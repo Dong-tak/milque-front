@@ -96,8 +96,8 @@ const contentData = [
 
 export function DownloadView() {
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+    <div className="setting-frame">
+      <DialogHeader className="setting-header">
         <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
           다운로드 관리
         </DialogTitle>
@@ -132,19 +132,21 @@ export function DownloadView() {
           },
         ]}
       />
-      <div>
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             내 다운로드 히스토리
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          menuItems={[
-            { label: "삭제하기", onClick: () => {} }, //수정 필요
-          ]}
-        />
+        <div className="overflow-x-auto">
+          <SettingDataTable
+            tableheader={tableheader}
+            contentData={contentData}
+            menuItems={[
+              { label: "삭제하기", onClick: () => {} }, //수정 필요
+            ]}
+          />
+        </div>
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ export interface OurOptionSidebarProps {
 }
 export function OptionSidebar({ setView }: OurOptionSidebarProps) {
   return (
-    <Command className="w-max-[1136px] right-0 flex h-full max-h-[743px] min-w-[234px] max-w-[250px] grow flex-col items-center justify-center p-0 md:left-0 md:w-[250px] md:border-r">
+    <Command className="w-max-[1136px] right-0 flex h-full min-w-[234px] max-w-[250px] grow flex-col items-center justify-center p-0 md:left-0 md:w-[250px] md:border-r">
       <SidebarList>
         <SelectGroup className="hidden h-full w-full items-start justify-center p-2 md:block">
           <div className="flex h-auto w-full min-w-[234px] items-center justify-between px-4 py-2">

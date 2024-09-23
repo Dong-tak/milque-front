@@ -23,10 +23,10 @@ export function ProfileView() {
   );
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+    <div className="setting-frame">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             내 프로필
           </DialogTitle>
         </DialogHeader>
@@ -55,7 +55,6 @@ export function ProfileView() {
           }
         />
       </div>
-
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
@@ -102,11 +101,10 @@ export function ProfileView() {
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             지원
           </DialogTitle>
         </DialogHeader>
-
         <SettingArrow
           title="로그아웃"
           content="tmdcjf326dtmdcjf@gmail.com"

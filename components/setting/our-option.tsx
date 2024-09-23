@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -27,6 +27,10 @@ export function OurOption({ button, user_id }: OurOptionProps) {
   const [view, setView] = useState("profile");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); // 사이드바 토글 함수
+
+  useEffect(() => {
+    toggleSidebar();
+  }, [view]); // view가 변경될 때마다 toggleSidebar 실행
 
   type ViewType =
     | "profile"
@@ -81,7 +85,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
         <div onClick={() => setIsOpen(true)}>{button}</div>
       </DialogTrigger>
       {isOpen && (
-        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[767px] md:flex-row lg:max-w-[100%]">
+        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[70%] md:flex-row lg:max-w-[75%]">
           {/* 상단바 (작은 화면에서만 보임) */}
           <div className="relative z-50 flex max-h-[48px] w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
             <DialogPrimitive.Close>
@@ -99,7 +103,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
             <OptionSidebar setView={setView} />
           </div>
           {/* Content view*/}
-          <div className="inline-flex h-[767px] w-full flex-col items-center justify-start gap-8 p-8">
+          <div className="inline-flex h-full w-full flex-col items-center justify-start gap-8 pb-8 pl-4">
             {renderContentView(view as ViewType)}
           </div>
         </DialogContent>

@@ -100,8 +100,8 @@ const contentData = [
 
 export function ScrapView() {
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+    <div className="setting-frame">
+      <DialogHeader className="setting-header">
         <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
           스크랩 관리
         </DialogTitle>
@@ -117,19 +117,21 @@ export function ScrapView() {
         trigger={undefined} //수정필요
       />
       <div>
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+        <DialogHeader className="setting-header">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
             내 스크랩 히스토리
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          menuItems={[
-            { label: "삭제하기", onClick: () => {} }, //수정필요
-            { label: "수정하기", onClick: () => {} }, //수정필요
-          ]}
-        />
+        <div className="overflow-x-auto">
+          <SettingDataTable
+            tableheader={tableheader}
+            contentData={contentData}
+            menuItems={[
+              { label: "삭제하기", onClick: () => {} }, //수정필요
+              { label: "수정하기", onClick: () => {} }, //수정필요
+            ]}
+          />
+        </div>
       </div>
     </div>
   );
