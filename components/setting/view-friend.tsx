@@ -1,31 +1,9 @@
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { AccountTable } from "@/components/setting/our-table";
-import {
-  SettingButton,
-  SettingSwitch,
-  SettingDropDown,
-  SettingArrow,
-} from "@/components/setting/setting-comp";
-import { NewTag } from "../shadcn/our-status-tag";
-import { OurPagination } from "../shadcn/our-pagination";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SettingArrow } from "@/components/setting/setting-comp";
 import { Button } from "@/components/ui/button";
-import { PlusCircleIcon, Settings2 } from "lucide-react";
-import { OurDataTable } from "../shadcn/our-datatable";
-import { ColumnDef } from "@tanstack/react-table";
 import { SettingDataTable } from "@/components/setting/data-table";
-import { buffer } from "stream/consumers";
-import { profile } from "console";
-import { root } from "postcss";
 import { ChevronRight } from "lucide-react";
-import { FriendRequest } from "@/components/setting/friend-dialog/friend-request";
+import { BasicAlert } from "../alert/basic-alert";
 
 const tableheader = [
   { title: "사용자", accessor: "user", sort: true },
@@ -95,10 +73,11 @@ export function FriendView() {
         title="친구 요청하기"
         content="내 활동과 상태를 말합니다."
         trigger={
-          <FriendRequest
+          <BasicAlert
             button={arrow}
             dialogDescription="친구의 아이디를 입력해주세요."
             dialogTitle="친구요청"
+            placeholder="친구 아이디 입력"
           />
         }
       />

@@ -38,6 +38,7 @@ import { DataFetchInClient } from "../../app/api/postdata-client";
 import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
 import { OurOption } from "../setting/our-option";
+import { BasicAlert } from "../alert/basic-alert";
 
 export function OurSidebar({
   noti,
@@ -164,10 +165,21 @@ export function OurSidebar({
             <Link className="mr-2 size-4" />
             <span>계정 연동</span>
           </SidebarBtn>
-          <SidebarBtn>
+          {/* <SidebarBtn>
             <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
-          </SidebarBtn>
+          </SidebarBtn> */}
+          <BasicAlert
+            button={
+              <SidebarBtn>
+                <UserPlus className="mr-2 size-4" />
+                <span>초대하기</span>
+              </SidebarBtn>
+            }
+            dialogDescription="친구의 아이디를 입력해주세요."
+            dialogTitle="친구요청"
+            placeholder="친구의 아이디를 입력해주세요."
+          />
           <SidebarBtn>
             <FileDown className="mr-2 size-4" />
             <span>다운로드</span>

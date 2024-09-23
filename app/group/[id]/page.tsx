@@ -20,8 +20,8 @@ import {
   ExternalLink,
   Share2,
 } from "lucide-react";
-import { FriendRequest } from "@/components/setting/friend-dialog/friend-request";
 import { useState } from "react";
+import { BasicAlert } from "@/components/alert/basic-alert";
 
 const group_count = 243;
 const scrap_count = 10332;
@@ -56,7 +56,7 @@ export default function GroupPage() {
                 유연한뱁새
               </div>
               <div className="flex items-start justify-start">
-                <FriendRequest
+                <BasicAlert
                   dialogTitle="합류 신청을 하시겠습니까?"
                   dialogDescription="합류 신청할 친구의 아이디를 입력해주세요."
                   button={
@@ -64,6 +64,7 @@ export default function GroupPage() {
                       <UserPlus className="size-4" /> 합류 신청
                     </Button>
                   }
+                  placeholder="친구의 아이디를 입력해주세요."
                 />
               </div>
             </div>
