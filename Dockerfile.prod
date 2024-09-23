@@ -21,7 +21,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install AWS CLI via apk
-RUN apk add --no-cache py3-awscli
+RUN apk add --no-cache aws-cli
 
 # Copy the build output and package files
 COPY --from=builder /app/.next ./.next
