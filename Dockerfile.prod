@@ -34,11 +34,11 @@ RUN npm ci --production
 EXPOSE 3000
 
 # 엔트리포인트 스크립트 추가
-COPY ./config/entrypoint.prod.sh /config/entrypoint.prod.sh
-RUN chmod +x /config/entrypoint.prod.sh
+COPY ./config/entrypoint.prod.sh ./config/entrypoint.prod.sh
+RUN chmod +x ./config/entrypoint.prod.sh
 
 # 엔트리포인트 설정
-ENTRYPOINT ["/config/entrypoint.prod.sh"]
+ENTRYPOINT ["./config/entrypoint.prod.sh"]
 
 # Start the application
 CMD ["npm", "run", "start"]
