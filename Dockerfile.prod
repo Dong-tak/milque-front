@@ -1,5 +1,3 @@
-# frontend/Dockerfile
-
 # Build Stage
 FROM node:20-alpine AS builder
 
@@ -33,12 +31,12 @@ RUN npm ci --production
 # Expose the port
 EXPOSE 3000
 
-# 엔트리포인트 스크립트 추가
-COPY ./config/entrypoint.prod.sh ./config/entrypoint.prod.sh
-RUN chmod +x ./config/entrypoint.prod.sh
+# Copy entrypoint script
+COPY ./config/entrypoint.prod.sh /app/config/entrypoint.prod.sh
+RUN chmod +x /app/config/entrypoint.prod.sh
 
-# 엔트리포인트 설정
-ENTRYPOINT ["./config/entrypoint.prod.sh"]
+# 엔트리포인트 설정 (절대 경로 사용)
+ENTRYPOINT ["/app/config/entrypoint.prod.sh"]
 
 # Start the application
 CMD ["npm", "run", "start"]
