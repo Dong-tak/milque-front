@@ -13,10 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  SettingMediaSlect,
-  SettingTwoLabel,
-} from "@/components/setting/alert-dialog";
 import Image from "next/image";
 import {
   MessageCircle,

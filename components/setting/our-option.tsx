@@ -85,7 +85,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
         <div onClick={() => setIsOpen(true)}>{button}</div>
       </DialogTrigger>
       {isOpen && (
-        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[70%] md:flex-row lg:max-w-[75%]">
+        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[100%] md:max-w-[100%] md:flex-row">
           {/* 상단바 (작은 화면에서만 보임) */}
           <div className="relative z-50 flex max-h-[48px] w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
             <DialogPrimitive.Close>

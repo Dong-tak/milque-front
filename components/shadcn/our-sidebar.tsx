@@ -39,6 +39,8 @@ import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
 import { OurOption } from "../setting/our-option";
 import { BasicAlert } from "../alert/basic-alert";
+import ChangeAuthDialog from "../setting/profile-dialog/auth-change";
+import SocialLinkDialog from "../setting/sidebar-modul/sociallink-dialog";
 
 export function OurSidebar({
   noti,
@@ -161,10 +163,14 @@ export function OurSidebar({
           <Label className="sidebar-label px-4 py-2 others-medium-button">
             바로가기
           </Label>
-          <SidebarBtn>
-            <Link className="mr-2 size-4" />
-            <span>계정 연동</span>
-          </SidebarBtn>
+          <SocialLinkDialog
+            button={
+              <SidebarBtn>
+                <Link className="mr-2 size-4" />
+                <span>계정 연동</span>
+              </SidebarBtn>
+            }
+          />
           {/* <SidebarBtn>
             <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
