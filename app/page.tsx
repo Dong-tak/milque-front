@@ -1,35 +1,21 @@
 "use client";
 
-import { OurAccordion } from "@/components/our-accordion";
-import { OurBtmBar } from "@/components/our-btmbar";
-import { OurSidebar } from "@/components/our-sidebar";
-import { OurTopBar } from "@/components/our-topbar";
-
-import { getPostData } from "./api/feed-api";
-import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { OurBtmBar } from "@/components/shadcn/our-btmbar";
+import { OurSidebar } from "@/components/shadcn/our-sidebar";
+import { OurTopBar } from "@/components/shadcn/our-topbar";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
-
-  const goLogin = () => {
+  useEffect(() => {
     router.push("/login");
-  };
-  const goSignup = () => {
-    router.push("/signup");
-  };
-
+  }, []);
   return (
     <div className="flex h-screen items-center justify-center gap-8">
       <OurSidebar />
-      <OurBtmBar user_id="" />
-      <OurTopBar user_id="" />
-      <div>
-        <Button onClick={goLogin}>로그인 하러가기</Button>
-      </div>
-      <div>
-        <Button onClick={goSignup}>회원가입 하러가기</Button>
-      </div>
+      <OurBtmBar user_id={1} />
+      <OurTopBar user_id={1} />
     </div>
   );
 }

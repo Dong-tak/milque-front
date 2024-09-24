@@ -1,9 +1,8 @@
 "use client";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-export default function RouteHome({ userId }: { userId: string }) {
+export default function RouteHomeWithX({ userId }: { userId: string }) {
   const router = useRouter();
   const goBack = () => {
     router.push(`/home/${userId}`);
@@ -32,3 +31,11 @@ export function RouteDetail({
     </div>
   );
 }
+
+export const RoutePage = (routeUrl: string) => {
+  const router = useRouter();
+
+  return () => {
+    router.push(routeUrl);
+  };
+};

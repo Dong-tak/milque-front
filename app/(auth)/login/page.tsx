@@ -18,16 +18,8 @@ import { Github, Instagram, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
-import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
-
-import { getCookie } from "@/components/cookie";
 import { OurOption } from "@/components/setting/our-option";
-
-const convertFormDataToLoginData = (formData: FormData): LoginData => {
-  const loginId = formData.get("loginId") as string;
-  const password = formData.get("password") as string;
-  return { loginId, password };
-};
+import { DataFetchInClient } from "@/app/api/postdata-client";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -49,8 +41,19 @@ export default function Login() {
     };
 
     try {
-      await onLogIn(loginData);
-      // router.push("/"); // 로그인 성공 시 홈 페이지로 이동
+      const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`;
+      const bodyData = {
+        loginId: loginData.loginId,
+        password: loginData.password,
+      };
+      const data = await DataFetchInClient({ apiUrl, bodyData });
+      if (data) {
+        const { id } = data.user;
+        console.log(id);
+        router.push(`/home/${id}`);
+      } else if (data.error) {
+        setError("로그인 실패: " + data.error);
+      }
     } catch (err) {
       const errorMessage = (err as Error).message; // 명시적 형변환
       setError("로그인 실패: " + errorMessage); // 오류 메시지 설정
@@ -131,9 +134,6 @@ export default function Login() {
           </Link>
         </CardContent>
       </Card>
-      <div className="flex flex-col items-center space-y-5">
-        <OurOption />
-      </div>
     </div>
   );
 }

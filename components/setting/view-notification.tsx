@@ -152,22 +152,24 @@ export const NotificationView: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+    <div className="setting-frame">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             내 알림
           </DialogTitle>
         </DialogHeader>
-        <SettingDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          menuItems={generateMenuItems(contentData[0]?.id || 0)} // 첫 번째 아이템의 ID를 사용
-        />
+        <div className="overflow-x-auto">
+          <SettingDataTable
+            tableheader={tableheader}
+            contentData={contentData}
+            menuItems={generateMenuItems(contentData[0]?.id || 0)} // 첫 번째 아이템의 ID를 사용
+          />
+        </div>
       </div>
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             알림 범위
           </DialogTitle>
         </DialogHeader>

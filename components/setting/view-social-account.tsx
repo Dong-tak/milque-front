@@ -23,7 +23,7 @@ import {
   HotTag,
   PrivateTag,
   PublicTag,
-} from "../our-status-tag";
+} from "../shadcn/our-status-tag";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingDataTable } from "@/components/setting/data-table";
@@ -126,9 +126,9 @@ export function SocialAccountView() {
   );
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
+    <div className="setting-frame">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
             소셜 계정 관리
           </DialogTitle>
@@ -152,20 +152,22 @@ export function SocialAccountView() {
           trigger={undefined}
         />
       </div>
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+      <div className="setting-block">
+        <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
           내 소셜 계정
         </DialogTitle>
-        <SettingDataTable
-          tableheader={tableheader}
-          contentData={contentData}
-          header={false}
-          footer={false}
-          menuItems={[
-            { label: "삭제하기", onClick: handleDeleteClick },
-            { label: "수정하기", onClick: handleUpdateClick },
-          ]}
-        />
+        <div className="overflow-x-auto">
+          <SettingDataTable
+            tableheader={tableheader}
+            contentData={contentData}
+            header={false}
+            footer={false}
+            menuItems={[
+              { label: "삭제하기", onClick: handleDeleteClick },
+              { label: "수정하기", onClick: handleUpdateClick },
+            ]}
+          />
+        </div>
       </div>
       <div>
         <UpdateMedia

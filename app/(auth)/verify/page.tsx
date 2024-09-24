@@ -16,14 +16,14 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Check, Github, Instagram } from "lucide-react";
 import Link from "next/link";
-import { OurTooltip } from "@/components/our-tooltip";
+import { OurTooltip } from "@/components/shadcn/our-tooltip";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
-import { verifyEmail } from "@/app/api/utils/api";
+import { verifyEmail } from "./action";
 
 interface FormState {
   fieldErrors?: {

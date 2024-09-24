@@ -1,14 +1,10 @@
-import { OurAccordion } from "@/components/our-accordion";
-import { OurBtmBar } from "@/components/our-btmbar";
-import { OurSidebar } from "@/components/our-sidebar";
-import { OurTopBar } from "@/components/our-topbar";
+import { OurAccordion } from "@/components/shadcn/our-accordion";
+import { OurBtmBar } from "@/components/shadcn/our-btmbar";
+import { OurSidebar } from "@/components/shadcn/our-sidebar";
+import { OurTopBar } from "@/components/shadcn/our-topbar";
 import { getPostData } from "@/app/api/feed-api";
-import { useEffect, useState } from "react";
-import { ApiResponse } from "@/lib/types";
-import cookie from "cookie";
-import { cookies } from "next/headers";
 
-export default async function HomePage({ params }: { params: { id: string } }) {
+export default async function HomePage({ params }: { params: { id: number } }) {
   const userId = params.id;
 
   const data = await getPostData({ userId });

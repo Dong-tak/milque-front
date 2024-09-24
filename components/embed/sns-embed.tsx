@@ -1,8 +1,8 @@
-import InstagramFeedEmbed from "@/components/insta-feed";
-import InstagramReelsEmbed from "@/components/insta-reels";
-import TiktokEmbed from "@/components/tiktok-embed";
-import YouTubeEmbed from "@/components/youtube-video";
-import YouTubeShortsEmbed from "@/components/youtube-shorts";
+import InstagramFeedEmbed from "@/components/embed/insta-feed";
+import InstagramReelsEmbed from "@/components/embed/insta-reels";
+import TiktokEmbed from "@/components/embed/tiktok-embed";
+import YouTubeEmbed from "@/components/embed/youtube-video";
+import YouTubeShortsEmbed from "@/components/embed/youtube-shorts";
 import ResponsiveIframe from "./iframe-embed";
 import PdfViewer from "./pdf-embed";
 

@@ -4,47 +4,25 @@ import {
   ArrowLeft,
   Bell,
   Bookmark,
-  Calculator,
   Calendar,
-  ChevronRight,
   Compass,
-  CreditCard,
   FileDown,
   Ghost,
   HeartHandshake,
-  History,
-  Instagram,
   Link,
-  LogIn,
-  LogOut,
   Pin,
-  Plus,
-  Scan,
   Settings,
-  Smile,
   SquarePlus,
-  Star,
-  User,
   UserPlus,
-  Users,
 } from "lucide-react";
 
-import React, { forwardRef, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import cookie from "cookie";
-
-import { usePathname, useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "./ui/button";
-import { SqBadge, Badge } from "./ui/badge";
-import { Label } from "./ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Slot } from "@radix-ui/react-slot";
+import { Button } from "../ui/button";
+import { SqBadge, Badge } from "../ui/badge";
+import { Label } from "../ui/label";
+import { SidebarDropdownBtn } from "./sidebar-dropdown";
 import {
   Dialog,
   DialogContent,
@@ -53,165 +31,38 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
+} from "../ui/dialog";
+import { Input } from "../ui/input";
 import { MilequeFullLogo, MilequeSmallLogo } from "@/public/svgBag";
-import { sendGTMEvent } from "@next/third-parties/google";
-
-interface SidebarBtnProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-  disabled?: boolean;
-  isActive?: boolean;
-  asChild?: boolean;
-  id?: string;
-}
-
-export const SidebarBtn = forwardRef<HTMLButtonElement, SidebarBtnProps>(
-  (
-    {
-      children,
-      onClick,
-      className,
-      disabled,
-      asChild = false,
-      isActive = false,
-      id,
-    },
-    ref,
-  ) => {
-    const Comp = asChild ? Slot : Button;
-    return (
-      <Comp
-        id={id}
-        variant="sidebar"
-        size="sidebar"
-        onClick={onClick}
-        disabled={disabled}
-        ref={ref}
-        className={cn(
-          "sidebar-item flex items-center justify-start",
-          isActive && "text-accent-foreground",
-          className,
-        )}
-      >
-        {children}
-      </Comp>
-    );
-  },
-);
-
-SidebarBtn.displayName = "SidebarBtn"; // for better debugging experience
-
-function SidebarDropdownBtn() {
-  const router = useRouter();
-  const navToLink = () => {
-    router.push("/link");
-  };
-  const navToInvite = () => {
-    router.push("/invite");
-  };
-  const navToDownload = () => {
-    router.push("/download");
-  };
-  const navToMark = () => {
-    router.push("/bookmark");
-  };
-  return (
-    <div className="dropdown relative flex">
-      <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
-          <SidebarBtn asChild>
-            <div className="flex items-center">
-              <Star className="icon mr-2 size-4" />
-              <span>모음집</span>
-            </div>
-          </SidebarBtn>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="absolute bottom-1 left-7 mt-1 flex flex-col">
-          <DropdownMenuItem onSelect={navToLink}>
-            <Link className="icon mr-2 h-4 w-4" />
-            <span>계정연동</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={navToInvite}>
-            <UserPlus className="icon mr-2 h-4 w-4" />
-            <span>초대하기</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={navToDownload}>
-            <FileDown className="icon mr-2 h-4 w-4" />
-            <span>다운로드</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={navToMark}>
-            <Bookmark className="icon mr-2 h-4 w-4" />
-            <span>북마크</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}
+import { DataFetchInClient } from "../../app/api/postdata-client";
+import { SidebarBtn } from "./sidebar-btn";
+import { RoutePage } from "../route-setting";
+import { OurOption } from "../setting/our-option";
+import { BasicAlert } from "../alert/basic-alert";
 
 export function OurSidebar({
   noti,
   user_id,
 }: {
   noti?: number;
-  user_id?: string;
+  user_id?: number;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
+  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`;
+  const bodyData = [
+    {
+      content_url: contentUrl,
+      comment: "Comment를 입력하세요.",
+    },
+  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentUrl(e.target.value);
   };
 
   const handleSaveClick = async () => {
-    try {
-      const cookies = cookie.parse(document.cookie);
-      console.log("Cookie:", cookies);
-      const accessToken = cookies.accessToken;
-      const refreshToken = cookies.refreshToken;
-      // // const accessCookies = document.cookie.split("accessToken=")[1];
-      // // const refreshCookies = document.cookie.split("refreshToken=")[1];
-      // // const accessToken = accessCookies;
-      // // const refreshToken = refreshCookies;
-      // console.log("accessToken:", accessToken);
-      // console.log("refreshToken:", refreshToken);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken} ${refreshToken}`,
-          },
-          body: JSON.stringify([
-            {
-              content_url: contentUrl,
-              comment: "Comment를 입력하세요.",
-            },
-          ]),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to save the content");
-      }
-
-      const data = await response.json();
-      console.log("Data saved successfully:", data);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
-  };
-
-  const navToHome = () => {
-    router.push(`/home/${user_id}`);
+    await DataFetchInClient({ apiUrl, bodyData, isReload: true });
   };
 
   return (
@@ -219,7 +70,7 @@ export function OurSidebar({
       <div>
         <div className="p-2">
           <SidebarBtn
-            onClick={navToHome}
+            onClick={RoutePage(`/home/${user_id}`)}
             className="hover:bg-background hover:text-popover-foreground"
           >
             <div className="xl:hidden">
@@ -231,7 +82,10 @@ export function OurSidebar({
           </SidebarBtn>
         </div>
         <div className="flex flex-col p-2">
-          <SidebarBtn onClick={navToHome} isActive={pathname === "/"}>
+          <SidebarBtn
+            onClick={RoutePage(`/home/${user_id}`)}
+            isActive={pathname === `/home/${user_id}`}
+          >
             <Calendar className="icon mr-2 size-4" />
             <span>홈</span>
           </SidebarBtn>
@@ -256,7 +110,7 @@ export function OurSidebar({
                 </SidebarBtn>
               )}
             </DialogTrigger>
-            <DialogContent className="max-h-[200px] w-full max-w-[512px] gap-5 rounded-md bg-popover p-6">
+            <DialogContent className="w-full gap-5 rounded-md bg-popover p-6">
               <DialogHeader>
                 <DialogTitle className="w-full pb-2 display-undefine-display-01">
                   스크랩할 페이지를 입력하세요
@@ -293,6 +147,7 @@ export function OurSidebar({
           <SidebarBtn
             className="flex justify-between"
             isActive={pathname === "/group"}
+            onClick={RoutePage(`/group/${user_id}`)}
           >
             <div className="flex items-center">
               <HeartHandshake className="icon mr-2 size-4" />
@@ -300,7 +155,7 @@ export function OurSidebar({
             </div>
             <SqBadge variant={"outlineDefault"}>NEW</SqBadge>
           </SidebarBtn>
-          <SidebarDropdownBtn />
+          <SidebarDropdownBtn pos="left" />
         </div>
         <div className="direct flex flex-col p-2">
           <Label className="sidebar-label px-4 py-2 others-medium-button">
@@ -310,10 +165,21 @@ export function OurSidebar({
             <Link className="mr-2 size-4" />
             <span>계정 연동</span>
           </SidebarBtn>
-          <SidebarBtn>
+          {/* <SidebarBtn>
             <UserPlus className="mr-2 size-4" />
             <span>초대하기</span>
-          </SidebarBtn>
+          </SidebarBtn> */}
+          <BasicAlert
+            button={
+              <SidebarBtn>
+                <UserPlus className="mr-2 size-4" />
+                <span>초대하기</span>
+              </SidebarBtn>
+            }
+            dialogDescription="친구의 아이디를 입력해주세요."
+            dialogTitle="친구요청"
+            placeholder="친구의 아이디를 입력해주세요."
+          />
           <SidebarBtn>
             <FileDown className="mr-2 size-4" />
             <span>다운로드</span>
@@ -338,10 +204,15 @@ export function OurSidebar({
             </div>
             {noti ? <Badge variant={"default"}>{noti}</Badge> : null}
           </SidebarBtn>
-          <SidebarBtn>
-            <Settings className="icon mr-2 size-4" />
-            <span>설정</span>
-          </SidebarBtn>
+          <OurOption
+            button={
+              <SidebarBtn>
+                <Settings className="icon mr-2 size-4" />
+                <span>설정</span>
+              </SidebarBtn>
+            }
+            user_id={user_id}
+          />
         </div>
       </div>
     </div>
