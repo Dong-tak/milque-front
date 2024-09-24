@@ -1,11 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ArrowUpDown, Settings2, PlusCircle } from "lucide-react";
 import {
   ColumnDef,
@@ -27,8 +23,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -310,7 +304,7 @@ export function SettingDataTable({
   });
 
   return (
-    <div className="w-full min-w-[758px]">
+    <div className="w-full">
       {/* 헤더가 true일 경우 보이게 */}
       {header && (
         <div className="flex items-center justify-between py-4">

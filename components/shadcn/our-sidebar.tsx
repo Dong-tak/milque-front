@@ -84,7 +84,7 @@ export function OurSidebar({
         <div className="flex flex-col p-2">
           <SidebarBtn
             onClick={RoutePage(`/home/${user_id}`)}
-            isActive={pathname === "/"}
+            isActive={pathname === `/home/${user_id}`}
           >
             <Calendar className="icon mr-2 size-4" />
             <span>홈</span>

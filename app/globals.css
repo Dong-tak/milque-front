@@ -216,3 +216,18 @@
   padding-top: 1rem; /* Equivalent to py-4 */
   padding-bottom: 1rem;
 }
+
+/* 스크롤 바 커스텀 */
+/* 웹킷 브라우저 (Chrome, Safari 등)에서 스크롤바 커스터마이징 */
+*::-webkit-scrollbar {
+  width: 8px; /* 스크롤바의 너비 */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #d1c4e9; /* 스크롤바의 색상 */
+  border-radius: 10px; /* 스크롤바 둥근 모서리 */
+}
+
+*::-webkit-scrollbar-track {
+  background-color: transparent; /* 스크롤 트랙의 배경색 제거 */
+}

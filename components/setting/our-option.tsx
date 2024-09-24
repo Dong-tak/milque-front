@@ -91,7 +91,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
             <DialogPrimitive.Close>
               <ChevronLeft className="h-6 w-6" />
             </DialogPrimitive.Close>
-            <span className="text-center text-xl font-bold">프로필 설정</span>
+            <span className="text-center text-xl font-bold">{view}</span>
             <Menu className="h-6 w-6" onClick={toggleSidebar} />
           </div>
           {/* 사이드바 */}
