@@ -3,6 +3,8 @@ import "./globals.css";
 import localFont from "next/font/local";
 import OurProviders from "@/components/provider";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { getLocale, getMessages } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
 
 const pretnedard = localFont({
   src: "../lib/PretendardVariable.woff2",
@@ -26,18 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="ko">
+    <html lang={locale}>
       <GoogleTagManager
         gtmId={process.env.NEXT_PUBLIC_GTM_ID || "undefined-gtmId"}
       />
       <body className={suit.className}>
-        <OurProviders>{children}</OurProviders>
+        <NextIntlClientProvider messages={messages}>
+          <OurProviders>{children}</OurProviders>
+        </NextIntlClientProvider>
         <GoogleAnalytics
           gaId={process.env.NEXT_PUBLIC_GA_ID || "undefined-gaId"}
         />
