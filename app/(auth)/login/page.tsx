@@ -18,7 +18,6 @@ import { Github, Instagram, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
-import { OurOption } from "@/components/setting/our-option";
 import { DataFetchInClient } from "@/app/api/postdata-client";
 
 export default function Login() {
