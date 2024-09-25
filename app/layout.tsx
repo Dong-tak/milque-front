@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <GoogleTagManager
         gtmId={process.env.NEXT_PUBLIC_GTM_ID || "undefined-gtmId"}
       />
