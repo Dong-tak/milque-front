@@ -18,13 +18,14 @@ import { Github, Instagram, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
-import { OurOption } from "@/components/setting/our-option";
 import { DataFetchInClient } from "@/app/api/postdata-client";
+import { useTranslations } from "next-intl";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 오류 메시지 상태 추가
+  const t = useTranslations("author");
 
   const router = useRouter();
 
@@ -134,6 +135,7 @@ export default function Login() {
           </Link>
         </CardContent>
       </Card>
+      <h1>{t("name")}</h1>
     </div>
   );
 }

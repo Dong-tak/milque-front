@@ -151,6 +151,9 @@
   .detail {
     height: 100vh;
   }
+  .setting-frame {
+    margin-bottom: 2rem; /* md 크기 이상에서 margin-bottom을 8px로 설정 */
+  }
 }
 
 @media (min-width: 764px) {
@@ -194,7 +197,6 @@
   gap: 2rem; /* This is equivalent to Tailwind's space-y-8 */
   padding-left: 2rem; /* Equivalent to px-8 */
   padding-right: 2rem;
-  margin-bottom: 2rem; /* Equivalent to mb-8 */
 }
 
 .setting-block {

@@ -304,7 +304,7 @@ export function SettingDataTable({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-[764px]">
       {/* 헤더가 true일 경우 보이게 */}
       {header && (
         <div className="flex items-center justify-between py-4">
