@@ -2,7 +2,7 @@
 
 import React from "react";
 import MDEditor from "@uiw/react-md-editor";
-import ResponsiveIframe from "@/components/iframe-embed";
+import ResponsiveIframe from "@/components/embed/iframe-embed";
 
 export default function App() {
   const [value, setValue] = React.useState("**Hello world!!!**");

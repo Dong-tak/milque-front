@@ -7,12 +7,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CloudDownload, ExternalLink, Share2 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-import { SqBadge } from "./ui/badge";
 import { PostFeed } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -106,7 +105,7 @@ export function OurAccordion({
   userId,
 }: {
   posts: PostFeed[];
-  userId: string;
+  userId: number;
 }) {
   const [isShared, setIsShared] = useState(false);
   const handleShare = () => {

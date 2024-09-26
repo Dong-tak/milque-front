@@ -28,20 +28,23 @@ export default function Signup() {
   const [state, setState] = useState<FormState>({ fieldErrors: {} });
   const [isLoading, setIsLoading] = useState(false); // isLoading 상태 변수 추가
   const { register, handleSubmit } = useForm();
+  const [error, setError] = useState(""); // 오류 메시지 상태 추가
   const router = useRouter();
 
   const onSubmitRegister = async (data: FieldValues) => {
     setIsLoading(true);
     try {
       const result = await registerUser(data.email as string);
-      if (result.success) {
+      if (result.message) {
         // 회원가입 성공 시 인증 페이지로 이동
         router.push("/verify");
       } else {
-        // 회원가입 실패 시 오류 메시지 표시
-        setState({ fieldErrors: { email: result.error } });
-        console.log("회원가입 실패");
+        setError("회원가입 실패: " + result.error);
       }
+    } catch (err) {
+      const errorMessage = (err as Error).message; // 명시적 형변환
+      setError("회원가입 실패: " + errorMessage); // 오류 메시지 설정
+      console.error("회원가입 실패:", error);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +80,8 @@ export default function Signup() {
               {...register("email")}
             />
           </div>
+          {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+          {/* 오류 메시지 표시 */}
           <Button size={"long"} type="submit" disabled={isLoading}>
             이메일로 회원가입
           </Button>

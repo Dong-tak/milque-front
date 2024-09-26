@@ -29,7 +29,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { OurCheckbox, OurColorCheckbox } from "@/components/our-checkbox";
+import {
+  OurCheckbox,
+  OurColorCheckbox,
+} from "@/components/shadcn/our-checkbox";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { useFormState } from "react-dom";
 import React, { useEffect, useReducer, useState } from "react";

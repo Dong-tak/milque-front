@@ -1,10 +1,9 @@
 "use client";
 
-import { OurAccordion } from "@/components/our-accordion";
-import { OurBtmBar } from "@/components/our-btmbar";
-import { OurSidebar } from "@/components/our-sidebar";
-import { OurTopBar } from "@/components/our-topbar";
-import { getPostData } from "@/app/api/feed-api";
+import { OurAccordion } from "@/components/shadcn/our-accordion";
+import { OurBtmBar } from "@/components/shadcn/our-btmbar";
+import { OurSidebar } from "@/components/shadcn/our-sidebar";
+import { OurTopBar } from "@/components/shadcn/our-topbar";
 
 import {
   Accordion,
@@ -21,8 +20,8 @@ import {
   ExternalLink,
   Share2,
 } from "lucide-react";
-import { FriendRequest } from "@/components/setting/friend-dialog/friend-request";
 import { useState } from "react";
+import { BasicAlert } from "@/components/alert/basic-alert";
 
 const group_count = 243;
 const scrap_count = 10332;
@@ -39,8 +38,8 @@ export default function GroupPage() {
   return (
     <div className="flex h-screen w-full items-start justify-start overflow-hidden overflow-x-scroll">
       <OurSidebar />
-      <OurBtmBar user_id="" />
-      <OurTopBar user_id="" />
+      <OurBtmBar user_id={1} />
+      <OurTopBar user_id={1} />
       <div className="ml-0 flex h-screen w-full flex-col pt-[68px] md:ml-[69px] md:pt-5 xl:ml-[250px]">
         {/* 그룹 프로필 */}
         <div className="font-['SUIT Variable'] relative box-border flex w-full flex-row items-start justify-start border-b-[1px] border-solid border-border px-4 pb-10 pt-6 text-left text-5xl text-black">
@@ -57,7 +56,7 @@ export default function GroupPage() {
                 유연한뱁새
               </div>
               <div className="flex items-start justify-start">
-                <FriendRequest
+                <BasicAlert
                   dialogTitle="합류 신청을 하시겠습니까?"
                   dialogDescription="합류 신청할 친구의 아이디를 입력해주세요."
                   button={
@@ -65,6 +64,7 @@ export default function GroupPage() {
                       <UserPlus className="size-4" /> 합류 신청
                     </Button>
                   }
+                  placeholder="친구의 아이디를 입력해주세요."
                 />
               </div>
             </div>

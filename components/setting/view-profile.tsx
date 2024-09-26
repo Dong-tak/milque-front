@@ -1,31 +1,12 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import React from "react";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   SettingButton,
   SettingSwitch,
-  SettingDropDown,
   SettingProfile,
   SettingArrow,
 } from "@/components/setting/setting-comp";
-import {
-  SettingAlertDialog,
-  SettingTwoLabel,
-  SettingAlertLink,
-  SettingOneLabel,
-  SettingMediaSlect,
-} from "@/components/setting/alert-dialog";
 import { PasswordDialog } from "@/components/setting/profile-dialog/password-view";
 import { ChevronRight } from "lucide-react";
 import { DeleteAccountDialog } from "./profile-dialog/delete-account-view";
@@ -42,10 +23,10 @@ export function ProfileView() {
   );
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col space-y-8 overflow-auto px-8">
-      <div className="flex w-full flex-grow flex-col gap-4">
-        <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+    <div className="setting-frame">
+      <div className="setting-block">
+        <DialogHeader className="setting-header">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             내 프로필
           </DialogTitle>
         </DialogHeader>
@@ -74,7 +55,6 @@ export function ProfileView() {
           }
         />
       </div>
-
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
           <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
@@ -121,11 +101,10 @@ export function ProfileView() {
       </div>
       <div className="flex w-full flex-grow flex-col gap-4">
         <DialogHeader className="flex h-auto w-full flex-col items-start gap-2 border-b py-4">
-          <DialogTitle className="font-['SUIT Variable'] h-auto w-full text-xl font-bold leading-7 text-slate-900">
+          <DialogTitle className="h-auto w-full text-xl font-bold leading-7 text-slate-900">
             지원
           </DialogTitle>
         </DialogHeader>
-
         <SettingArrow
           title="로그아웃"
           content="tmdcjf326dtmdcjf@gmail.com"

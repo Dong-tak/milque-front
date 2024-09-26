@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X, Menu, ChevronLeft } from "lucide-react";
@@ -17,12 +16,21 @@ import { SiteView } from "@/components/setting/view-site";
 
 const DialogClose = DialogPrimitive.Close;
 
-export function OurOption() {
+interface OurOptionProps {
+  button: ReactNode; // 버튼으로 사용할 컴포넌트 (ex: SidebarBtn)
+  user_id?: number;
+}
+
+export function OurOption({ button, user_id }: OurOptionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태 관리
   const [view, setView] = useState("profile");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); // 사이드바 토글 함수
+
+  useEffect(() => {
+    toggleSidebar();
+  }, [view]); // view가 변경될 때마다 toggleSidebar 실행
 
   type ViewType =
     | "profile"
@@ -72,19 +80,18 @@ export function OurOption() {
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* button prop을 DialogTrigger에 넣어 트리거로 사용 */}
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setIsOpen(true)}>
-          옵션설정
-        </Button>
+        <div onClick={() => setIsOpen(true)}>{button}</div>
       </DialogTrigger>
       {isOpen && (
-        <DialogContent className="flex h-full w-full max-w-[1136px] flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[767px] md:flex-row">
+        <DialogContent className="flex h-full w-full flex-shrink-0 flex-col bg-white shadow-lg md:h-full md:max-h-[100%] md:max-w-[100%] md:flex-row">
           {/* 상단바 (작은 화면에서만 보임) */}
           <div className="relative z-50 flex max-h-[48px] w-full items-center justify-between bg-background p-4 shadow-md md:hidden">
             <DialogPrimitive.Close>
               <ChevronLeft className="h-6 w-6" />
             </DialogPrimitive.Close>
-            <span className="text-center text-xl font-bold">프로필 설정</span>
+            <span className="text-center text-xl font-bold">{view}</span>
             <Menu className="h-6 w-6" onClick={toggleSidebar} />
           </div>
           {/* 사이드바 */}
@@ -96,7 +103,7 @@ export function OurOption() {
             <OptionSidebar setView={setView} />
           </div>
           {/* Content view*/}
-          <div className="inline-flex h-[767px] w-full flex-col items-center justify-start gap-8 p-8">
+          <div className="inline-flex h-full w-full flex-col items-center justify-start gap-8 pb-8 pl-4">
             {renderContentView(view as ViewType)}
           </div>
         </DialogContent>

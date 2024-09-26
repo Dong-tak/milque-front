@@ -14,18 +14,20 @@ interface SettingAlertDialogProps {
   dialogTitle: string;
   dialogDescription: string;
   buttonClassName?: string;
-  button: React.ReactNode; //버튼을 외부에서 주입 받도록 추가
+  button?: React.ReactNode; //버튼을 외부에서 주입 받도록 추가
   label_1_title?: string;
   label_2_title?: string;
   label_3_title?: string;
+  placeholder?: string;
 }
-import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 
-export function FriendRequest({
+export function BasicAlert({
   button,
   dialogTitle,
   dialogDescription,
+  placeholder,
 }: SettingAlertDialogProps) {
   return (
     <AlertDialog>
@@ -39,7 +41,7 @@ export function FriendRequest({
           <div className="space-y-[6px]">
             <Input
               className="font-['SUIT Variable'] shrink grow basis-0 text-sm font-normal leading-tight text-slate-400"
-              placeholder="친구 아이디 입력"
+              placeholder={placeholder}
             />
           </div>
         </div>

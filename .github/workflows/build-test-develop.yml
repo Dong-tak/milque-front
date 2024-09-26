@@ -13,7 +13,7 @@ jobs:
       # 1. Checkout latest version
       - name: Checkout source code
         uses: actions/checkout@v4.1.1
-
+        
       # 2. Cache node_modules for faster dependency installation
       - name: Cache node_modules
         uses: actions/cache@v2

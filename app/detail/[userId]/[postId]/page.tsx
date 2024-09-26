@@ -1,16 +1,12 @@
-import DetailComment from "@/components/detail-comment";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { ApiResponse, PostDetail } from "@/lib/types";
-import SnsEmbed from "../../../../components/sns-embed";
+import DetailComment from "@/components/detail-view/detail-comment";
+import { PostDetail } from "@/lib/types";
+import SnsEmbed from "../../../../components/embed/sns-embed";
 import { getPostDetailData } from "@/app/api/detail-api";
-import RouteHome, { RouteDetail } from "@/components/route-back";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import RouteHomeWithX from "@/components/route-setting";
 import {
   DetailNavigationLeft,
   DetailNavigationRight,
-} from "@/components/detail-navigation";
+} from "@/components/detail-view/detail-navigation";
 
 export default async function DetailPage({
   params,
@@ -47,7 +43,7 @@ export default async function DetailPage({
     <div className="flex h-screen items-center justify-center bg-neutral-500 py-6">
       <div className="hidden md:block">
         <div className="fixed right-8 top-6 size-8 text-background hover:cursor-pointer hover:text-gray-400">
-          <RouteHome userId={userId} />
+          <RouteHomeWithX userId={userId} />
         </div>
         <DetailNavigationLeft userId={userId} postId={postId} />
       </div>

@@ -1,9 +1,63 @@
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   images: {
-    domains: [], // 비워두면 다양한 도메인에서 이미지를 가져올 수 있음
-    // 또는 특정 도메인을 추가해 허용할 수 있음
-  },
-};
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.tiktokcdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.cdninstagram.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
+      {
+        protocol: "https",
+        hostname: "blogthumb.pstatic.net",
+      },
 
-export default nextConfig;
+      {
+        protocol: "https",
+        hostname: "velog.velcdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.sstatic.net",
+      },
+      {
+        protocol: "https",
+        hostname: "static.toss.im",
+      },
+      {
+        protocol: "https",
+        hostname: "img1.daumcdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "techplay.blog",
+      },
+      {
+        protocol: "https",
+        hostname: "**.samsungfund.com",
+      },
+    ],
+  },
+  productionBrowserSourceMaps: false,
+};
+export default withNextIntl(nextConfig);
