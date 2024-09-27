@@ -94,6 +94,10 @@
   position: relative;
 }
 
+.accordion {
+  margin-bottom: 3rem;
+}
+
 .accordhead {
   display: -webkit-box;
   -webkit-line-clamp: 1; /* 줄 수 제한: 4줄 */
@@ -162,6 +166,9 @@
   }
   .btm-bar {
     display: none;
+  }
+  .accordion {
+    margin-bottom: 0;
   }
 }
 
