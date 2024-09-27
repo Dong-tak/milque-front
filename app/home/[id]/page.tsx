@@ -13,10 +13,12 @@ export default async function HomePage({ params }: { params: { id: number } }) {
 
   return (
     <div>
-      <OurSidebar noti={noti} user_id={userId} />
       <OurBtmBar user_id={userId} />
       <OurTopBar user_id={userId} />
-      <OurAccordion posts={posts} userId={userId} />
+      <div className="flex">
+        <OurSidebar noti={noti} user_id={userId} />
+        <OurAccordion posts={posts} userId={userId} />
+      </div>
     </div>
   );
 }

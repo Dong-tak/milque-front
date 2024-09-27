@@ -14,10 +14,11 @@ import {
 } from "../ui/dropdown-menu";
 import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
+import SocialLinkDialog from "../setting/sidebar-modul/sociallink-dialog";
 
 export function SidebarDropdownBtn({ pos }: { pos: string }) {
   return (
-    <div className="dropdown relative flex">
+    <div className="dropdown flex">
       <DropdownMenu>
         <DropdownMenuTrigger className="rounded-md hover:bg-accent hover:text-accent-foreground">
           <SidebarBtn asChild>
@@ -31,22 +32,20 @@ export function SidebarDropdownBtn({ pos }: { pos: string }) {
             </div>
           </SidebarBtn>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="absolute bottom-1 left-7 mt-1 flex flex-col">
-          <DropdownMenuItem onSelect={RoutePage(`/`)}>
-            <Link className="icon mr-2 h-4 w-4" />
-            <span>계정연동</span>
-          </DropdownMenuItem>
+        <DropdownMenuContent side="left" className="mt-1 flex flex-col">
           <DropdownMenuItem>
+            <SocialLinkDialog
+              button={
+                <div className="flex">
+                  <Link className="icon mr-2 h-4 w-4" />
+                  <span>계정연동</span>
+                </div>
+              }
+            />
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>
             <UserPlus className="icon mr-2 h-4 w-4" />
             <span>초대하기</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <FileDown className="icon mr-2 h-4 w-4" />
-            <span>다운로드</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bookmark className="icon mr-2 h-4 w-4" />
-            <span>북마크</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

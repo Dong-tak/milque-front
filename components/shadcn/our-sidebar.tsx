@@ -5,6 +5,7 @@ import {
   Bell,
   Bookmark,
   Calendar,
+  ChevronLeft,
   Compass,
   FileDown,
   Ghost,
@@ -39,7 +40,6 @@ import { SidebarBtn } from "./sidebar-btn";
 import { RoutePage } from "../route-setting";
 import { OurOption } from "../setting/our-option";
 import { BasicAlert } from "../alert/basic-alert";
-import ChangeAuthDialog from "../setting/profile-dialog/auth-change";
 import SocialLinkDialog from "../setting/sidebar-modul/sociallink-dialog";
 
 export function OurSidebar({
@@ -51,6 +51,7 @@ export function OurSidebar({
 }) {
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
+  const [isOpen, setIsOpen] = useState(true); // 사이드바 열림 상태 관리
   const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`;
   const bodyData = [
     {
@@ -67,8 +68,17 @@ export function OurSidebar({
     await DataFetchInClient({ apiUrl, bodyData, isReload: true });
   };
 
+  // 애니메이션 추가 함수
+  const toggleSidebar = () => {
+    setIsOpen((prev) => !prev); // 열림/닫힘 상태 변경
+  };
+
   return (
-    <div className="sidebar fixed left-0 top-0 z-50 flex h-full w-[250px] flex-col justify-between border-r">
+    <div
+      className={`sidebar fixed left-0 top-0 z-50 h-full w-[250px] flex-col justify-between border-r ${
+        isOpen ? "sidebar-open" : "sidebar-close"
+      }`}
+    >
       <div>
         <div className="p-2">
           <SidebarBtn
@@ -78,8 +88,14 @@ export function OurSidebar({
             <div className="xl:hidden">
               <MilequeSmallLogo />
             </div>
-            <div className="hidden xl:block">
-              <MilequeFullLogo />
+            <div className="hidden w-full xl:block">
+              <div className="flex justify-between">
+                <MilequeFullLogo />
+                <ChevronLeft
+                  className="icon ml-2 size-4"
+                  onClick={toggleSidebar}
+                />
+              </div>
             </div>
           </SidebarBtn>
         </div>
@@ -150,12 +166,13 @@ export function OurSidebar({
             className="flex justify-between"
             isActive={pathname === "/group"}
             onClick={RoutePage(`/group/${user_id}`)}
+            disabled
           >
             <div className="flex items-center">
               <HeartHandshake className="icon mr-2 size-4" />
               <span>그룹</span>
             </div>
-            <SqBadge variant={"outlineDefault"}>NEW</SqBadge>
+            <SqBadge variant={"gray"}>준비중</SqBadge>
           </SidebarBtn>
           <SidebarDropdownBtn pos="left" />
         </div>
@@ -171,38 +188,36 @@ export function OurSidebar({
               </SidebarBtn>
             }
           />
-          {/* <SidebarBtn>
-            <UserPlus className="mr-2 size-4" />
-            <span>초대하기</span>
-          </SidebarBtn> */}
           <BasicAlert
             button={
-              <SidebarBtn>
-                <UserPlus className="mr-2 size-4" />
-                <span>초대하기</span>
+              <SidebarBtn
+                disabled
+                className="flex items-center justify-between"
+              >
+                <div className="flex">
+                  <UserPlus className="mr-2 size-4" />
+                  <span>초대하기</span>
+                </div>
+                <SqBadge variant={"gray"}>준비중</SqBadge>
               </SidebarBtn>
             }
             dialogDescription="친구의 아이디를 입력해주세요."
             dialogTitle="친구요청"
             placeholder="친구의 아이디를 입력해주세요."
           />
-          <SidebarBtn>
-            <FileDown className="mr-2 size-4" />
-            <span>다운로드</span>
-          </SidebarBtn>
-          <SidebarBtn>
-            <Bookmark className="mr-2 size-4" />
-            <span>북마크</span>
-          </SidebarBtn>
         </div>
       </div>
       <div>
         <Separator />
         <div className="flex flex-col p-2">
-          <SidebarBtn>
-            <Ghost className="icon mr-2 size-4" />
-            <span>프로필</span>
-          </SidebarBtn>
+          <OurOption
+            button={
+              <SidebarBtn>
+                <Ghost className="icon mr-2 size-4" />
+                <span>프로필</span>
+              </SidebarBtn>
+            }
+          />
           <SidebarBtn className="flex justify-between">
             <div className="flex items-center">
               <Bell className="icon mr-2 size-4" />
