@@ -133,24 +133,12 @@ export function OurAccordion({
   return (
     <Accordion type="multiple" className="accordion w-full pl-[250px] pt-12">
       {sortedDateKeys.map((dateKey) => (
-        <AccordionItem value={dateKey} key={dateKey}>
-          <div className="sticky top-12 flex items-center justify-between border-b bg-background p-2 md:top-0">
-            <AccordionTrigger>{dateKey.replace(/-/g, ".")}</AccordionTrigger>
-            <div className="flex">
-              <LinkBtn url="https://www.google.com" className="gap-2">
-                <CloudDownload className="size-4" />
-                다운로드
-              </LinkBtn>
-              <LinkBtn url="https://www.google.com">
-                <ExternalLink className="size-4" />
-                원본열기
-              </LinkBtn>
-              <AccordionBtn size="sm">
-                <Share2 className="size-4" />
-                <span>{isShared ? "공유중" : "공유하기"}</span>
-              </AccordionBtn>
+        <AccordionItem value={dateKey} key={dateKey} className="border-b">
+          <AccordionTrigger>
+            <div className="sticky top-12 flex items-center justify-between bg-background p-2 md:top-0">
+              {dateKey.replace(/-/g, ".")}
             </div>
-          </div>
+          </AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col">
               {groupedPosts[dateKey].map((post) => (
