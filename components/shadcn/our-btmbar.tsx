@@ -26,6 +26,7 @@ import { Input } from "../ui/input";
 import { DataFetchInClient } from "@/app/api/postdata-client";
 import { RoutePage } from "../route-setting";
 import { NavButton } from "./navigation-btn";
+import { OurOption } from "../setting/our-option";
 
 export function OurBtmBar({ user_id }: { user_id: number }) {
   const pathname = usePathname();
@@ -101,14 +102,9 @@ export function OurBtmBar({ user_id }: { user_id: number }) {
       <NavButton
         onClick={RoutePage(`/home/${user_id}`)}
         isActive={pathname === "/group"}
+        disabled
       >
         <HeartHandshake className="size-6" />
-      </NavButton>
-      <NavButton
-        onClick={RoutePage(`/home/${user_id}`)}
-        isActive={pathname === "/profile"}
-      >
-        <Ghost className="size-6" />
       </NavButton>
     </div>
   );

@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CloudDownload, ExternalLink, Share2 } from "lucide-react";
+import { CloudDownload, ExternalLink, Menu, Share2 } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -131,7 +131,11 @@ export function OurAccordion({
   };
 
   return (
-    <Accordion type="multiple" className="accordion w-full pl-[250px] pt-12">
+    <Accordion
+      type="multiple"
+      className="accordion relative w-full pl-[250px] pt-12"
+    >
+      <Menu className="absolute left-4 top-3 z-50 h-6 w-6 bg-background" />
       {sortedDateKeys.map((dateKey) => (
         <AccordionItem value={dateKey} key={dateKey} className="border-b">
           <AccordionTrigger>
@@ -148,7 +152,7 @@ export function OurAccordion({
                   onClick={() => handlePostClick(post.postId)}
                   id="accordion-content"
                 >
-                  <Image
+                  <img
                     src={post.thumbnail || "/netflex.jpg"}
                     alt={`${post.media} thumbnail`}
                     width={128}
