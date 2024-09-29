@@ -17,7 +17,7 @@ import {
   UserPlus,
 } from "lucide-react";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "../ui/button";
@@ -41,6 +41,9 @@ import { RoutePage } from "../route-setting";
 import { OurOption } from "../setting/our-option";
 import { BasicAlert } from "../alert/basic-alert";
 import SocialLinkDialog from "../setting/sidebar-modul/sociallink-dialog";
+import { openSidebar, toggleSidebar } from "@/redux/features/sidebarSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 export function OurSidebar({
   noti,
@@ -51,7 +54,8 @@ export function OurSidebar({
 }) {
   const pathname = usePathname();
   const [contentUrl, setContentUrl] = useState("");
-  const [isOpen, setIsOpen] = useState(true); // 사이드바 열림 상태 관리
+  const dispatch = useDispatch();
+  const isOpen = useSelector((state: RootState) => state.sidebar.isOpen); // Redux 상태에서 isOpen 값을 가져옴
   const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${user_id}/create/`;
   const bodyData = [
     {
@@ -59,6 +63,33 @@ export function OurSidebar({
       comment: "Comment를 입력하세요.",
     },
   ];
+
+  // 미디어 쿼리 상태를 관리하는 useEffect
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(min-width: 764px) and (max-width: 1100px)",
+    );
+
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        // 764px ~ 1100px 사이에 있을 때 sidebar 열기
+        dispatch(openSidebar());
+      }
+    };
+
+    // 최초 실행 시 체크
+    if (mediaQuery.matches) {
+      dispatch(openSidebar());
+    }
+
+    // 리스너 등록
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    // 컴포넌트가 언마운트될 때 리스너 제거
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaChange);
+    };
+  }, [dispatch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentUrl(e.target.value);
@@ -69,8 +100,8 @@ export function OurSidebar({
   };
 
   // 애니메이션 추가 함수
-  const toggleSidebar = () => {
-    setIsOpen((prev) => !prev); // 열림/닫힘 상태 변경
+  const toggleSidebarState = () => {
+    dispatch(toggleSidebar());
   };
 
   return (
@@ -93,7 +124,7 @@ export function OurSidebar({
                 <MilequeFullLogo />
                 <ChevronLeft
                   className="icon ml-2 size-4"
-                  onClick={toggleSidebar}
+                  onClick={toggleSidebarState}
                 />
               </div>
             </div>
@@ -207,7 +238,7 @@ export function OurSidebar({
           />
         </div>
       </div>
-      <div>
+      <div className="fixed bottom-0 w-full">
         <Separator />
         <div className="flex flex-col p-2">
           <OurOption
