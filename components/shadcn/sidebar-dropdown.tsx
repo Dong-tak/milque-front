@@ -33,7 +33,8 @@ export function SidebarDropdownBtn({ pos }: { pos: string }) {
           </SidebarBtn>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="left" className="mt-1 flex flex-col">
-          <DropdownMenuItem>
+          {/* SocialLinkDialog를 열 때 Dropdown이 닫히지 않도록 onSelect 이벤트를 막음 */}
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <SocialLinkDialog
               button={
                 <div className="flex">
