@@ -27,6 +27,9 @@ import { useRouter } from "next/navigation";
 import SnsEmbed from "../embed/sns-embed";
 import cookie from "cookie";
 import { DataFetchInClient } from "../../app/api/postdata-client";
+import { useToast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function DetailComment({
   params,
@@ -152,10 +155,12 @@ export default function DetailComment({
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        alert("Comment copied to clipboard!"); // You can customize this alert or use a toast notification instead
+        toast.success("클립보드에 복사되었습니다.", { position: "top-right" });
       })
       .catch((err) => {
-        console.error("Failed to copy text: ", err);
+        toast.error("복사에 실패했습니다.", {
+          position: "top-right",
+        });
       });
   };
 
@@ -169,6 +174,7 @@ export default function DetailComment({
 
   return (
     <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
+      <ToastContainer autoClose={2000} />
       <div className="flex w-full bg-card">
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
