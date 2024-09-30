@@ -6,6 +6,7 @@ import {
   Copy,
   Dot,
   Eye,
+  Link,
   Share2,
   SquarePen,
   Trash2,
@@ -121,7 +122,7 @@ export default function DetailComment({
     }
   };
 
-  const handleBlur = async (commentId: number) => {
+  const handleCommentBlur = async (commentId: number) => {
     const updatedContent = contentEditableRef.current?.innerText;
     setIsEditing(null);
     const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`;
@@ -162,6 +163,10 @@ export default function DetailComment({
     router.back();
   };
 
+  const handleGoLinkClick = () => {
+    window.open(post.contentUrl);
+  };
+
   return (
     <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
       <div className="flex w-full bg-card">
@@ -192,9 +197,9 @@ export default function DetailComment({
                 variant={"ghost"}
                 size={"icon"}
                 className="rounded-none md:rounded-md md:p-1"
-                disabled
+                onClick={handleGoLinkClick}
               >
-                <Share2 className="size-6 md:size-4" />
+                <Link className="size-6 md:size-4" />
               </Button>
               <Button
                 variant={"ghost"}
@@ -268,7 +273,7 @@ export default function DetailComment({
                       ref={contentEditableRef}
                       contentEditable
                       suppressContentEditableWarning
-                      onBlur={() => handleBlur(comment.id)}
+                      onBlur={() => handleCommentBlur(comment.id)}
                       className="w-full border-b p-2"
                     >
                       {comment.comment}
