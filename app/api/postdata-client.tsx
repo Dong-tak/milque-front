@@ -37,9 +37,11 @@ export const DataFetchInClient = async ({
 
     const response = await fetch(`${apiUrl}`, fetchOptions);
 
-    if (!response.ok) {
-      throw new Error("Failed to save the content");
-    }
+    // if (!response.ok) {
+    //   const errorText = await response.text();
+    //   console.error("Error response:", errorText);
+    //   throw new Error("Failed to save the content");
+    // }
 
     const data = await response.json();
     console.log("Data saved successfully:", data);
