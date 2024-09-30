@@ -37,25 +37,39 @@ export const DataFetchInClient = async ({
 
     const response = await fetch(`${apiUrl}`, fetchOptions);
 
-    // if (!response.ok) {
-    //   const errorText = await response.text();
-    //   console.error("Error response:", errorText);
-    //   throw new Error("Failed to save the content");
-    // }
-
-    const data = await response.json();
-    console.log("Data saved successfully:", data);
-
-    // Reload the page or perform other actions if necessary
-    if (isReload) {
-      window.location.reload();
-    } else if (goHome) {
-      window.location.href = goHome;
+    // 응답 상태 코드 확인
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return data; // Return the response data
+    // 응답 상태 코드가 204인 경우 본문이 없음
+    if (method === "DELETE" || response.status === 204) {
+      console.log("No content in response");
+      // 페이지 리로드 또는 다른 작업 수행
+      if (isReload) {
+        window.location.reload();
+      } else if (goHome) {
+        window.location.href = goHome;
+      }
+      return null; // 또는 적절한 값을 반환
+    } else {
+      // 응답 본문이 있는 경우에만 JSON 파싱
+      const data = await response.json();
+      console.log("Data saved successfully:", data);
+
+      // 페이지 리로드 또는 다른 작업 수행
+      if (isReload) {
+        window.location.reload();
+      } else if (goHome) {
+        window.location.href = goHome;
+      }
+
+      return data; // 응답 데이터 반환
+    }
   } catch (error) {
     console.error("Error:", error);
-    throw error; // Re-throw error so that the caller can handle it
+    throw error; // 에러 재발생
   }
 };
