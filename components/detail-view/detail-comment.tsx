@@ -256,11 +256,11 @@ export default function DetailComment({
                   <Eye className="size-6" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent>
+              <DrawerContent className="h-[90vh]">
                 <DrawerHeader>
                   <DrawerTitle>{postTitle}</DrawerTitle>
                 </DrawerHeader>
-                <div className="h-[550px] p-3">
+                <div className="flex-grow p-3">
                   <SnsEmbed
                     form={post.media + post.type}
                     contentUrl={post.contentUrl}
