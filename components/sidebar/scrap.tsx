@@ -11,6 +11,7 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 
 interface ScrapDialogProps {
   user_id?: number;
@@ -53,7 +54,8 @@ export default function ScrapDialog({
             링크를 입력하고 바로 저장하세요!
           </DialogDescription>
         </DialogHeader>
-        <div className="items-center gap-4">
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="url">Link</Label>
           <Input
             id="url"
             value={contentUrl}
@@ -61,6 +63,10 @@ export default function ScrapDialog({
             className="w-full"
             placeholder="링크를 입력하세요"
           />
+        </div>
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="file">File</Label>
+          <Input id="file" type="file" />
         </div>
         <DialogFooter className="flex items-end justify-end gap-2">
           <Button variant={"outline"}>

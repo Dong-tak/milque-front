@@ -63,7 +63,7 @@ export function OurBtmBar({ user_id }: { user_id: number }) {
         contentUrl={contentUrl}
         handleInputChange={handleInputChange}
         handleSaveClick={handleSaveClick}
-        className="max-h-[20%]"
+        className="h-[340px]"
       />
       <NavButton
         onClick={RoutePage(`/home/${user_id}`)}
