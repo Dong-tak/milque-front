@@ -79,6 +79,7 @@ export default function DetailComment({
     const bodyData = {
       comment: newComment,
     };
+    if (!newComment) return;
     const data = await DataFetchInClient({ apiUrl, bodyData, method: "POST" });
     if (data) {
       const newCommentObject = {
@@ -330,7 +331,7 @@ export default function DetailComment({
               value={newComment}
               className="w-full border-none"
               onChange={handleInputChange}
-              onKeyUp={handleKeyDown}
+              onKeyDown={handleKeyDown}
             />
             <Button
               variant="ghost"
