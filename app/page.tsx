@@ -7,10 +7,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const router = useRouter();
-  useEffect(() => {
-    router.push("/login");
-  }, []);
+  // const router = useRouter();
+  // useEffect(() => {
+  //   router.push("/login");
+  // }, []);
   return (
     <div className="flex h-screen items-center justify-center gap-8">
       <OurSidebar />
