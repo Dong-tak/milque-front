@@ -33,7 +33,7 @@ export function OurOption({ button, user_id }: OurOptionProps) {
 
   useEffect(() => {
     toggleSidebar();
-  }, [view]); // view가 변경될 때마다 toggleSidebar 실행
+  }, [view, toggleSidebar]); // view가 변경될 때마다 toggleSidebar 실행
 
   type ViewType =
     | "profile"

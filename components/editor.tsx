@@ -17,7 +17,7 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import { useState, useRef, useEffect } from "react";
-import { PageBlock } from "./pageblock";
+// import { PageBlock } from "./pageblock";
 import { StickyNote } from "lucide-react";
 
 // EditorProps 인터페이스 정의
@@ -31,25 +31,25 @@ const schema = BlockNoteSchema.create({
     // Adds all default blocks.
     ...defaultBlockSpecs,
     // Adds the Alert block.
-    page: PageBlock,
+    // page: PageBlock,
   },
 });
 
-const insertPageBlock = (editor: typeof schema.BlockNoteEditor) => ({
-  title: "Page",
-  onItemClick: () => {
-    insertOrUpdateBlock(editor, {
-      type: "page",
-    });
-  },
-  group: "Other",
-  icon: <StickyNote />,
-});
+// const insertPageBlock = (editor: typeof schema.BlockNoteEditor) => ({
+//   title: "Page",
+//   onItemClick: () => {
+//     insertOrUpdateBlock(editor, {
+//       type: "page",
+//     });
+//   },
+//   group: "Other",
+//   icon: <StickyNote />,
+// });
 
 const Editor = ({ initialContent, onChange, editable }: EditorProps) => {
   // BlockNote 에디터 인스턴스 생성
   const editor = useCreateBlockNote({
-    schema,
+    // schema,
     initialContent: initialContent
       ? (JSON.parse(initialContent) as PartialBlock[])
       : undefined,
@@ -147,9 +147,9 @@ const Editor = ({ initialContent, onChange, editable }: EditorProps) => {
 
   return (
     <div>
-      <BlockNoteView editor={editor} slashMenu={false}>
+      <BlockNoteView editor={editor}>
         {/* Replaces the default Slash Menu. */}
-        <SuggestionMenuController
+        {/* <SuggestionMenuController
           triggerCharacter={"/"}
           getItems={async (query) =>
             // Gets all default slash menu items and `insertAlert` item.
@@ -161,7 +161,7 @@ const Editor = ({ initialContent, onChange, editable }: EditorProps) => {
               query,
             )
           }
-        />
+        /> */}
       </BlockNoteView>
       {/* 현재 블록 상태를 JSON 형태로 화면에 표시 */}
       <pre>{/* <code>{JSON.stringify(blocks, null, 2)}</code> */}</pre>

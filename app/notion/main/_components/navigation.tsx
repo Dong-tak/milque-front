@@ -31,14 +31,6 @@ const Navigation = () => {
   const isMobile = useMediaQuery("(max-width: 768px)"); // 모바일 화면인지 여부를 확인
   const documents = useSelector((state: RootState) => state.documents.items);
   const dispatch = useDispatch();
-  // 모바일 여부에 따라 사이드바 상태 변경
-  useEffect(() => {
-    if (isMobile) {
-      collapse();
-    } else {
-      resetWidth();
-    }
-  }, [isMobile]);
 
   // 경로나 모바일 상태가 변경될 때마다 실행
   // 모바일 환경에서는 사이드바를 접음
@@ -105,6 +97,15 @@ const Navigation = () => {
       }, 300);
     }
   };
+
+  // 모바일 여부에 따라 사이드바 상태 변경
+  useEffect(() => {
+    if (isMobile) {
+      collapse();
+    } else {
+      resetWidth();
+    }
+  }, [isMobile, resetWidth]);
 
   // 사이드바 접기
   const collapse = () => {
