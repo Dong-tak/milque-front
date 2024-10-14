@@ -6,6 +6,7 @@ import {
   Copy,
   Dot,
   Eye,
+  Link,
   Share2,
   SquarePen,
   Trash2,
@@ -24,8 +25,9 @@ import { Comment, PostFeed } from "@/lib/types";
 import { DateCalc } from "../shadcn/date-calc";
 import { useRouter } from "next/navigation";
 import SnsEmbed from "../embed/sns-embed";
-import cookie from "cookie";
 import { DataFetchInClient } from "../../app/api/postdata-client";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function DetailComment({
   params,
@@ -35,8 +37,11 @@ export default function DetailComment({
   params: { userId: string; postId: string };
 }) {
   const [isEditing, setIsEditing] = useState<number | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false); // 제목 수정 상태
   const contentEditableRef = useRef<HTMLDivElement>(null);
+  const titleEditableRef = useRef<HTMLDivElement>(null); // 제목 수정 참조
   const [newComment, setnewComment] = useState("");
+  const [postTitle, setPostTitle] = useState(post.title || "제목이 없습니다."); // 제목 상태
   const [comments, setComments] = useState<Comment[]>(post.comments || []);
   const router = useRouter();
   const { userId, postId } = params;
@@ -66,34 +71,13 @@ export default function DetailComment({
   }) => {
     const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`;
     const goHome = `/home/${userId}`;
-    await DataFetchInClient({ apiUrl, method: "DELETE", goHome });
-    // try {
-    //   const accessCookies = document.cookie.split("accessToken=")[1];
-    //   const refreshCookies = document.cookie.split("refreshToken=")[1];
-    //   const accessToken = accessCookies;
-    //   const refreshToken = refreshCookies;
-
-    //   const response = await fetch(
-    //     `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`,
-    //     {
-    //       method: "DELETE",
-    //       credentials: "include",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${accessToken} ${refreshToken}`,
-    //       },
-    //     },
-    //   );
-
-    //   if (!response.ok) {
-    //     throw new Error("Failed to delete the post");
-    //   }
-    //   window.location.href = `/home/${userId}`;
-    //   const data = await response.json();
-    //   console.log("post deleted successfully:", data);
-    // } catch (error) {
-    //   console.error("Error saving data:", error);
-    // }
+    await DataFetchInClient({ apiUrl, method: "DELETE", goHome })
+      .then(() => {
+        toast.success("게시물이 삭제되었습니다.", { position: "top-right" });
+      })
+      .catch((error) => {
+        toast.error(error, { position: "top-right" });
+      });
   };
 
   const handleSaveClick = async () => {
@@ -101,6 +85,7 @@ export default function DetailComment({
     const bodyData = {
       comment: newComment,
     };
+    if (!newComment) return;
     const data = await DataFetchInClient({ apiUrl, bodyData, method: "POST" });
     if (data) {
       const newCommentObject = {
@@ -115,13 +100,13 @@ export default function DetailComment({
       setComments((prevComments) => [...prevComments, newCommentObject]);
       setnewComment("");
 
-      if (comments[0].comment === "Comment를 입력하세요.") {
+      if (comments[0]?.comment === "Comment를 입력하세요.") {
         handleDeleteComment(comments[0].id);
       }
     }
   };
 
-  const handleBlur = async (commentId: number) => {
+  const handleCommentBlur = async (commentId: number) => {
     const updatedContent = contentEditableRef.current?.innerText;
     setIsEditing(null);
     const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/comment/${commentId}/edit/`;
@@ -151,10 +136,12 @@ export default function DetailComment({
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        alert("Comment copied to clipboard!"); // You can customize this alert or use a toast notification instead
+        toast.success("클립보드에 복사되었습니다.", { position: "top-right" });
       })
       .catch((err) => {
-        console.error("Failed to copy text: ", err);
+        toast.error("복사에 실패했습니다.", {
+          position: "top-right",
+        });
       });
   };
 
@@ -162,8 +149,54 @@ export default function DetailComment({
     router.back();
   };
 
+  const handleGoLinkClick = () => {
+    window.open(post.contentUrl);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // 기본 Enter 키 동작 방지 (필요한 경우)
+      handleSaveClick();
+    }
+  };
+
+  // 제목을 수정 모드로 전환
+  const handleTitleClick = () => {
+    setIsEditingTitle(true);
+  };
+
+  // 제목 수정 후 저장
+  const handleTitleBlur = async () => {
+    const updatedTitle = titleEditableRef.current?.innerText.trim();
+    setIsEditingTitle(false);
+
+    if (!updatedTitle || updatedTitle === postTitle) return;
+
+    const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/edit/`;
+    const bodyData = {
+      title: updatedTitle,
+    };
+
+    try {
+      await DataFetchInClient({
+        apiUrl,
+        bodyData,
+        method: "PATCH",
+        isReload: false,
+      });
+
+      setPostTitle(updatedTitle);
+    } catch (error) {
+      console.error("Error updating title:", error);
+      toast.error("제목 수정에 실패했습니다.", {
+        position: "top-right",
+      });
+    }
+  };
+
   return (
     <div className="relative flex h-screen min-h-[310px] w-screen justify-between py-6 md:max-h-[785px] md:min-w-[310px] md:max-w-[500px]">
+      <ToastContainer autoClose={2000} />
       <div className="flex w-full bg-card">
         {/* top nav */}
         <div className="absolute top-0 flex w-full items-center justify-between border-b bg-background md:top-6 md:h-[48px] md:min-w-[310px] md:max-w-[500px] md:px-4">
@@ -174,9 +207,24 @@ export default function DetailComment({
             >
               <ChevronLeft className="size-6" />
             </div>
-            <span className="accordhead others-medium-title">
-              {post.title || "제목이 없습니다."}
-            </span>
+            {isEditingTitle ? (
+              <div
+                ref={titleEditableRef}
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={handleTitleBlur}
+                className="accordhead w-full border-b p-2 others-medium-title"
+              >
+                {postTitle}
+              </div>
+            ) : (
+              <span
+                className="accordhead cursor-pointer others-medium-title"
+                onClick={handleTitleClick}
+              >
+                {postTitle}
+              </span>
+            )}
           </div>
           <div className="flex">
             <div className="flex md:gap-2">
@@ -192,19 +240,17 @@ export default function DetailComment({
                 variant={"ghost"}
                 size={"icon"}
                 className="rounded-none md:rounded-md md:p-1"
-                disabled
+                onClick={handleGoLinkClick}
               >
-                <Share2 className="size-6 md:size-4" />
+                <Link className="size-6 md:size-4" />
               </Button>
               <Button
                 variant={"ghost"}
                 size={"icon"}
                 className="hidden p-1 md:block"
+                onClick={() => handleDeletePost({ userId, postId })}
               >
-                <Trash2
-                  className="size-4"
-                  onClick={() => handleDeletePost({ userId, postId })}
-                />
+                <Trash2 className="size-4" />
               </Button>
             </div>
             <Drawer>
@@ -217,11 +263,11 @@ export default function DetailComment({
                   <Eye className="size-6" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent>
+              <DrawerContent className="h-[90vh]">
                 <DrawerHeader>
-                  <DrawerTitle>{post.title}</DrawerTitle>
+                  <DrawerTitle>{postTitle}</DrawerTitle>
                 </DrawerHeader>
-                <div className="h-[550px] p-3">
+                <div className="flex-grow p-3">
                   <SnsEmbed
                     form={post.media + post.type}
                     contentUrl={post.contentUrl}
@@ -268,7 +314,7 @@ export default function DetailComment({
                       ref={contentEditableRef}
                       contentEditable
                       suppressContentEditableWarning
-                      onBlur={() => handleBlur(comment.id)}
+                      onBlur={() => handleCommentBlur(comment.id)}
                       className="w-full border-b p-2"
                     >
                       {comment.comment}
@@ -291,6 +337,7 @@ export default function DetailComment({
               value={newComment}
               className="w-full border-none"
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
             />
             <Button
               variant="ghost"

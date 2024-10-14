@@ -15,10 +15,8 @@ export default async function HomePage({ params }: { params: { id: number } }) {
     <div>
       <OurBtmBar user_id={userId} />
       <OurTopBar user_id={userId} />
-      <div className="flex">
-        <OurSidebar noti={noti} user_id={userId} />
-        <OurAccordion posts={posts} userId={userId} />
-      </div>
+      <OurSidebar noti={noti} user_id={userId} />
+      <OurAccordion posts={posts} userId={userId} />
     </div>
   );
 }
