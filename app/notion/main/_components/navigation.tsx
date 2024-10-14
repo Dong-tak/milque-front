@@ -11,7 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
-import { ElementRef, useEffect, useRef, useState } from "react";
+import { ElementRef, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "usehooks-ts";
 import Item from "./item";
@@ -80,7 +80,7 @@ const Navigation = () => {
   };
 
   // 사이드바 너비 리셋
-  const resetWidth = () => {
+  const resetWidth = useCallback(() => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
       setIsResetting(true);
@@ -96,7 +96,7 @@ const Navigation = () => {
         setIsResetting(false);
       }, 300);
     }
-  };
+  }, []);
 
   // 모바일 여부에 따라 사이드바 상태 변경
   useEffect(() => {
