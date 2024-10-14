@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import postsReducer from "./features/postsDateSlice"; // 새로 분리한 postsSlice
 import sidebarReducer from "./features/sidebarSlice"; // sidebarSlice 가져오기
 import viewReducer from "./features/viewSlice"; // viewSlice 가져오기
+import documentsReducer from "./features/documentsSlice";
 
 // Redux 스토어 설정
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
     posts: postsReducer, // posts 상태
     sidebar: sidebarReducer, // sidebar 상태
     view: viewReducer, // view 상태
+    documents: documentsReducer, // documents 상태
   },
 });
 

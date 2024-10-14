@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
 import { DataFetchInClient } from "@/app/api/postdata-client";
 import { useTranslations } from "next-intl";
+import PdfViewer from "@/components/embed/pdf-embed";
 
 export default function Login() {
   const [email, setEmail] = useState("");

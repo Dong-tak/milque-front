@@ -71,7 +71,13 @@ export default function DetailComment({
   }) => {
     const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/feed/${userId}/post/${postId}/delete/`;
     const goHome = `/home/${userId}`;
-    await DataFetchInClient({ apiUrl, method: "DELETE", goHome });
+    await DataFetchInClient({ apiUrl, method: "DELETE", goHome })
+      .then(() => {
+        toast.success("게시물이 삭제되었습니다.", { position: "top-right" });
+      })
+      .catch((error) => {
+        toast.error(error, { position: "top-right" });
+      });
   };
 
   const handleSaveClick = async () => {

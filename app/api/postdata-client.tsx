@@ -41,7 +41,7 @@ export const DataFetchInClient = async ({
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Error response:", errorText);
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`${errorText}`);
     }
 
     // 응답 상태 코드가 204인 경우 본문이 없음
@@ -69,7 +69,7 @@ export const DataFetchInClient = async ({
       return data; // 응답 데이터 반환
     }
   } catch (error) {
-    console.error("Error:", error);
+    console.error(error);
     throw error; // 에러 재발생
   }
 };
