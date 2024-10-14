@@ -36,7 +36,7 @@ import {
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { useFormState } from "react-dom";
 import React, { useEffect, useReducer, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { completeUserProfile } from "./action"; // action.ts 파일에서 가져오기
 
 interface FormState {
@@ -136,8 +136,8 @@ export default function SetUserId() {
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [isMarketed, setIsMarketed] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const searchParams = useParams();
+  const token = searchParams.token as string;
 
   useEffect(() => {
     if (isAllChecked) {
