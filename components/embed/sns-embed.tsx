@@ -5,6 +5,8 @@ import YouTubeEmbed from "@/components/embed/youtube-video";
 import YouTubeShortsEmbed from "@/components/embed/youtube-shorts";
 import ResponsiveIframe from "./iframe-embed";
 import PdfViewer from "./pdf-embed";
+import Index from "./pdf-embed";
+import Image from "next/image";
 
 interface SnsEmbedProps {
   form: string;
@@ -24,9 +26,11 @@ export default function SnsEmbed({ form, contentUrl }: SnsEmbedProps) {
     case "youtubeshorts":
       return <YouTubeShortsEmbed url={contentUrl} />;
     case "img":
-      return <img src={contentUrl} alt="SNS content" />;
+      return (
+        <Image src={contentUrl} alt="SNS content" width={100} height={100} />
+      );
     case "pdf":
-      return <PdfViewer contentUrl={contentUrl} />;
+      return <Index />;
     default:
       return <ResponsiveIframe src={contentUrl} />;
   }
