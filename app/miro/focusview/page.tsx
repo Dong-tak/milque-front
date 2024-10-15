@@ -1,5 +1,16 @@
-const MiroBoard = () => {
-  return <div className="flex flex-col gap-y-4">MiroBoard</div>;
-};
+"use client";
+import dynamic from "next/dynamic";
 
-export default MiroBoard;
+// Since client components get prerenderd on server as well hence importing
+// the excalidraw stuff dynamically with ssr false
+
+const ExcalidrawWrapper = dynamic(
+  async () => (await import("./excalidraw-wrapper")).default,
+  {
+    ssr: false,
+  },
+);
+
+export default function Page() {
+  return <ExcalidrawWrapper />;
+}
