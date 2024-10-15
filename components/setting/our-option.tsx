@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -29,11 +29,14 @@ export function OurOption({ button, user_id }: OurOptionProps) {
   const [view, setView] = useState("profile");
   const currentView = useSelector((state: RootState) => state.view.currentView);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); // 사이드바 토글 함수
+  // useCallback을 사용하여 toggleSidebar 함수 메모이제이션
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     toggleSidebar();
-  }, [view]); // view가 변경될 때마다 toggleSidebar 실행
+  }, [view, toggleSidebar]); // view가 변경될 때마다 toggleSidebar 실행
 
   type ViewType =
     | "profile"

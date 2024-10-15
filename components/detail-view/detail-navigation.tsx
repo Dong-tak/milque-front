@@ -1,10 +1,11 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { RootState } from "@/redux/store";
 
 export function DetailNavigationLeft({
   userId,

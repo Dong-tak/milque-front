@@ -159,7 +159,7 @@ export function OurAccordion({
                   onClick={() => handlePostClick(post.postId)}
                   id="accordion-content"
                 >
-                  <img
+                  <Image
                     src={post.thumbnail || "/netflex.jpg"}
                     alt={`${post.media} thumbnail`}
                     width={128}
