@@ -1,16 +1,13 @@
+// app/board/page.tsx
 "use client";
-import dynamic from "next/dynamic";
 
-// Since client components get prerenderd on server as well hence importing
-// the excalidraw stuff dynamically with ssr false
+import React from "react";
+import DrawingBoard from "../_components/board/drawingboard";
 
-const ExcalidrawWrapper = dynamic(
-  async () => (await import("./excalidraw-wrapper")).default,
-  {
-    ssr: false,
-  },
-);
-
-export default function Page() {
-  return <ExcalidrawWrapper />;
+export default function BoardPage() {
+  return (
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <DrawingBoard />
+    </div>
+  );
 }
