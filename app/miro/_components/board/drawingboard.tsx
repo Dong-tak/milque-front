@@ -73,28 +73,6 @@ const DrawingBoard = () => {
     };
   }, []);
 
-  // 줌 인/아웃 및 리셋 함수
-  const zoomIn = () => {
-    const scaleBy = 1.2;
-    const newScale = stageScale * scaleBy;
-    if (newScale <= maxScale) {
-      setStageScale(newScale);
-    }
-  };
-
-  const zoomOut = () => {
-    const scaleBy = 1.2;
-    const newScale = stageScale / scaleBy;
-    if (newScale >= minScale) {
-      setStageScale(newScale);
-    }
-  };
-
-  const resetTransform = () => {
-    setStageScale(initialScale);
-    setStagePosition({ x: 0, y: 0 });
-  };
-
   // 휠 이벤트를 통한 줌 제어
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
@@ -171,14 +149,16 @@ const DrawingBoard = () => {
     ]);
   };
 
-  // 스테이지 클릭 이벤트 처리
+  // Stage click event handler
   const handleStageClick = (e: any) => {
-    // 다른 곳을 클릭하면 선택 해제
-    const newShapes = shapes.map((s) => ({
-      ...s,
-      isSelected: false,
-    }));
-    setShapes(newShapes);
+    // Only deselect if clicked on empty area (Stage)
+    if (e.target === e.target.getStage()) {
+      const newShapes = shapes.map((s) => ({
+        ...s,
+        isSelected: false,
+      }));
+      setShapes(newShapes);
+    }
   };
 
   return (
@@ -286,9 +266,6 @@ const DrawingBoard = () => {
                   return null;
               }
             })}
-
-            {/* 툴팁 */}
-            {/* 툴팁 (항상 표시) */}
           </Layer>
         </Stage>
         {/* 툴팁 (Stage 밖으로 이동) */}

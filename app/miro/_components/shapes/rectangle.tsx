@@ -5,8 +5,8 @@ import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 
 const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
-  const shapeRef = useRef<any>();
-  const trRef = useRef<any>();
+  const shapeRef = useRef<any>(null);
+  const trRef = useRef<any>(null);
 
   useEffect(() => {
     if (isSelected) {
@@ -17,18 +17,18 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
   }, [isSelected]);
 
   return (
-    <>
+    <React.Fragment>
       <Rect
-        onClick={onSelect}
-        onTap={onSelect}
         ref={shapeRef}
         {...shapeProps}
         draggable
-        onDragStart={(e) => {
-          e.cancelBubble = true;
+        onClick={(e) => {
+          onSelect();
+          e.cancelBubble = true; // Prevent event bubbling
         }}
-        onDragMove={(e) => {
-          e.cancelBubble = true;
+        onTap={(e) => {
+          onSelect();
+          e.cancelBubble = true; // Prevent event bubbling
         }}
         onDragEnd={(e) => {
           e.cancelBubble = true;
@@ -39,26 +39,28 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           });
         }}
         onTransformEnd={(e) => {
-          // 변형된 속성을 업데이트합니다.
+          e.cancelBubble = true; // Prevent event bubbling
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
-
+          node.scaleX(1);
+          node.scaleY(1);
           // 크기와 스케일을 업데이트합니다.
           onChange({
             ...shapeProps,
             x: node.x(),
             y: node.y(),
-            width: node.width() * scaleX,
-            height: node.height() * scaleY,
-            scaleX: 1,
-            scaleY: 1,
+            width: Math.max(5, node.width() * scaleX),
+            height: Math.max(5, node.height() * scaleY),
           });
         }}
       />
       {isSelected && (
         <Transformer
           ref={trRef}
+          flipEnabled={false}
+          onClick={(e) => (e.cancelBubble = true)} // Prevent event bubbling
+          onTap={(e) => (e.cancelBubble = true)} // Prevent event bubbling
           boundBoxFunc={(oldBox, newBox) => {
             // 최소 크기를 제한합니다.
             if (newBox.width < 5 || newBox.height < 5) {
@@ -68,7 +70,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           }}
         />
       )}
-    </>
+    </React.Fragment>
   );
 };
 
