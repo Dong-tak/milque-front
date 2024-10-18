@@ -17,6 +17,9 @@ import TextNode from "../shapes/textnode";
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
   const stageRef = useRef<any>(null);
+  const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
+  const [newShape, setNewShape] = useState<any>(null); // 현재 그리는 사각형
+  const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
 
   // 스테이지 스케일 및 위치 상태
   const initialScale = 1 / 10;
@@ -101,22 +104,6 @@ const DrawingBoard = () => {
   };
 
   // 도형 추가 함수들
-  const addRectangleAtPosition = (x: number, y: number) => {
-    const id = `rect-${shapes.length + 1}`;
-    setShapes([
-      ...shapes,
-      {
-        id,
-        type: "rectangle",
-        x: x,
-        y: y,
-        width: 100,
-        height: 100,
-        fill: "red",
-        draggable: true,
-      },
-    ]);
-  };
 
   const addArrowAtPosition = (x: number, y: number) => {
     const id = `arrow-${shapes.length + 1}`;
@@ -139,7 +126,7 @@ const DrawingBoard = () => {
       ...shapes,
       {
         id,
-        type: "text",
+        type: "textbox",
         x: x,
         y: y,
         text: "텍스트",
@@ -161,14 +148,85 @@ const DrawingBoard = () => {
     }
   };
 
+  // 사각형 생성 모드 활성화 (툴팁 클릭 시 호출)
+  const handleRectangleToolClick = () => {
+    setIsRectangleMode(true); // 사각형 생성 모드 활성화
+  };
+
+  const handleMouseDown = (e: any) => {
+    if (!isRectangleMode || isDrawing) return;
+
+    const stage = stageRef.current;
+    const pointerPos = stage.getPointerPosition(); // 클릭한 포인터 위치
+    if (!pointerPos) return;
+
+    // 스케일과 스테이지 위치를 고려해 포인터 좌표를 변환
+    const adjustedPos = {
+      x: (pointerPos.x - stagePosition.x) / stageScale,
+      y: (pointerPos.y - stagePosition.y) / stageScale,
+    };
+
+    const { x, y } = adjustedPos;
+
+    setNewShape({
+      id: `rect-${shapes.length + 1}`,
+      type: "rectangle",
+      x,
+      y,
+      width: 0,
+      height: 0,
+      fill: "rgba(255, 0, 0, 0.5)", // 미리보기 색상
+      draggable: false,
+    });
+    setIsDrawing(true); // 드로잉 시작
+  };
+
+  const handleMouseMove = (e: any) => {
+    if (!isDrawing || !newShape) return;
+
+    const stage = stageRef.current;
+    const pointerPos = stage.getPointerPosition();
+    if (!pointerPos) return;
+
+    // 스케일과 위치를 고려해 포인터 좌표를 변환
+    const adjustedPos = {
+      x: (pointerPos.x - stagePosition.x) / stageScale,
+      y: (pointerPos.y - stagePosition.y) / stageScale,
+    };
+
+    const { x, y } = adjustedPos;
+
+    const width = x - newShape.x;
+    const height = y - newShape.y;
+
+    setNewShape({
+      ...newShape,
+      width: Math.abs(width),
+      height: Math.abs(height),
+      x: width < 0 ? x : newShape.x,
+      y: height < 0 ? y : newShape.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    if (!isDrawing || !newShape) return;
+
+    setShapes([...shapes, { ...newShape, fill: "red", draggable: true }]);
+    setNewShape(null); // 초기화
+    setIsDrawing(false); // 드로잉 종료
+    setIsRectangleMode(false); // 사각형 생성 모드 비활성화
+  };
+
   return (
     <div>
       {/* 보드 */}
       <div
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         style={{
           width: "100%",
           height: "80vh",
-
           position: "relative",
         }}
       >
@@ -241,7 +299,7 @@ const DrawingBoard = () => {
                       }}
                     />
                   );
-                case "text":
+                case "textbox":
                   return (
                     <TextNode
                       key={shape.id}
@@ -266,6 +324,8 @@ const DrawingBoard = () => {
                   return null;
               }
             })}
+            {/* 드로잉 중인 사각형 미리보기 */}
+            {newShape && <Rect {...newShape} />}
           </Layer>
         </Stage>
         {/* 툴팁 (Stage 밖으로 이동) */}
@@ -283,9 +343,7 @@ const DrawingBoard = () => {
           }}
         >
           <div
-            onClick={() =>
-              addRectangleAtPosition(stageSize.width / 2, stageSize.height / 2)
-            }
+            onClick={handleRectangleToolClick} // 사각형 생성 모드 활성화
             style={{ cursor: "pointer", textAlign: "center" }}
           >
             <div
