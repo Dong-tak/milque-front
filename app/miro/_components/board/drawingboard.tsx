@@ -13,6 +13,7 @@ import {
 import Rectangle from "../shapes/rectangle";
 import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
+import { defaultProps } from "@blocknote/core";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -122,6 +123,65 @@ const DrawingBoard = () => {
 
   const addTextAtPosition = (x: number, y: number) => {
     const id = `text-${shapes.length + 1}`;
+    const initialText = [
+      {
+        type: "paragraph",
+        content: "Welcome to this demo!",
+      },
+      {
+        type: "paragraph",
+      },
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "Blocks:",
+            styles: { bold: true },
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        content: "Paragraph",
+      },
+      {
+        type: "heading",
+        content: "Heading",
+      },
+      {
+        type: "bulletListItem",
+        content: "Bullet List Item",
+      },
+      {
+        type: "numberedListItem",
+        content: "Numbered List Item",
+      },
+      {
+        type: "checkListItem",
+        content: "Check List Item",
+      },
+      {
+        type: "table",
+        content: {
+          type: "tableContent",
+          rows: [
+            {
+              cells: ["Table Cell", "Table Cell", "Table Cell"],
+            },
+            {
+              cells: ["Table Cell", "Table Cell", "Table Cell"],
+            },
+            {
+              cells: ["Table Cell", "Table Cell", "Table Cell"],
+            },
+          ],
+        },
+      },
+      {
+        type: "file",
+      },
+    ];
     setShapes([
       ...shapes,
       {
@@ -129,7 +189,7 @@ const DrawingBoard = () => {
         type: "textbox",
         x: x,
         y: y,
-        text: "텍스트",
+        text: JSON.stringify(initialText),
         fontSize: 24,
         draggable: true,
       },

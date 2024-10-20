@@ -1,0 +1,17 @@
+/* components/shapes/TextNode.css */
+
+.text-editor {
+  position: absolute;
+  border: 1px solid #ddd;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  background: none;
+  outline: none;
+  resize: none;
+  line-height: normal;
+  font-family: Arial, sans-serif;
+  text-align: left;
+  color: black;
+  transform-origin: left top;
+}
