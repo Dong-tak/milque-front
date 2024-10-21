@@ -1,7 +1,7 @@
 // components/shapes/TextNode.tsx
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { Text, Transformer } from "react-konva";
 
 interface TextNodeProps {
@@ -9,17 +9,12 @@ interface TextNodeProps {
   isSelected: boolean;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
-  onDragMove?: () => void; // 추가된 부분
+  onDragMove?: (e: any) => void;
 }
 
-const TextNode = ({
-  shapeProps,
-  isSelected,
-  onSelect,
-  onChange,
-  onDragMove,
-}: TextNodeProps) => {
-  const shapeRef = useRef<any>();
+const TextNode = React.forwardRef<any, TextNodeProps>((props, ref) => {
+  const { shapeProps, isSelected, onSelect, onChange, onDragMove } = props;
+  const shapeRef = ref as React.MutableRefObject<any>;
   const trRef = useRef<any>();
 
   useEffect(() => {
@@ -28,7 +23,7 @@ const TextNode = ({
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
-  }, [isSelected]);
+  }, [isSelected, shapeRef]);
 
   return (
     <>
@@ -43,13 +38,9 @@ const TextNode = ({
             y: e.target.y(),
           });
         }}
-        onDragMove={() => {
-          onChange({
-            x: shapeRef.current.x(),
-            y: shapeRef.current.y(),
-          });
+        onDragMove={(e) => {
           if (onDragMove) {
-            onDragMove();
+            onDragMove(e);
           }
         }}
       />
@@ -65,6 +56,8 @@ const TextNode = ({
       )}
     </>
   );
-};
+});
+
+TextNode.displayName = "TextNode";
 
 export default TextNode;

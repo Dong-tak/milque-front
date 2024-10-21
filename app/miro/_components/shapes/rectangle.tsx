@@ -1,7 +1,7 @@
 // components/shapes/Rectangle.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
 
 interface RectangleProps {
@@ -9,22 +9,22 @@ interface RectangleProps {
   isSelected: boolean;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
-  onDragMove?: () => void; // 추가된 부분
+  onDragMove?: (e: any) => void;
 }
 
-const Rectangle = ({
+const Rectangle: React.FC<RectangleProps> = ({
   shapeProps,
   isSelected,
   onSelect,
   onChange,
   onDragMove,
-}: RectangleProps) => {
-  const shapeRef = React.useRef<any>();
-  const trRef = React.useRef<any>();
+}) => {
+  const shapeRef = useRef<any>(null);
+  const trRef = useRef<any>(null);
 
-  React.useEffect(() => {
-    if (isSelected && trRef.current) {
-      // attach transformer
+  useEffect(() => {
+    if (isSelected && trRef.current && shapeRef.current) {
+      // 트랜스포머 연결
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
@@ -43,13 +43,9 @@ const Rectangle = ({
             y: e.target.y(),
           });
         }}
-        onDragMove={() => {
-          onChange({
-            x: shapeRef.current.x(),
-            y: shapeRef.current.y(),
-          });
+        onDragMove={(e) => {
           if (onDragMove) {
-            onDragMove();
+            onDragMove(e);
           }
         }}
         onTransformEnd={(e) => {
@@ -57,7 +53,7 @@ const Rectangle = ({
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
 
-          // we will reset it back
+          // 스케일을 초기화합니다
           node.scaleX(1);
           node.scaleY(1);
           onChange({
@@ -72,7 +68,7 @@ const Rectangle = ({
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox: any, newBox: any) => {
-            // limit resize
+            // 크기 조정 제한
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }

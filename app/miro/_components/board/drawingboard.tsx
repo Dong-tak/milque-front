@@ -160,10 +160,9 @@ const DrawingBoard = () => {
     if (isPanning) return;
 
     const stage = stageRef.current;
-    const pointerPos = stage.getPointerPosition(); // 클릭한 포인터 위치
+    const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
 
-    // 스케일과 스테이지 위치를 고려해 포인터 좌표를 변환
     const adjustedPos = {
       x: (pointerPos.x - stagePosition.x) / stageScale,
       y: (pointerPos.y - stagePosition.y) / stageScale,
@@ -193,20 +192,23 @@ const DrawingBoard = () => {
           | TextShape
         )[],
       );
+
+      let startPoint = { x, y };
       if (startShape) {
-        const startPoint = getClosestSidePoint(startShape, x, y);
-        const newArrow: ArrowShape = {
-          id: `arrow-${shapes.length + 1}`,
-          type: "arrow",
-          from: startShape.id,
-          to: "", // 끝점은 나중에 설정
-          points: [startPoint.x, startPoint.y, startPoint.x, startPoint.y],
-          arrowTipX: startPoint.x,
-          arrowTipY: startPoint.y,
-        };
-        setNewShape(newArrow);
-        setIsDrawing(true); // 드로잉 시작
+        startPoint = getClosestSidePoint(startShape, x, y);
       }
+
+      const newArrow: ArrowShape = {
+        id: `arrow-${shapes.length + 1}`,
+        type: "arrow",
+        from: startShape ? startShape.id : "",
+        to: "",
+        points: [startPoint.x, startPoint.y, startPoint.x, startPoint.y],
+        arrowTipX: startPoint.x,
+        arrowTipY: startPoint.y,
+      };
+      setNewShape(newArrow);
+      setIsDrawing(true);
     }
   };
 
@@ -217,7 +219,6 @@ const DrawingBoard = () => {
     const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
 
-    // 스케일과 위치를 고려해 포인터 좌표를 변환
     const adjustedPos = {
       x: (pointerPos.x - stagePosition.x) / stageScale,
       y: (pointerPos.y - stagePosition.y) / stageScale,
@@ -237,7 +238,6 @@ const DrawingBoard = () => {
         y: height < 0 ? y : newShape.y,
       });
     } else if (isArrowMode && newShape.type === "arrow") {
-      // 끝점에서 가장 가까운 도형 찾기
       const endShape = findClosestShapeAtPoint(
         x,
         y,
@@ -246,10 +246,12 @@ const DrawingBoard = () => {
           | TextShape
         )[],
       );
+
       let endPoint = { x, y };
       if (endShape) {
         endPoint = getClosestSidePoint(endShape, x, y);
       }
+
       const newPoints = [
         newShape.points[0],
         newShape.points[1],
@@ -257,25 +259,12 @@ const DrawingBoard = () => {
         endPoint.y,
       ];
 
-      // 화살표 헤드 계산
-      const len = newPoints.length;
-      const x1 = newPoints[len - 4];
-      const y1 = newPoints[len - 3];
-      const x2 = newPoints[len - 2];
-      const y2 = newPoints[len - 1];
-      const angle = Math.atan2(y2 - y1, x2 - x1);
-      const arrowLength = 10;
-      const x2_new = x2 - arrowLength * Math.cos(angle);
-      const y2_new = y2 - arrowLength * Math.sin(angle);
-      newPoints[len - 2] = x2_new;
-      newPoints[len - 1] = y2_new;
-
       setNewShape({
         ...newShape,
         to: endShape ? endShape.id : "",
         points: newPoints,
-        arrowTipX: x2,
-        arrowTipY: y2,
+        arrowTipX: endPoint.x,
+        arrowTipY: endPoint.y,
       });
     }
   };
@@ -294,23 +283,38 @@ const DrawingBoard = () => {
       setShapes([...shapes, newShape]);
     }
 
-    setNewShape(null); // 초기화
-    setIsDrawing(false); // 드로잉 종료
+    setNewShape(null);
+    setIsDrawing(false);
     setIsRectangleMode(false);
     setIsArrowMode(false);
   };
 
-  // 도형 이동 시 연결된 화살표 업데이트
-  const updateArrows = (movedShapeId: string) => {
+  // updateArrows 함수 수정
+  const updateArrows = (movedShapeId: string, newX: number, newY: number) => {
     const updatedShapes = shapes.map((shape) => {
       if (isArrow(shape)) {
         if (shape.from === movedShapeId || shape.to === movedShapeId) {
-          const fromShape = shapes.find((s) => s.id === shape.from) as
-            | RectangleShape
-            | TextShape;
-          const toShape = shapes.find((s) => s.id === shape.to) as
-            | RectangleShape
-            | TextShape;
+          const fromShape =
+            shape.from === movedShapeId
+              ? ({
+                  ...shapes.find((s) => s.id === shape.from),
+                  x: newX,
+                  y: newY,
+                } as RectangleShape | TextShape)
+              : (shapes.find((s) => s.id === shape.from) as
+                  | RectangleShape
+                  | TextShape);
+          const toShape =
+            shape.to === movedShapeId
+              ? ({
+                  ...shapes.find((s) => s.id === shape.to),
+                  x: newX,
+                  y: newY,
+                } as RectangleShape | TextShape)
+              : (shapes.find((s) => s.id === shape.to) as
+                  | RectangleShape
+                  | TextShape);
+
           if (fromShape && toShape) {
             const result = getConnectorPoints(fromShape, toShape);
             return {
@@ -324,6 +328,65 @@ const DrawingBoard = () => {
       }
       return shape;
     });
+    setShapes(updatedShapes);
+  };
+
+  const handleArrowPointDrag = (
+    id: string,
+    x: number,
+    y: number,
+    type: "from" | "to",
+  ) => {
+    const updatedShapes = shapes.map((shape) => {
+      if (isArrow(shape) && shape.id === id) {
+        const otherShapes = shapes.filter(
+          (s) =>
+            (isRectangle(s) || isText(s)) &&
+            s.id !== (type === "from" ? shape.from : shape.to),
+        );
+        const closestShape = findClosestShapeAtPoint(
+          x,
+          y,
+          otherShapes as (RectangleShape | TextShape)[],
+        );
+
+        if (closestShape) {
+          const closestPoint = getClosestSidePoint(closestShape, x, y);
+          x = closestPoint.x;
+          y = closestPoint.y;
+
+          if (type === "from") {
+            shape.from = closestShape.id;
+          } else {
+            shape.to = closestShape.id;
+          }
+        } else {
+          if (type === "from") {
+            shape.from = "";
+          } else {
+            shape.to = "";
+          }
+        }
+
+        const newPoints = [...shape.points];
+        if (type === "from") {
+          newPoints[0] = x;
+          newPoints[1] = y;
+        } else {
+          newPoints[newPoints.length - 2] = x;
+          newPoints[newPoints.length - 1] = y;
+        }
+
+        return {
+          ...shape,
+          points: newPoints,
+          arrowTipX: type === "to" ? x : shape.arrowTipX,
+          arrowTipY: type === "to" ? y : shape.arrowTipY,
+        };
+      }
+      return shape;
+    });
+
     setShapes(updatedShapes);
   };
 
@@ -385,21 +448,9 @@ const DrawingBoard = () => {
                       ) as (RectangleShape | ArrowShape | TextShape)[];
                       setShapes(newShapes);
                     }}
-                    onDragMove={() => updateArrows(shape.id)}
-                  />
-                );
-              } else if (isArrow(shape)) {
-                return (
-                  <Arrow
-                    key={shape.id}
-                    shapeProps={shape}
-                    isSelected={shape.isSelected}
-                    onSelect={() => {
-                      const newShapes = shapes.map((s) => ({
-                        ...s,
-                        isSelected: s.id === shape.id,
-                      }));
-                      setShapes(newShapes);
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(shape.id, node.x(), node.y());
                     }}
                   />
                 );
@@ -422,7 +473,32 @@ const DrawingBoard = () => {
                       ) as (RectangleShape | ArrowShape | TextShape)[];
                       setShapes(newShapes);
                     }}
-                    onDragMove={() => updateArrows(shape.id)}
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(shape.id, node.x(), node.y());
+                    }}
+                  />
+                );
+              } else if (isArrow(shape)) {
+                return (
+                  <Arrow
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<ArrowShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onDragMove={handleArrowPointDrag}
                   />
                 );
               }
@@ -442,6 +518,8 @@ const DrawingBoard = () => {
                 shapeProps={newShape}
                 isSelected={false}
                 onSelect={() => {}}
+                onChange={() => {}} // 빈 함수로 설정
+                onDragMove={() => {}} // 빈 함수로 설정
               />
             )}
           </Layer>
