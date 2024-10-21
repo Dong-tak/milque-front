@@ -1,68 +1,78 @@
 // components/shapes/Rectangle.tsx
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { Rect, Transformer } from "react-konva";
 
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
-  const shapeRef = useRef<any>(null);
-  const trRef = useRef<any>(null);
+interface RectangleProps {
+  shapeProps: any;
+  isSelected: boolean;
+  onSelect: () => void;
+  onChange: (newAttrs: any) => void;
+  onDragMove?: () => void; // 추가된 부분
+}
 
-  useEffect(() => {
-    if (isSelected) {
-      // Transformer 노드를 연결합니다.
+const Rectangle = ({
+  shapeProps,
+  isSelected,
+  onSelect,
+  onChange,
+  onDragMove,
+}: RectangleProps) => {
+  const shapeRef = React.useRef<any>();
+  const trRef = React.useRef<any>();
+
+  React.useEffect(() => {
+    if (isSelected && trRef.current) {
+      // attach transformer
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
   }, [isSelected]);
 
   return (
-    <React.Fragment>
+    <>
       <Rect
+        onClick={onSelect}
         ref={shapeRef}
         {...shapeProps}
-        draggable
-        onClick={(e) => {
-          onSelect();
-          e.cancelBubble = true; // Prevent event bubbling
-        }}
-        onTap={(e) => {
-          onSelect();
-          e.cancelBubble = true; // Prevent event bubbling
-        }}
+        draggable={shapeProps.draggable}
         onDragEnd={(e) => {
-          e.cancelBubble = true;
           onChange({
-            ...shapeProps,
             x: e.target.x(),
             y: e.target.y(),
           });
         }}
+        onDragMove={() => {
+          onChange({
+            x: shapeRef.current.x(),
+            y: shapeRef.current.y(),
+          });
+          if (onDragMove) {
+            onDragMove();
+          }
+        }}
         onTransformEnd={(e) => {
-          e.cancelBubble = true; // Prevent event bubbling
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
+
+          // we will reset it back
           node.scaleX(1);
           node.scaleY(1);
-          // 크기와 스케일을 업데이트합니다.
           onChange({
-            ...shapeProps,
             x: node.x(),
             y: node.y(),
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY),
+            height: Math.max(node.height() * scaleY),
           });
         }}
       />
       {isSelected && (
         <Transformer
           ref={trRef}
-          flipEnabled={false}
-          onClick={(e) => (e.cancelBubble = true)} // Prevent event bubbling
-          onTap={(e) => (e.cancelBubble = true)} // Prevent event bubbling
-          boundBoxFunc={(oldBox, newBox) => {
-            // 최소 크기를 제한합니다.
+          boundBoxFunc={(oldBox: any, newBox: any) => {
+            // limit resize
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
@@ -70,7 +80,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           }}
         />
       )}
-    </React.Fragment>
+    </>
   );
 };
 
