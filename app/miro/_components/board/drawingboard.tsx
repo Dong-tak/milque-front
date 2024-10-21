@@ -127,6 +127,8 @@ const DrawingBoard = () => {
       y: y,
       text: "텍스트",
       fontSize: 24,
+      width: 100, // 초기 너비 설정
+      height: 30, // 초기 높이 설정
       draggable: true,
     };
     setShapes([...shapes, newText]);
@@ -524,7 +526,7 @@ const DrawingBoard = () => {
             )}
           </Layer>
         </Stage>
-        {/* 툴바 컴포넌트 */}
+        {/* 툴바 컴��넌트 */}
         <Toolbar
           onRectangleToolClick={handleRectangleToolClick}
           onArrowToolClick={handleArrowToolClick}

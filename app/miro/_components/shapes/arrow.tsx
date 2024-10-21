@@ -27,8 +27,6 @@ const Arrow: React.FC<ArrowProps> = ({
   // 참조를 위한 useRef 훅 사용
   const shapeRef = useRef<any>(null);
   const arrowHeadRef = useRef<any>(null);
-  const fromPointRef = useRef<any>(null);
-  const toPointRef = useRef<any>(null);
 
   // 선택 상태가 변경될 때 실행되는 useEffect
   useEffect(() => {
@@ -44,7 +42,7 @@ const Arrow: React.FC<ArrowProps> = ({
   const y1 = points[len - 3];
   const dx = arrowTipX - x1;
   const dy = arrowTipY - y1;
-  const angle = (Math.atan2(dy, dx) * 180) / Math.PI; // 라디안을 도로 변환
+  const angle = Math.atan2(dy, dx);
 
   return (
     <>
@@ -127,10 +125,10 @@ const Arrow: React.FC<ArrowProps> = ({
         radius={10} // 화살표 머리 반지름
         fill="black" // 채우기 색상
         stroke="black" // 선 색상
-        strokeWidth={3} // 화살표 머리 두께
+        strokeWidth={2} // 화살표 머리 두께
         x={arrowTipX} // 머리의 X 좌표
         y={arrowTipY} // 머리의 Y 좌표
-        rotation={angle + 90} // 화살표 머리 회전 각도
+        rotation={(angle * 180) / Math.PI + 90} // 화살표 머리 회전 각도
       />
 
       {/* 선택된 경우 드래그 가능한 원점 표시 */}
@@ -138,7 +136,6 @@ const Arrow: React.FC<ArrowProps> = ({
         <>
           {/* 시작점 드래그 핸들 */}
           <Circle
-            ref={fromPointRef}
             x={points[0]} // 시작점 X 좌표
             y={points[1]} // 시작점 Y 좌표
             radius={8} // 원의 반지름
@@ -152,10 +149,9 @@ const Arrow: React.FC<ArrowProps> = ({
 
           {/* 끝점 드래그 핸들 */}
           <Circle
-            ref={toPointRef}
             x={arrowTipX} // 끝점 X 좌표
             y={arrowTipY} // 끝점 Y 좌표
-            radius={8} // 원의 반지름
+            radius={10} // 원의 반지름
             fill="red" // 원의 채우기 색상
             draggable // 드래그 가능하게 설정
             onDragMove={(e) => {

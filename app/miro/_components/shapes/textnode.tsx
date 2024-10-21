@@ -25,6 +25,19 @@ const TextNode = React.forwardRef<any, TextNodeProps>((props, ref) => {
     }
   }, [isSelected, shapeRef]);
 
+  useEffect(() => {
+    if (shapeRef.current) {
+      const node = shapeRef.current;
+      const width = node.width();
+      const height = node.height();
+      onChange({
+        ...shapeProps,
+        width,
+        height,
+      });
+    }
+  }, [shapeProps.text, shapeProps.fontSize, onChange, shapeProps, shapeRef]);
+
   return (
     <>
       <Text

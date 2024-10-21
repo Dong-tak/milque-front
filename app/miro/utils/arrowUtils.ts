@@ -1,6 +1,6 @@
 // utils/arrowUtils.ts
 
-import { RectangleShape, TextShape } from "./types"; // RectangleShape과 TextShape 타입을 import
+import { RectangleShape, TextShape, isRectangle, isText } from "./types"; // RectangleShape과 TextShape 타입을 import
 import { getShapeSideCenters } from "./helpers"; // 도형의 측면 중앙 좌표를 가져오는 헬퍼 함수 import
 
 // /**
@@ -17,79 +17,104 @@ export function getConnectorPoints(
   const fromCenters = getShapeSideCenters(from);
   const toCenters = getShapeSideCenters(to);
 
-  let minDistance = Infinity; // 최소 거리를 무한대로 초기화
-  let bestFromPoint = fromCenters[0]; // 최적의 출발 점을 첫 번째 측면 중앙 점으로 초기화
-  let bestToPoint = toCenters[0]; // 최적의 도착 점을 첫 번째 측면 중앙 점으로 초기화
+  // 출발 도형의 중심 좌표 계산
+  const fromCenterX =
+    from.x + (isRectangle(from) ? from.width / 2 : from.width / 2);
+  const fromCenterY =
+    from.y + (isRectangle(from) ? from.height / 2 : from.height / 2);
 
-  // 모든 출발 점과 도착 점을 비교하여 가장 가까운 점 쌍을 찾음
-  fromCenters.forEach((fromPoint) => {
-    toCenters.forEach((toPoint) => {
-      const distance = Math.hypot(
-        fromPoint.x - toPoint.x,
-        fromPoint.y - toPoint.y,
-      ); // 두 점 사이의 유클리드 거리 계산
-      if (distance < minDistance) {
-        minDistance = distance; // 새로운 최소 거리 발견 시 업데이트
-        bestFromPoint = fromPoint; // 최적의 출발 점 업데이트
-        bestToPoint = toPoint; // 최적의 도착 점 업데이트
-      }
-    });
-  });
+  // 도착 도형의 중심 좌표 계산
+  const toCenterX = to.x + (isRectangle(to) ? to.width / 2 : to.width / 2);
+  const toCenterY = to.y + (isRectangle(to) ? to.height / 2 : to.height / 2);
 
-  // 최적의 출발 점과 도착 점의 좌표 추출
-  const fromX = bestFromPoint.x;
-  const fromY = bestFromPoint.y;
-  const toX = bestToPoint.x;
-  const toY = bestToPoint.y;
+  let fromPoint, toPoint;
 
-  // 출발점과 도착점의 중간 좌표 계산
-  const midX = (fromX + toX) / 2;
-  const midY = (fromY + toY) / 2;
+  // 화살표의 방향을 결정하기 위해 x축과 y축의 차이를 계산
+  const dx = toCenterX - fromCenterX;
+  const dy = toCenterY - fromCenterY;
 
-  const offset = 15; // 화살표의 굴곡을 위한 오프셋 값
-
-  let points: number[]; // 화살표를 그리기 위한 포인트 배열 선언
-
-  // 출발점과 도착점의 수평 거리와 수직 거리를 비교하여 화살표의 방향 결정
-  if (Math.abs(toX - fromX) > Math.abs(toY - fromY)) {
-    // 수평 방향일 경우
-    const direction = toX > fromX ? -1 : 1; // 도착점이 오른쪽에 있으면 왼쪽으로, 왼쪽에 있으면 오른쪽으로 오프셋 적용
-    const adjustedToX = toX + direction * offset; // 도착점의 X 좌표를 오프셋만큼 조정
-    const bendX = midX; // 굴곡점의 X 좌표를 중간 X로 설정
-
-    // 화살표의 포인트 배열 설정: 출발점 -> 굴곡점 -> 도착점
-    points = [fromX, fromY, bendX, fromY, bendX, toY, adjustedToX, toY];
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // 수평 방향의 차이가 더 큰 경우
+    if (dx > 0) {
+      // 화살표가 오른쪽으로 향함
+      fromPoint = fromCenters[3]; // 출발 도형의 오른쪽 측면 중앙
+      toPoint = toCenters[2]; // 도착 도형의 왼쪽 측면 중앙
+    } else {
+      // 화살표가 왼쪽으로 향함
+      fromPoint = fromCenters[2]; // 출발 도형의 왼쪽 측면 중앙
+      toPoint = toCenters[3]; // 도착 도형의 오른쪽 측면 중앙
+    }
   } else {
-    // 수직 방향일 경우
-    const direction = toY > fromY ? -1 : 1; // 도착점이 아래쪽에 있으면 위쪽으로, 위쪽에 있으면 아래쪽으로 오프셋 적용
-    const adjustedToY = toY + direction * offset; // 도착점의 Y 좌표를 오프셋만큼 조정
-    const bendY = midY; // 굴곡점의 Y 좌표를 중간 Y로 설정
-
-    // 화살표의 포인트 배열 설정: 출발점 -> 굴곡점 -> 도착점
-    points = [fromX, fromY, fromX, bendY, toX, bendY, toX, adjustedToY];
+    // 수직 방향의 차이가 더 큰 경우
+    if (dy > 0) {
+      // 화살표가 아래쪽으로 향함
+      fromPoint = fromCenters[1]; // 출발 도형의 아래 측면 중앙
+      toPoint = toCenters[0]; // 도착 도형의 위 측면 중앙
+    } else {
+      // 화살표가 위쪽으로 향함
+      fromPoint = fromCenters[0]; // 출발 도형의 위 측면 중앙
+      toPoint = toCenters[1]; // 도착 도형의 아래 측면 중앙
+    }
   }
 
-  // 화살표 머리를 그리기 위한 계산
-  const arrowLength = 5; // 화살표 머리의 길이 설정
-  const len = points.length; // 포인트 배열의 길이
-  const x1 = points[len - 4]; // 화살표 머리 시작점의 X 좌표
-  const y1 = points[len - 3]; // 화살표 머리 시작점의 Y 좌표
-  const x2 = points[len - 2]; // 화살표 머리 끝점의 X 좌표
-  const y2 = points[len - 1]; // 화살표 머리 끝점의 Y 좌표
+  // 출발점과 도착점의 중간 좌표 계산
+  const midX = (fromPoint.x + toPoint.x) / 2;
+  const midY = (fromPoint.y + toPoint.y) / 2;
 
-  const angle = Math.atan2(y2 - y1, x2 - x1); // 화살표 머리의 각도 계산 (라디안)
+  const offset = 20; // 꺾임 포인트의 오프셋 값 (현재 사용되지 않음)
+  let points: number[];
 
-  // 화살표 머리의 끝점을 조정하여 머리 부분을 그리기 적합하게 함
-  const x2_new = x2 - arrowLength * Math.cos(angle);
-  const y2_new = y2 - arrowLength * Math.sin(angle);
+  // 꺾임 포인트를 기준으로 화살표의 꺾인 부분을 계산
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // 수평 방향으로 꺾이는 경우
+    const bendX = midX; // 중간 x 좌표를 꺾임 포인트의 x 좌표로 설정
+    points = [
+      fromPoint.x, // 출발점 x
+      fromPoint.y, // 출발점 y
+      bendX, // 꺾임점 x (수평 이동)
+      fromPoint.y, // 꺾임점 y (출발점 y와 동일)
+      bendX, // 꺾임점 x (수평 이동)
+      toPoint.y, // 꺾임점 y (도착점 y와 동일)
+      toPoint.x, // 도착점 x
+      toPoint.y, // 도착점 y
+    ];
+  } else {
+    // 수직 방향으로 꺾이는 경우
+    const bendY = midY; // 중간 y 좌표를 꺾임 포인트의 y 좌표로 설정
+    points = [
+      fromPoint.x, // 출발점 x
+      fromPoint.y, // 출발점 y
+      fromPoint.x, // 꺾임점 x (출발점 x와 동일)
+      bendY, // 꺾임점 y (수직 이동)
+      toPoint.x, // 꺾임점 x (도착점 x와 동일)
+      bendY, // 꺾임점 y (수직 이동)
+      toPoint.x, // 도착점 x
+      toPoint.y, // 도착점 y
+    ];
+  }
 
-  // 포인트 배열의 마지막 두 좌표를 업데이트하여 화살표 머리의 위치 조정
-  points[len - 2] = x2_new;
-  points[len - 1] = y2_new;
+  // 화살표 헤드 계산
+  const arrowLength = 15; // 화살표 헤드의 길이
+  const angle = Math.atan2(
+    toPoint.y - points[points.length - 3],
+    toPoint.x - points[points.length - 4],
+  );
+
+  // 화살표 헤드의 끝점 (객체와 접하는 점)
+  const arrowTipX = toPoint.x;
+  const arrowTipY = toPoint.y;
+
+  // 화살표 헤드의 시작점을 객체 바깥쪽으로 조정
+  const x2_new = arrowTipX + arrowLength * Math.cos(angle);
+  const y2_new = arrowTipY + arrowLength * Math.sin(angle);
+
+  // 화살표 선의 끝점을 화살표 헤드의 시작점으로 조정
+  points[points.length - 2] = x2_new;
+  points[points.length - 1] = y2_new;
 
   return {
-    points, // 화살표를 그리기 위한 포인트 배열
-    arrowTipX: x2, // 화살표 머리의 X 좌표
-    arrowTipY: y2, // 화살표 머리의 Y 좌표
+    points,
+    arrowTipX,
+    arrowTipY,
   };
 }

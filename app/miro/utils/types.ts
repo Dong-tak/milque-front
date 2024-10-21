@@ -17,10 +17,12 @@ export interface RectangleShape extends ShapeProps {
 
 export interface TextShape extends ShapeProps {
   type: "textbox";
-  x: number;
-  y: number;
+  x: number; // 추가
+  y: number; // 추가
   text: string;
   fontSize: number;
+  width: number;
+  height: number;
   draggable: boolean;
 }
 
