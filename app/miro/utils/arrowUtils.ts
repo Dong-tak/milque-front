@@ -61,7 +61,6 @@ export function getConnectorPoints(
   const midX = (fromPoint.x + toPoint.x) / 2;
   const midY = (fromPoint.y + toPoint.y) / 2;
 
-  const offset = 20; // 꺾임 포인트의 오프셋 값 (현재 사용되지 않음)
   let points: number[];
 
   // 꺾임 포인트를 기준으로 화살표의 꺾인 부분을 계산
@@ -95,26 +94,23 @@ export function getConnectorPoints(
 
   // 화살표 헤드 계산
   const arrowLength = 15; // 화살표 헤드의 길이
-  const angle = Math.atan2(
+  const arrowAngle = Math.atan2(
     toPoint.y - points[points.length - 3],
     toPoint.x - points[points.length - 4],
   );
 
-  // 화살표 헤드의 끝점 (객체와 접하는 점)
-  const arrowTipX = toPoint.x;
-  const arrowTipY = toPoint.y;
-
-  // 화살표 헤드의 시작점을 객체 바깥쪽으로 조정
-  const x2_new = arrowTipX + arrowLength * Math.cos(angle);
-  const y2_new = arrowTipY + arrowLength * Math.sin(angle);
+  // 화살표 헤드를 객체 바깥으로 이동
+  const arrowOffset = -15; // 화살표 헤드를 객체로부터 얼마나 떨어뜨릴지 결정하는 값
+  const finalArrowTipX = toPoint.x + Math.cos(arrowAngle) * arrowOffset;
+  const finalArrowTipY = toPoint.y + Math.sin(arrowAngle) * arrowOffset;
 
   // 화살표 선의 끝점을 화살표 헤드의 시작점으로 조정
-  points[points.length - 2] = x2_new;
-  points[points.length - 1] = y2_new;
+  points[points.length - 2] = finalArrowTipX;
+  points[points.length - 1] = finalArrowTipY;
 
   return {
     points,
-    arrowTipX,
-    arrowTipY,
+    arrowTipX: finalArrowTipX,
+    arrowTipY: finalArrowTipY,
   };
 }
