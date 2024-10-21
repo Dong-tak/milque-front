@@ -125,61 +125,22 @@ const DrawingBoard = () => {
     const id = `text-${shapes.length + 1}`;
     const initialText = [
       {
-        type: "paragraph",
-        content: "Welcome to this demo!",
-      },
-      {
-        type: "paragraph",
-      },
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: "Blocks:",
-            styles: { bold: true },
-          },
-        ],
-      },
-      {
-        type: "paragraph",
-        content: "Paragraph",
-      },
-      {
         type: "heading",
-        content: "Heading",
+        props: {
+          textColor: "default",
+          backgroundColor: "default",
+          textAlignment: "left",
+          level: 3,
+        },
+        content: "",
       },
       {
         type: "bulletListItem",
-        content: "Bullet List Item",
+        content: "",
       },
       {
-        type: "numberedListItem",
-        content: "Numbered List Item",
-      },
-      {
-        type: "checkListItem",
-        content: "Check List Item",
-      },
-      {
-        type: "table",
-        content: {
-          type: "tableContent",
-          rows: [
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-            {
-              cells: ["Table Cell", "Table Cell", "Table Cell"],
-            },
-          ],
-        },
-      },
-      {
-        type: "file",
+        type: "paragraph",
+        content: "",
       },
     ];
     setShapes([
@@ -371,6 +332,7 @@ const DrawingBoard = () => {
                           isSelected: s.id === shape.id,
                         }));
                         setShapes(newShapes);
+                        console.log("Group Clicked");
                       }}
                       onChange={(newAttrs: Partial<typeof shape>) => {
                         const newShapes = shapes.map((s) =>

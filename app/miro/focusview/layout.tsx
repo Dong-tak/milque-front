@@ -1,4 +1,6 @@
 import React from "react";
+import "@blocknote/mantine/style.css";
+import "@blocknote/core/fonts/inter.css";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
