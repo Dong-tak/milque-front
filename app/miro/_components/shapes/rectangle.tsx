@@ -9,6 +9,7 @@ import {
 } from "@/lib/snapping";
 import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
+import { anchorStyleFunc } from "./anchorStyle";
 
 const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
   const shapeRef = useRef<any>(null);
@@ -62,6 +63,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           onClick={(e) => (e.cancelBubble = true)} // Prevent event bubbling
           onTap={(e) => (e.cancelBubble = true)} // Prevent event bubbling
           anchorDragBoundFunc={anchorDragBoundFunc}
+          anchorStyleFunc={anchorStyleFunc}
           boundBoxFunc={(oldBox, newBox) => {
             // 최소 크기를 제한합니다.
             if (newBox.width < 5 || newBox.height < 5) {
