@@ -1,6 +1,5 @@
 // components/shapes/Rectangle.tsx
 "use client";
-
 import {
   anchorDragBoundFunc,
   snap,
@@ -11,21 +10,36 @@ import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 import { anchorStyleFunc } from "./anchorStyle";
 
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
+interface RectangleProps {
+  shapeProps: any;
+  isSelected: boolean;
+  onSelect: () => void;
+  onChange: (newAttrs: any) => void;
+  onDragMove?: (e: any) => void;
+}
+
+const Rectangle: React.FC<RectangleProps> = ({
+  shapeProps,
+  isSelected,
+  onSelect,
+  onChange,
+  onDragMove,
+}) => {
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
 
   useEffect(() => {
-    if (isSelected) {
-      // Transformer 노드를 연결합니다.
+    if (isSelected && trRef.current && shapeRef.current) {
+      // 트랜스포머 연결
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
   }, [isSelected]);
 
   return (
-    <React.Fragment>
+    <>
       <Rect
+        onClick={onSelect}
         ref={shapeRef}
         {...shapeProps}
         draggable
@@ -40,19 +54,18 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
         onDragMove={snapOnDragMove}
         onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
-          e.cancelBubble = true; // Prevent event bubbling
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
+
+          // 스케일을 초기화합니다
           node.scaleX(1);
           node.scaleY(1);
-          // 크기와 스케일을 업데이트합니다.
           onChange({
-            ...shapeProps,
             x: node.x(),
             y: node.y(),
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY),
+            height: Math.max(node.height() * scaleY),
           });
         }}
       />
@@ -73,7 +86,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           }}
         />
       )}
-    </React.Fragment>
+    </>
   );
 };
 

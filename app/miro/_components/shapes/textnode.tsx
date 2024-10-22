@@ -39,7 +39,8 @@ const TextNode: React.FC<TextNodeProps> = ({
   } | null>(null);
 
   useEffect(() => {
-    if (isSelected && !isEditing) {
+    if (isSelected && trRef.current) {
+      // attach transformer
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
@@ -147,6 +148,8 @@ const TextNode: React.FC<TextNodeProps> = ({
       )}
     </>
   );
-};
+});
+
+TextNode.displayName = "TextNode";
 
 export default TextNode;

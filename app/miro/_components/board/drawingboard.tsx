@@ -2,32 +2,47 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Stage,
-  Layer,
-  Group,
-  Rect,
-  Text,
-  Arrow as KonvaArrow,
-  Shape,
-} from "react-konva";
+import { Stage, Layer } from "react-konva";
 import Rectangle from "../shapes/rectangle";
 import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
+import Toolbar from "../Toolbar";
+import {
+  ShapeProps,
+  RectangleShape,
+  TextShape,
+  ArrowShape,
+  isRectangle,
+  isArrow,
+  isText,
+} from "../../utils/types";
+import {
+  findClosestShapeAtPoint,
+  getClosestSidePoint,
+  snapDistance,
+} from "../../utils/helpers";
+import { getConnectorPoints } from "../../utils/arrowUtils";
+import { updateArrows } from "../../utils/updatearrow";
 import { defaultProps } from "@blocknote/core";
 
+
 const DrawingBoard = () => {
-  const [shapes, setShapes] = useState<any[]>([]);
+  const [shapes, setShapes] = useState<
+    (RectangleShape | ArrowShape | TextShape)[]
+  >([]);
   const stageRef = useRef<any>(null);
   const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
-  const [newShape, setNewShape] = useState<any>(null); // 현재 그리는 사각형
+  const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(
+    null,
+  ); // 현재 그리는 도형
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
+  const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
 
   // 스테이지 스케일 및 위치 상태
-  const initialScale = 1 / 10;
+  const initialScale = 1;
   const [stageScale, setStageScale] = useState(initialScale);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
-  const minScale = initialScale;
+  const minScale = 0.5;
   const maxScale = 2;
 
   // 팬닝 상태 (스페이스바를 누를 때 팬닝 가능)
@@ -106,22 +121,6 @@ const DrawingBoard = () => {
   };
 
   // 도형 추가 함수들
-
-  const addArrowAtPosition = (x: number, y: number) => {
-    const id = `arrow-${shapes.length + 1}`;
-    setShapes([
-      ...shapes,
-      {
-        id,
-        type: "arrow",
-        points: [x, y, x + 100, y + 100],
-        stroke: "black",
-        strokeWidth: 2,
-        draggable: true,
-      },
-    ]);
-  };
-
   const addTextAtPosition = (x: number, y: number) => {
     const id = `text-${shapes.length + 1}`;
     const initialText = [
@@ -160,7 +159,7 @@ const DrawingBoard = () => {
 
   // Stage click event handler
   const handleStageClick = (e: any) => {
-    // Only deselect if clicked on empty area (Stage)
+    // 빈 공간을 클릭하면 선택 해제
     if (e.target === e.target.getStage()) {
       const newShapes = shapes.map((s) => ({
         ...s,
@@ -170,19 +169,25 @@ const DrawingBoard = () => {
     }
   };
 
-  // 사각형 생성 모드 활성화 (툴팁 클릭 시 호출)
+  // 사각형 생성 모드 활성화 (툴바 클릭 시 호출)
   const handleRectangleToolClick = () => {
     setIsRectangleMode(true); // 사각형 생성 모드 활성화
+    setIsArrowMode(false); // 화살표 생성 모드 비활성화
+  };
+
+  // 화살표 생성 모드 활성화
+  const handleArrowToolClick = () => {
+    setIsArrowMode(true); // 화살표 생성 모드 활성화
+    setIsRectangleMode(false); // 사각형 생성 모드 비활성화
   };
 
   const handleMouseDown = (e: any) => {
-    if (!isRectangleMode || isDrawing) return;
+    if (isPanning) return;
 
     const stage = stageRef.current;
-    const pointerPos = stage.getPointerPosition(); // 클릭한 포인터 위치
+    const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
 
-    // 스케일과 스테이지 위치를 고려해 포인터 좌표를 변환
     const adjustedPos = {
       x: (pointerPos.x - stagePosition.x) / stageScale,
       y: (pointerPos.y - stagePosition.y) / stageScale,
@@ -190,17 +195,46 @@ const DrawingBoard = () => {
 
     const { x, y } = adjustedPos;
 
-    setNewShape({
-      id: `rect-${shapes.length + 1}`,
-      type: "rectangle",
-      x,
-      y,
-      width: 0,
-      height: 0,
-      fill: "rgba(255, 0, 0, 0.5)", // 미리보기 색상
-      draggable: false,
-    });
-    setIsDrawing(true); // 드로잉 시작
+    if (isRectangleMode && !isDrawing) {
+      const newRect: RectangleShape = {
+        id: `rect-${shapes.length + 1}`,
+        type: "rectangle",
+        x,
+        y,
+        width: 0,
+        height: 0,
+        fill: "rgba(0, 0, 255, 0.5)", // 미리보기 색상
+        draggable: false,
+      };
+      setNewShape(newRect);
+      setIsDrawing(true); // 드로잉 시작
+    } else if (isArrowMode && !isDrawing) {
+      const startShape = findClosestShapeAtPoint(
+        x,
+        y,
+        shapes.filter((s) => isRectangle(s) || isText(s)) as (
+          | RectangleShape
+          | TextShape
+        )[],
+      );
+
+      let startPoint = { x, y };
+      if (startShape) {
+        startPoint = getClosestSidePoint(startShape, x, y);
+      }
+
+      const newArrow: ArrowShape = {
+        id: `arrow-${shapes.length + 1}`,
+        type: "arrow",
+        from: startShape ? startShape.id : "",
+        to: "",
+        points: [startPoint.x, startPoint.y, startPoint.x, startPoint.y],
+        arrowTipX: startPoint.x,
+        arrowTipY: startPoint.y,
+      };
+      setNewShape(newArrow);
+      setIsDrawing(true);
+    }
   };
 
   const handleMouseMove = (e: any) => {
@@ -210,7 +244,6 @@ const DrawingBoard = () => {
     const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
 
-    // 스케일과 위치를 고려해 포인터 좌표를 변환
     const adjustedPos = {
       x: (pointerPos.x - stagePosition.x) / stageScale,
       y: (pointerPos.y - stagePosition.y) / stageScale,
@@ -218,25 +251,126 @@ const DrawingBoard = () => {
 
     const { x, y } = adjustedPos;
 
-    const width = x - newShape.x;
-    const height = y - newShape.y;
+    if (isRectangleMode && newShape.type === "rectangle") {
+      const width = x - newShape.x;
+      const height = y - newShape.y;
 
-    setNewShape({
-      ...newShape,
-      width: Math.abs(width),
-      height: Math.abs(height),
-      x: width < 0 ? x : newShape.x,
-      y: height < 0 ? y : newShape.y,
-    });
+      setNewShape({
+        ...newShape,
+        width: Math.abs(width),
+        height: Math.abs(height),
+        x: width < 0 ? x : newShape.x,
+        y: height < 0 ? y : newShape.y,
+      });
+    } else if (isArrowMode && newShape.type === "arrow") {
+      const endShape = findClosestShapeAtPoint(
+        x,
+        y,
+        shapes.filter((s) => isRectangle(s) || isText(s)) as (
+          | RectangleShape
+          | TextShape
+        )[],
+      );
+
+      let endPoint = { x, y };
+      if (endShape) {
+        endPoint = getClosestSidePoint(endShape, x, y);
+      }
+
+      const newPoints = [
+        newShape.points[0],
+        newShape.points[1],
+        endPoint.x,
+        endPoint.y,
+      ];
+
+      setNewShape({
+        ...newShape,
+        to: endShape ? endShape.id : "",
+        points: newPoints,
+        arrowTipX: endPoint.x,
+        arrowTipY: endPoint.y,
+      });
+    }
   };
 
   const handleMouseUp = () => {
     if (!isDrawing || !newShape) return;
 
-    setShapes([...shapes, { ...newShape, fill: "red", draggable: true }]);
-    setNewShape(null); // 초기화
-    setIsDrawing(false); // 드로잉 종료
-    setIsRectangleMode(false); // 사각형 생성 모드 비활성화
+    if (isRectangleMode && newShape.type === "rectangle") {
+      const finalizedRect: RectangleShape = {
+        ...newShape,
+        fill: "blue",
+        draggable: true,
+      };
+      setShapes([...shapes, finalizedRect]);
+    } else if (isArrowMode && newShape.type === "arrow") {
+      setShapes([...shapes, newShape]);
+    }
+
+    setNewShape(null);
+    setIsDrawing(false);
+    setIsRectangleMode(false);
+    setIsArrowMode(false);
+  };
+
+  const handleArrowPointDrag = (
+    id: string,
+    x: number,
+    y: number,
+    type: "from" | "to",
+  ) => {
+    const updatedShapes = shapes.map((shape) => {
+      if (isArrow(shape) && shape.id === id) {
+        const otherShapes = shapes.filter(
+          (s) =>
+            (isRectangle(s) || isText(s)) &&
+            s.id !== (type === "from" ? shape.from : shape.to),
+        );
+        const closestShape = findClosestShapeAtPoint(
+          x,
+          y,
+          otherShapes as (RectangleShape | TextShape)[],
+        );
+
+        if (closestShape) {
+          const closestPoint = getClosestSidePoint(closestShape, x, y);
+          x = closestPoint.x;
+          y = closestPoint.y;
+
+          if (type === "from") {
+            shape.from = closestShape.id;
+          } else {
+            shape.to = closestShape.id;
+          }
+        } else {
+          if (type === "from") {
+            shape.from = "";
+          } else {
+            shape.to = "";
+          }
+        }
+
+        const newPoints = [...shape.points];
+        if (type === "from") {
+          newPoints[0] = x;
+          newPoints[1] = y;
+        } else {
+          newPoints[newPoints.length - 2] = x;
+          newPoints[newPoints.length - 1] = y;
+        }
+
+        return {
+          ...shape,
+          points: newPoints,
+          arrowTipX: type === "to" ? x : shape.arrowTipX,
+          arrowTipY: type === "to" ? y : shape.arrowTipY,
+        };
+      }
+      return shape;
+    });
+
+    setShapes(updatedShapes);
   };
 
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
@@ -335,167 +469,111 @@ const DrawingBoard = () => {
           <Layer>
             {/* 도형들 렌더링 */}
             {shapes.map((shape) => {
-              switch (shape.type) {
-                case "rectangle":
-                  return (
-                    <Rectangle
-                      key={shape.id}
-                      shapeProps={shape}
-                      isSelected={shape.isSelected}
-                      onSelect={() => {
-                        const newShapes = shapes.map((s) => ({
-                          ...s,
-                          isSelected: s.id === shape.id,
-                        }));
-                        setShapes(newShapes);
-                      }}
-                      onChange={(newAttrs: Partial<typeof shape>) => {
-                        const newShapes = shapes.map((s) =>
-                          s.id === shape.id ? { ...s, ...newAttrs } : s,
-                        );
-                        setShapes(newShapes);
-                      }}
-                    />
-                  );
-                case "arrow":
-                  return (
-                    <Arrow
-                      key={shape.id}
-                      shapeProps={shape}
-                      isSelected={shape.isSelected}
-                      onSelect={() => {
-                        const newShapes = shapes.map((s) => ({
-                          ...s,
-                          isSelected: s.id === shape.id,
-                        }));
-                        setShapes(newShapes);
-                      }}
-                      onChange={(newAttrs: Partial<typeof shape>) => {
-                        const newShapes = shapes.map((s) =>
-                          s.id === shape.id ? { ...s, ...newAttrs } : s,
-                        );
-                        setShapes(newShapes);
-                      }}
-                    />
-                  );
-                case "textbox":
-                  return (
-                    <TextNode
-                      key={shape.id}
-                      shapeProps={shape}
-                      isSelected={shape.isSelected}
-                      onSelect={() => {
-                        const newShapes = shapes.map((s) => ({
-                          ...s,
-                          isSelected: s.id === shape.id,
-                        }));
-                        setShapes(newShapes);
-                      }}
-                      onChange={(newAttrs: Partial<typeof shape>) => {
-                        const newShapes = shapes.map((s) =>
-                          s.id === shape.id ? { ...s, ...newAttrs } : s,
-                        );
-                        setShapes(newShapes);
-                      }}
-                    />
-                  );
-                default:
-                  return null;
+              if (isRectangle(shape)) {
+                return (
+                  <Rectangle
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<RectangleShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(
+                        shape.id,
+                        node.x(),
+                        node.y(),
+                        shapes,
+                        setShapes,
+                      );
+                    }}
+                  />
+                );
+              } else if (isText(shape)) {
+                return (
+                  <TextNode
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<TextShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isArrow(shape)) {
+                return (
+                  <Arrow
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<ArrowShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onDragMove={handleArrowPointDrag}
+                  />
+                );
               }
+              return null;
             })}
-            {/* 드로잉 중인 사각형 미리보기 */}
-            {newShape && <Rect {...newShape} />}
+            {/* 드로잉 중인 도형 미리보기 */}
+            {newShape && newShape.type === "rectangle" && (
+              <Rectangle
+                shapeProps={newShape}
+                isSelected={false}
+                onSelect={() => {}}
+                onChange={() => {}}
+              />
+            )}
+            {newShape && newShape.type === "arrow" && (
+              <Arrow
+                shapeProps={newShape}
+                isSelected={false}
+                onSelect={() => {}}
+                onChange={() => {}} // 빈 함수로 설정
+                onDragMove={() => {}} // 빈 함수로 설정
+              />
+            )}
           </Layer>
         </Stage>
-        {/* 툴팁 (Stage 밖으로 이동) */}
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            left: "50%",
-            backgroundColor: "white",
-            border: "1px solid black",
-            borderRadius: "5px",
-            padding: "10px",
-            display: "flex",
-            gap: "20px",
-            transform: "translateX(-50%)",
-          }}
-        >
-          <div
-            onClick={handleRectangleToolClick} // 사각형 생성 모드 활성화
-            style={{ cursor: "pointer", textAlign: "center" }}
-          >
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                backgroundColor: "red",
-                margin: "auto",
-              }}
-            ></div>
-            <span>사각형</span>
-          </div>
-          <div
-            onClick={() =>
-              addArrowAtPosition(stageSize.width / 2, stageSize.height / 2)
-            }
-            style={{ cursor: "pointer", textAlign: "center" }}
-          >
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                margin: "auto",
-                position: "relative",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: 0,
-                  right: 0,
-                  height: "2px",
-                  backgroundColor: "black",
-                }}
-              ></div>
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: 0,
-                  width: 0,
-                  height: 0,
-                  borderTop: "5px solid transparent",
-                  borderBottom: "5px solid transparent",
-                  borderLeft: "10px solid black",
-                  transform: "translateY(-50%)",
-                }}
-              ></div>
-            </div>
-            <span>화살표</span>
-          </div>
-          <div
-            onClick={() =>
-              addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
-            }
-            style={{ cursor: "pointer", textAlign: "center" }}
-          >
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                margin: "auto",
-                fontSize: "24px",
-                fontWeight: "bold",
-              }}
-            >
-              T
-            </div>
-            <span>텍스트</span>
-          </div>
-        </div>
+        {/* 툴바 컴��넌트 */}
+        <Toolbar
+          onRectangleToolClick={handleRectangleToolClick}
+          onArrowToolClick={handleArrowToolClick}
+          onAddText={() =>
+            addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
+          }
+        />
       </div>
     </div>
   );
