@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Stage, Layer } from "react-konva";
+import { Stage, Layer, Shape } from "react-konva";
 import Rectangle from "../shapes/rectangle";
 import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
@@ -25,11 +25,8 @@ import { getConnectorPoints } from "../../utils/arrowUtils";
 import { updateArrows } from "../../utils/updatearrow";
 import { defaultProps } from "@blocknote/core";
 
-
 const DrawingBoard = () => {
-  const [shapes, setShapes] = useState<
-    (RectangleShape | ArrowShape | TextShape)[]
-  >([]);
+  const [shapes, setShapes] = useState<any[]>([]);
   const stageRef = useRef<any>(null);
   const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
   const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(

@@ -21,10 +21,8 @@ export const updateArrows = (
   movedShapeId: string,
   newX: number,
   newY: number,
-  shapes: (RectangleShape | ArrowShape | TextShape)[],
-  setShapes: React.Dispatch<
-    React.SetStateAction<(RectangleShape | ArrowShape | TextShape)[]>
-  >,
+  shapes: any[],
+  setShapes: React.Dispatch<React.SetStateAction<any[]>>,
 ) => {
   const updatedShapes = shapes.map((shape) => {
     if (isArrow(shape)) {
