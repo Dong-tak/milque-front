@@ -26,25 +26,6 @@ interface EditorProps {
   onChange: (value: string) => void; // 내용 변경 시 호출될 콜백 함수
   editable?: boolean; // 편집 가능 여부 (선택적)
 }
-const schema = BlockNoteSchema.create({
-  blockSpecs: {
-    // Adds all default blocks.
-    ...defaultBlockSpecs,
-    // Adds the Alert block.
-    // page: PageBlock,
-  },
-});
-
-// const insertPageBlock = (editor: typeof schema.BlockNoteEditor) => ({
-//   title: "Page",
-//   onItemClick: () => {
-//     insertOrUpdateBlock(editor, {
-//       type: "page",
-//     });
-//   },
-//   group: "Other",
-//   icon: <StickyNote />,
-// });
 
 const Editor = ({ initialContent, onChange, editable }: EditorProps) => {
   // BlockNote 에디터 인스턴스 생성
@@ -147,24 +128,7 @@ const Editor = ({ initialContent, onChange, editable }: EditorProps) => {
 
   return (
     <div>
-      <BlockNoteView editor={editor}>
-        {/* Replaces the default Slash Menu. */}
-        {/* <SuggestionMenuController
-          triggerCharacter={"/"}
-          getItems={async (query) =>
-            // Gets all default slash menu items and `insertAlert` item.
-            filterSuggestionItems(
-              [
-                ...getDefaultReactSlashMenuItems(editor),
-                insertPageBlock(editor),
-              ],
-              query,
-            )
-          }
-        /> */}
-      </BlockNoteView>
-      {/* 현재 블록 상태를 JSON 형태로 화면에 표시 */}
-      <pre>{/* <code>{JSON.stringify(blocks, null, 2)}</code> */}</pre>
+      <BlockNoteView editor={editor}></BlockNoteView>
     </div>
   );
 };

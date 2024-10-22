@@ -1,8 +1,14 @@
 // components/shapes/Rectangle.tsx
 "use client";
-
-import React, { useEffect, useRef } from "react";
+import {
+  anchorDragBoundFunc,
+  snap,
+  snapOnDragEnd,
+  snapOnDragMove,
+} from "@/lib/snapping";
+import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
+import { anchorStyleFunc } from "./anchorStyle";
 
 interface RectangleProps {
   shapeProps: any;
@@ -36,18 +42,17 @@ const Rectangle: React.FC<RectangleProps> = ({
         onClick={onSelect}
         ref={shapeRef}
         {...shapeProps}
-        draggable={shapeProps.draggable}
-        onDragEnd={(e) => {
-          onChange({
-            x: e.target.x(),
-            y: e.target.y(),
-          });
+        draggable
+        onClick={(e) => {
+          onSelect();
+          e.cancelBubble = true; // Prevent event bubbling
         }}
-        onDragMove={(e) => {
-          if (onDragMove) {
-            onDragMove(e);
-          }
+        onTap={(e) => {
+          onSelect();
+          e.cancelBubble = true; // Prevent event bubbling
         }}
+        onDragMove={snapOnDragMove}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
@@ -67,8 +72,13 @@ const Rectangle: React.FC<RectangleProps> = ({
       {isSelected && (
         <Transformer
           ref={trRef}
-          boundBoxFunc={(oldBox: any, newBox: any) => {
-            // 크기 조정 제한
+          flipEnabled={false}
+          onClick={(e) => (e.cancelBubble = true)} // Prevent event bubbling
+          onTap={(e) => (e.cancelBubble = true)} // Prevent event bubbling
+          anchorDragBoundFunc={anchorDragBoundFunc}
+          anchorStyleFunc={anchorStyleFunc}
+          boundBoxFunc={(oldBox, newBox) => {
+            // 최소 크기를 제한합니다.
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
