@@ -9,11 +9,10 @@ interface TextNodeProps {
   isSelected: boolean;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
-  onDragMove?: (e: any) => void;
 }
 
 const TextNode = React.forwardRef<any, TextNodeProps>((props, ref) => {
-  const { shapeProps, isSelected, onSelect, onChange, onDragMove } = props;
+  const { shapeProps, isSelected, onSelect, onChange } = props;
   const shapeRef = ref as React.MutableRefObject<any>;
   const trRef = useRef<any>();
 
@@ -50,11 +49,6 @@ const TextNode = React.forwardRef<any, TextNodeProps>((props, ref) => {
             x: e.target.x(),
             y: e.target.y(),
           });
-        }}
-        onDragMove={(e) => {
-          if (onDragMove) {
-            onDragMove(e);
-          }
         }}
       />
       {isSelected && (

@@ -22,6 +22,7 @@ import {
   snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
+import { updateArrows } from "../../utils/updatearrow";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<
@@ -291,48 +292,6 @@ const DrawingBoard = () => {
     setIsArrowMode(false);
   };
 
-  // updateArrows 함수 수정
-  const updateArrows = (movedShapeId: string, newX: number, newY: number) => {
-    const updatedShapes = shapes.map((shape) => {
-      if (isArrow(shape)) {
-        if (shape.from === movedShapeId || shape.to === movedShapeId) {
-          const fromShape =
-            shape.from === movedShapeId
-              ? ({
-                  ...shapes.find((s) => s.id === shape.from),
-                  x: newX,
-                  y: newY,
-                } as RectangleShape | TextShape)
-              : (shapes.find((s) => s.id === shape.from) as
-                  | RectangleShape
-                  | TextShape);
-          const toShape =
-            shape.to === movedShapeId
-              ? ({
-                  ...shapes.find((s) => s.id === shape.to),
-                  x: newX,
-                  y: newY,
-                } as RectangleShape | TextShape)
-              : (shapes.find((s) => s.id === shape.to) as
-                  | RectangleShape
-                  | TextShape);
-
-          if (fromShape && toShape) {
-            const result = getConnectorPoints(fromShape, toShape);
-            return {
-              ...shape,
-              points: result.points,
-              arrowTipX: result.arrowTipX,
-              arrowTipY: result.arrowTipY,
-            };
-          }
-        }
-      }
-      return shape;
-    });
-    setShapes(updatedShapes);
-  };
-
   const handleArrowPointDrag = (
     id: string,
     x: number,
@@ -452,7 +411,13 @@ const DrawingBoard = () => {
                     }}
                     onDragMove={(e: any) => {
                       const node = e.target;
-                      updateArrows(shape.id, node.x(), node.y());
+                      updateArrows(
+                        shape.id,
+                        node.x(),
+                        node.y(),
+                        shapes,
+                        setShapes,
+                      );
                     }}
                   />
                 );
@@ -474,10 +439,6 @@ const DrawingBoard = () => {
                         s.id === shape.id ? { ...s, ...newAttrs } : s,
                       ) as (RectangleShape | ArrowShape | TextShape)[];
                       setShapes(newShapes);
-                    }}
-                    onDragMove={(e: any) => {
-                      const node = e.target;
-                      updateArrows(shape.id, node.x(), node.y());
                     }}
                   />
                 );
