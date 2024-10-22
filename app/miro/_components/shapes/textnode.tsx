@@ -27,13 +27,22 @@ const TextNode: React.FC<TextNodeProps> = ({
   const [textValue, setTextValue] = useState<string>(shapeProps.text || "");
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
   const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
+  // 컴포넌트 내에서 마우스 시작 위치를 저장할 상태 변수 추가
+  const [dragStartPos, setDragStartPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     if (isSelected && !isEditing) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
-  }, [isSelected, isEditing]);
+  }, [isSelected, isEditing, shapeProps]);
+
+  useEffect(() => {
+    handleResize();
+  }, [rectWidth, rectHeight]);
 
   const initialContent: PartialBlock[] | undefined = textValue
     ? JSON.parse(textValue)
@@ -58,8 +67,34 @@ const TextNode: React.FC<TextNodeProps> = ({
     }
   };
 
-  const clickedit = () => {
-    console.log("clicked");
+  // 마우스 다운 이벤트 핸들러
+  const handleMouseDown = (e: any) => {
+    onSelect();
+    if (!isEditing) {
+      e.preventDefault();
+      e.stopPropagation();
+      shapeRef.current.startDrag();
+      const stage = shapeRef.current.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      setDragStartPos(pointerPosition);
+    }
+  };
+
+  // 마우스 업 이벤트 핸들러
+  const handleMouseUp = (e: any) => {
+    shapeRef.current.stopDrag();
+    if (dragStartPos) {
+      const stage = shapeRef.current.getStage();
+      const pointerPosition = stage.getPointerPosition();
+      const dx = pointerPosition.x - dragStartPos.x;
+      const dy = pointerPosition.y - dragStartPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 5) {
+        // 이동 거리가 5픽셀 미만이면 클릭으로 간주
+        setIsEditing(true);
+      }
+      setDragStartPos(null);
+    }
   };
 
   return (
@@ -76,9 +111,7 @@ const TextNode: React.FC<TextNodeProps> = ({
           width={rectWidth}
           height={rectHeight + 20}
           y={-20}
-          zIndex={99}
           fill="lightgray"
-          onClick={clickedit}
         />
         <Html>
           <div
@@ -86,7 +119,8 @@ const TextNode: React.FC<TextNodeProps> = ({
             style={{
               width: rectWidth,
             }}
-            onClick={() => setIsEditing(true)}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
             onBlur={() => setIsEditing(false)}
           >
             <BlockNoteView

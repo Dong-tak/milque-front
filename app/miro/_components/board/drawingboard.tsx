@@ -332,7 +332,6 @@ const DrawingBoard = () => {
                           isSelected: s.id === shape.id,
                         }));
                         setShapes(newShapes);
-                        console.log("Group Clicked");
                       }}
                       onChange={(newAttrs: Partial<typeof shape>) => {
                         const newShapes = shapes.map((s) =>
