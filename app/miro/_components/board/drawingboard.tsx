@@ -9,6 +9,7 @@ import {
   Rect,
   Text,
   Arrow as KonvaArrow,
+  Shape,
 } from "react-konva";
 import Rectangle from "../shapes/rectangle";
 import Arrow from "../shapes/arrow";
@@ -33,7 +34,7 @@ const DrawingBoard = () => {
   const [isPanning, setIsPanning] = useState(false);
 
   // 스테이지 크기 상태
-  const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
+  const [stageSize, setStageSize] = useState({ width: 800, height: 800 });
 
   useEffect(() => {
     // 클라이언트 사이드에서만 window 객체에 접근
@@ -238,6 +239,48 @@ const DrawingBoard = () => {
     setIsRectangleMode(false); // 사각형 생성 모드 비활성화
   };
 
+  const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
+    let baseSpacing = 30; // 기본 간격
+    let basePointSize = 2; // 기본 점 크기
+
+    const stage = shape.getStage();
+    const scale = stage.scaleX(); // scaleX와 scaleY가 동일하다고 가정
+    const position = stage.position(); // 스테이지의 현재 위치
+    const stageWidth = stage.width();
+    const stageHeight = stage.height();
+
+    if (scale < 0.3) {
+      baseSpacing = 60;
+      basePointSize = 4;
+    } else {
+      baseSpacing = 30;
+    }
+    // 화면에 보이는 영역의 좌표 계산
+    const visibleStartX = -position.x / scale;
+    const visibleEndX = (stageWidth - position.x) / scale;
+    const visibleStartY = -position.y / scale;
+    const visibleEndY = (stageHeight - position.y) / scale;
+
+    context.fillStyle = "#E6E6E6";
+
+    // 보이는 영역 전체에 점 그리기
+    for (
+      let x = Math.floor(visibleStartX / baseSpacing) * baseSpacing;
+      x <= visibleEndX;
+      x += baseSpacing
+    ) {
+      for (
+        let y = Math.floor(visibleStartY / baseSpacing) * baseSpacing;
+        y <= visibleEndY;
+        y += baseSpacing
+      ) {
+        context.beginPath();
+        context.arc(x, y, basePointSize, 0, 2 * Math.PI);
+        context.fill();
+      }
+    }
+  };
+
   return (
     <div>
       {/* 보드 */}
@@ -247,14 +290,15 @@ const DrawingBoard = () => {
         onMouseUp={handleMouseUp}
         style={{
           width: "100%",
-          height: "80vh",
+          height: "100vh",
           position: "relative",
+          overflow: "hidden",
         }}
       >
         <Stage
           width={stageSize.width}
           height={stageSize.height}
-          style={{ backgroundColor: "#f0f0f0" }}
+          style={{ backgroundColor: "#ffffff" }}
           ref={stageRef}
           draggable={isPanning}
           scaleX={stageScale}
@@ -262,6 +306,11 @@ const DrawingBoard = () => {
           x={stagePosition.x}
           y={stagePosition.y}
           onWheel={handleWheel}
+          onDragMove={() => {
+            // 스테이지 위치가 변경되면 Layer를 다시 그립니다.
+            const layer = stageRef.current.findOne("Layer");
+            layer.batchDraw();
+          }}
           onDragEnd={(e) => {
             if (e.target === e.target.getStage()) {
               // 스테이지 자체가 드래그된 경우에만 위치 업데이트
@@ -274,6 +323,15 @@ const DrawingBoard = () => {
           onMouseDown={handleStageClick}
           onContextMenu={(e) => e.evt.preventDefault()}
         >
+          {/* 그리드 레이어 */}
+          <Layer>
+            <Shape
+              sceneFunc={(context: any, shape: any) => {
+                drawGrid(context, shape);
+              }}
+              listening={false} // 그리드가 이벤트를 받지 않도록 설정
+            />
+          </Layer>
           <Layer>
             {/* 도형들 렌더링 */}
             {shapes.map((shape) => {
@@ -361,6 +419,7 @@ const DrawingBoard = () => {
             padding: "10px",
             display: "flex",
             gap: "20px",
+            transform: "translateX(-50%)",
           }}
         >
           <div
