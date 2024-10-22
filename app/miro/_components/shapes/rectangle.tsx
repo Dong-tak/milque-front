@@ -1,7 +1,12 @@
 // components/shapes/Rectangle.tsx
 "use client";
 
-import { snap, snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
+import {
+  anchorDragBoundFunc,
+  snap,
+  snapOnDragEnd,
+  snapOnDragMove,
+} from "@/lib/snapping";
 import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 
@@ -56,6 +61,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           flipEnabled={false}
           onClick={(e) => (e.cancelBubble = true)} // Prevent event bubbling
           onTap={(e) => (e.cancelBubble = true)} // Prevent event bubbling
+          anchorDragBoundFunc={anchorDragBoundFunc}
           boundBoxFunc={(oldBox, newBox) => {
             // 최소 크기를 제한합니다.
             if (newBox.width < 5 || newBox.height < 5) {

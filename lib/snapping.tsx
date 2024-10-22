@@ -35,6 +35,7 @@ export const snapOnDragEnd = (e: any, shapeProps: any, onChange: any) => {
 
   // 위치 업데이트
   node.position({ x, y });
+  console.log("start position:", x, y);
 
   // 상태 업데이트
   onChange({
@@ -42,4 +43,13 @@ export const snapOnDragEnd = (e: any, shapeProps: any, onChange: any) => {
     x,
     y,
   });
+};
+
+export const anchorDragBoundFunc = (oldPos: any, newPos: any, event: any) => {
+  // snap 함수를 사용하여 x와 y 좌표를 스냅합니다.
+  const x = snap(newPos.x);
+  const y = snap(newPos.y);
+  console.log("snap position:", x, y);
+
+  return { x, y };
 };

@@ -6,7 +6,11 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { PartialBlock } from "@blocknote/core";
 import { Group, Rect, Transformer } from "react-konva";
-import { snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
+import {
+  anchorDragBoundFunc,
+  snapOnDragEnd,
+  snapOnDragMove,
+} from "@/lib/snapping";
 
 interface TextNodeProps {
   shapeProps: any;
@@ -135,7 +139,11 @@ const TextNode: React.FC<TextNodeProps> = ({
         </Html>
       </Group>
       {isSelected && (
-        <Transformer ref={trRef} boundBoxFunc={(oldBox, newBox) => newBox} />
+        <Transformer
+          ref={trRef}
+          boundBoxFunc={(oldBox, newBox) => newBox}
+          anchorDragBoundFunc={anchorDragBoundFunc}
+        />
       )}
     </>
   );
