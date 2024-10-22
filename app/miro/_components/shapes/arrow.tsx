@@ -114,22 +114,104 @@ const Arrow: React.FC<ArrowProps> = ({
     };
   }, [isSelected, toggleTextBox]);
 
-  // 텍스트 박스의 위치를 계산하는 함수
-  const calculateTextBoxPosition = () => {
-    const bendPointIndex = Math.floor(points.length / 2);
-    const bendPointX = points[bendPointIndex];
-    const bendPointY = points[bendPointIndex + 1];
-    return { x: bendPointX, y: bendPointY };
+  // 화살표의 중간 지점 계산
+  const calculateArrowMidpoint = () => {
+    const midIndex = Math.floor(points.length / 2);
+    return {
+      x: (points[midIndex - 2] + points[midIndex]) / 2,
+      y: (points[midIndex - 1] + points[midIndex + 1]) / 2,
+    };
   };
 
-  // 텍스트 박스의 위치
-  const textBoxPosition = calculateTextBoxPosition();
+  const getClosestPointOnSegment = React.useCallback(
+    (x1: number, y1: number, x2: number, y2: number, x: number, y: number) => {
+      const A = x - x1;
+      const B = y - y1;
+      const C = x2 - x1;
+      const D = y2 - y1;
+
+      const dot = A * C + B * D;
+      const len_sq = C * C + D * D;
+      let param = -1;
+      if (len_sq !== 0) param = dot / len_sq;
+
+      let xx, yy;
+
+      if (param < 0) {
+        xx = x1;
+        yy = y1;
+      } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+      } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+      }
+
+      return { x: xx, y: yy };
+    },
+    [],
+  );
+
+  const getClosestPointOnLine = React.useCallback(
+    (points: number[], x: number, y: number) => {
+      let closestPoint = { x: points[0], y: points[1] };
+      let minDistance = Infinity;
+
+      for (let i = 0; i < points.length - 2; i += 2) {
+        const x1 = points[i];
+        const y1 = points[i + 1];
+        const x2 = points[i + 2];
+        const y2 = points[i + 3];
+
+        const point = getClosestPointOnSegment(x1, y1, x2, y2, x, y);
+        const distance = Math.hypot(point.x - x, point.y - y);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestPoint = point;
+        }
+      }
+
+      return closestPoint;
+    },
+    [getClosestPointOnSegment],
+  );
+
+  const calculateTextBoxPosition = React.useCallback(
+    (x: number, y: number) => {
+      if (!textBoxRef.current) return { x, y };
+
+      const box = textBoxRef.current.getClientRect();
+      const centerX = x + box.width / 2;
+      const centerY = y + box.height / 2;
+
+      const closestPoint = getClosestPointOnLine(points, centerX, centerY);
+
+      return {
+        x: closestPoint.x - box.width / 2,
+        y: closestPoint.y - box.height / 2,
+      };
+    },
+    [points, getClosestPointOnLine],
+  );
+
+  // 텍스트 박스의 초기 위치 설정
+  const [textBoxPosition, setTextBoxPosition] = useState(
+    calculateArrowMidpoint(),
+  );
 
   useEffect(() => {
     if (textBoxRef.current && isTextBoxVisible) {
+      const newPos = calculateTextBoxPosition(
+        textBoxPosition.x,
+        textBoxPosition.y,
+      );
+      setTextBoxPosition(newPos);
+      textBoxRef.current.position(newPos);
       textBoxRef.current.moveToTop();
     }
-  }, [isTextBoxVisible]);
+  }, [isTextBoxVisible, points, calculateTextBoxPosition, textBoxPosition]);
 
   const handleTextDblClick = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage();
@@ -200,15 +282,56 @@ const Arrow: React.FC<ArrowProps> = ({
   };
 
   const handleTextTransform = () => {
-    if (textRef.current) {
+    if (textRef.current && textBoxRef.current) {
       const node = textRef.current;
-      const scaleX = node.scaleX();
+      const labelNode = textBoxRef.current;
+      const tagNode = labelNode.findOne("Tag");
+
+      // 새로운 너비 계산 (Transformer에 의해 변경된 너비)
+      const newWidth = Math.max(node.width() * node.scaleX(), 20);
+
+      // Text 노드의 크기와 스케일 재설정
       node.setAttrs({
-        width: Math.max(node.width() * scaleX, 20),
+        width: newWidth,
         scaleX: 1,
+        scaleY: 1,
       });
+
+      // Text 높이를 자동으로 조정
+      const newHeight = node.height();
+
+      // Tag 크기 조정
+      if (tagNode) {
+        tagNode.setAttrs({
+          width: newWidth + node.padding() * 2,
+          height: newHeight + node.padding() * 2,
+        });
+      }
+
+      // Label 크기 조정
+      labelNode.size({
+        width: newWidth + node.padding() * 2,
+        height: newHeight + node.padding() * 2,
+      });
+
+      // 텍스트 박스 위치 조정
+      const newPos = calculateTextBoxPosition(labelNode.x(), labelNode.y());
+      labelNode.position(newPos);
     }
   };
+
+  const handleLabelDragMove = (e: KonvaEventObject<DragEvent>) => {
+    const newPos = calculateTextBoxPosition(e.target.x(), e.target.y());
+    e.target.position(newPos);
+  };
+
+  // Transformer 노드 설정을 위한 useEffect 추가
+  useEffect(() => {
+    if (isSelected && !isEditing && textBoxRef.current && trRef.current) {
+      trRef.current.nodes([textBoxRef.current]);
+      trRef.current.getLayer()?.batchDraw();
+    }
+  }, [isSelected, isEditing]);
 
   return (
     <>
@@ -320,9 +443,8 @@ const Arrow: React.FC<ArrowProps> = ({
           ref={textBoxRef}
           x={textBoxPosition.x}
           y={textBoxPosition.y}
-          offsetX={100}
-          offsetY={25}
           draggable
+          onDragMove={handleLabelDragMove}
         >
           <Tag
             fill="white"
@@ -342,16 +464,17 @@ const Arrow: React.FC<ArrowProps> = ({
             padding={5}
             fill="black"
             width={200}
-            height={50}
+            height={undefined} // 여기를 수정
             align="center"
             verticalAlign="middle"
             onDblClick={handleTextDblClick}
-            onTransform={handleTextTransform}
+            wrap="word"
+            ellipsis={false}
           />
         </Label>
       )}
 
-      {isSelected && !isEditing && (
+      {isSelected && !isEditing && isTextBoxVisible && (
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox, newBox) => {
@@ -360,6 +483,8 @@ const Arrow: React.FC<ArrowProps> = ({
           }}
           enabledAnchors={["middle-left", "middle-right"]}
           rotateEnabled={false}
+          resizeEnabled={true}
+          onTransform={handleTextTransform}
         />
       )}
 
