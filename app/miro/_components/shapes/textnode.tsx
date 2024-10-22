@@ -148,7 +148,7 @@ const TextNode: React.FC<TextNodeProps> = ({
       )}
     </>
   );
-});
+};
 
 TextNode.displayName = "TextNode";
 

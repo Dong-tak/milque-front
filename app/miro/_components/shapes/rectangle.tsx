@@ -39,7 +39,6 @@ const Rectangle: React.FC<RectangleProps> = ({
   return (
     <>
       <Rect
-        onClick={onSelect}
         ref={shapeRef}
         {...shapeProps}
         draggable
