@@ -50,7 +50,12 @@ const Rectangle: React.FC<RectangleProps> = ({
           onSelect();
           e.cancelBubble = true; // Prevent event bubbling
         }}
-        onDragMove={snapOnDragMove}
+        onDragMove={(e) => {
+          snapOnDragMove(e); // 스냅핑 로직 실행
+          if (onDragMove) {
+            onDragMove(e); // 부모로부터 전달된 onDragMove 실행 (updateArrows)
+          }
+        }}
         onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
           const node = shapeRef.current;

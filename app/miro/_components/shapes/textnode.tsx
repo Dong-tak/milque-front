@@ -17,6 +17,7 @@ interface TextNodeProps {
   isSelected: boolean;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
+  onDragMove: (e: any) => void;
 }
 
 const TextNode: React.FC<TextNodeProps> = ({
@@ -24,6 +25,7 @@ const TextNode: React.FC<TextNodeProps> = ({
   isSelected,
   onSelect,
   onChange,
+  onDragMove,
 }) => {
   const shapeRef = useRef<any>();
   const trRef = useRef<any>();
@@ -108,7 +110,12 @@ const TextNode: React.FC<TextNodeProps> = ({
       <Group
         draggable
         onClick={onSelect}
-        onDragMove={snapOnDragMove}
+        onDragMove={(e) => {
+          snapOnDragMove(e); // 스냅핑 로직 실행
+          if (onDragMove) {
+            onDragMove(e); // 부모로부터 전달된 onDragMove 실행 (updateArrows)
+          }
+        }}
         onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         ref={shapeRef}
         x={shapeProps.x}
