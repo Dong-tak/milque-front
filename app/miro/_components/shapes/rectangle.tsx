@@ -1,6 +1,7 @@
 // components/shapes/Rectangle.tsx
 "use client";
 
+import { snap, snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
 import React, { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 
@@ -30,14 +31,8 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }: any) => {
           onSelect();
           e.cancelBubble = true; // Prevent event bubbling
         }}
-        onDragEnd={(e) => {
-          e.cancelBubble = true;
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
-        }}
+        onDragMove={snapOnDragMove}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
           e.cancelBubble = true; // Prevent event bubbling
           const node = shapeRef.current;

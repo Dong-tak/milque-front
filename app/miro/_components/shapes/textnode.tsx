@@ -6,6 +6,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { PartialBlock } from "@blocknote/core";
 import { Group, Rect, Transformer } from "react-konva";
+import { snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
 
 interface TextNodeProps {
   shapeProps: any;
@@ -102,15 +103,16 @@ const TextNode: React.FC<TextNodeProps> = ({
       <Group
         draggable
         onClick={onSelect}
-        onDragEnd={handleDragEnd}
+        onDragMove={snapOnDragMove}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         ref={shapeRef}
         x={shapeProps.x}
         y={shapeProps.y}
       >
         <Rect
           width={rectWidth}
-          height={rectHeight + 20}
-          y={-20}
+          height={rectHeight + 30}
+          y={-30}
           fill="lightgray"
         />
         <Html>
