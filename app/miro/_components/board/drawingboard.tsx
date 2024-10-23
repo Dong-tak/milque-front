@@ -24,6 +24,7 @@ import {
 import { getConnectorPoints } from "../../utils/arrowUtils";
 import { defaultProps } from "@blocknote/core";
 import BrainstormInput from "../brainstorm/BrainstormInput";
+import CreateBoardDialog from "./creatboard";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -47,6 +48,79 @@ const DrawingBoard = () => {
 
   // 스테이지 크기 상태
   const [stageSize, setStageSize] = useState({ width: 800, height: 800 });
+
+  const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
+  const [contentTitle, setContentTitle] = useState(""); // contentTitle 상태 추가
+  const [boardPosition, setBoardPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
+
+  // 입력 변경 핸들러
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentTitle(e.target.value);
+  };
+
+  // 저장 클릭 핸들러
+  const handleSaveClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      if (!boardPosition || !contentTitle.trim()) return;
+
+      // 새로운 텍스트 노드 생성 - 이것을 보드 위젯으로 바꾸기!!!!!!!!
+      const newNode: TextShape = {
+        id: `text-${shapes.length + 1}`,
+        type: "textbox",
+        x: boardPosition.x,
+        y: boardPosition.y,
+        text: JSON.stringify([{ type: "paragraph", content: contentTitle }]),
+        fontSize: 16,
+        width: 200,
+        height: 100,
+        draggable: true,
+      };
+
+      setShapes((prev) => [...prev, newNode]);
+      setDialogOpen(false);
+      setContentTitle("");
+      setBoardPosition(null);
+    },
+    [boardPosition, contentTitle, shapes],
+  );
+
+  // 보드 생성 버튼 클릭 핸들러
+  const handleAddBoard = useCallback(() => {
+    setIsBoardPlacementMode(true); // 보드 배치 모드 활성화
+  }, []);
+
+  // 스테이지 클릭 핸들러 수정
+  const handleStageClick = useCallback(
+    (e: any) => {
+      if (isBoardPlacementMode) {
+        const stage = e.target.getStage();
+        const pointerPos = stage.getPointerPosition();
+        if (!pointerPos) return;
+
+        const adjustedPos = {
+          x: (pointerPos.x - stagePosition.x) / stageScale,
+          y: (pointerPos.y - stagePosition.y) / stageScale,
+        };
+
+        setBoardPosition(adjustedPos);
+        setIsBoardPlacementMode(false);
+        setDialogOpen(true);
+      } else if (e.target === e.target.getStage()) {
+        // 기존 선택 해제 로직
+        const newShapes = shapes.map((s) => ({
+          ...s,
+          isSelected: false,
+        }));
+        setShapes(newShapes);
+      }
+    },
+    [isBoardPlacementMode, stagePosition, stageScale, shapes],
+  );
 
   useEffect(() => {
     // 클라이언트 사이드에서만 window 객체에 접근
@@ -152,18 +226,6 @@ const DrawingBoard = () => {
         draggable: true,
       },
     ]);
-  };
-
-  // Stage click event handler
-  const handleStageClick = (e: any) => {
-    // 빈 공간을 클릭하면 선택 해제
-    if (e.target === e.target.getStage()) {
-      const newShapes = shapes.map((s) => ({
-        ...s,
-        isSelected: false,
-      }));
-      setShapes(newShapes);
-    }
   };
 
   // 사각형 생성 모드 활성화 (툴바 클릭 시 호출)
@@ -756,6 +818,15 @@ const DrawingBoard = () => {
           onAddText={() =>
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
+          onAddBoard={handleAddBoard}
+        />
+        <CreateBoardDialog
+          contentTitle={contentTitle}
+          handleInputChange={handleInputChange}
+          handleSaveClick={handleSaveClick}
+          className="custom-dialog-class"
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
         />
         <BrainstormInput onCreateNode={handleCreateTextNode} />
       </div>
