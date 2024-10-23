@@ -30,7 +30,7 @@ export default function CreateBoardDialog({
   open,
   onOpenChange,
 }: CreateBoardDialogProps) {
-  // Ctrl+Enter 핸들러 추가
+  // Ctrl+Enter 핸들러
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
@@ -43,15 +43,20 @@ export default function CreateBoardDialog({
       <DialogContent
         className={`w-full gap-5 rounded-md bg-popover p-6 ${className}`}
       >
+        <DialogHeader>
+          <DialogTitle className="w-full pb-2 display-undefine-display-01">
+            보드 주제를 입력하세요
+          </DialogTitle>
+        </DialogHeader>
         <div className="grid w-full items-center gap-1.5">
           <Input
             id="title"
             value={contentTitle}
             onChange={handleInputChange}
-            onKeyDown={handleKeyDown} // 키 이벤트 핸들러 추가
+            onKeyDown={handleKeyDown}
             className="w-full border-none"
             placeholder="Enter your focus"
-            autoFocus // 자동 포커스 추가
+            autoFocus
           />
         </div>
         <DialogFooter className="flex items-end justify-end gap-2">

@@ -25,6 +25,9 @@ import { getConnectorPoints } from "../../utils/arrowUtils";
 import { defaultProps } from "@blocknote/core";
 import BrainstormInput from "../brainstorm/BrainstormInput";
 import CreateBoardDialog from "./creatboard";
+import BoardWidget from "../shapes/boardwidget"; // BoardWidget import 추가
+import { useDispatch } from "react-redux";
+import { deselectBoard } from "@/redux/features/boardSlice";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -57,31 +60,31 @@ const DrawingBoard = () => {
   } | null>(null);
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
 
+  const dispatch = useDispatch();
+
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
   };
 
-  // 저장 클릭 핸들러
+  // 저장 클릭 핸들러 수정
   const handleSaveClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (!boardPosition || !contentTitle.trim()) return;
 
-      // 새로운 텍스트 노드 생성 - 이것을 보드 위젯으로 바꾸기!!!!!!!!
-      const newNode: TextShape = {
-        id: `text-${shapes.length + 1}`,
-        type: "textbox",
+      const newBoard = {
+        id: `board-${shapes.length + 1}`,
+        type: "board",
         x: boardPosition.x,
         y: boardPosition.y,
-        text: JSON.stringify([{ type: "paragraph", content: contentTitle }]),
-        fontSize: 16,
-        width: 200,
-        height: 100,
+        width: 500,
+        height: 300,
         draggable: true,
+        titleBlock: contentTitle,
       };
 
-      setShapes((prev) => [...prev, newNode]);
+      setShapes((prev) => [...prev, newBoard]);
       setDialogOpen(false);
       setContentTitle("");
       setBoardPosition(null);
@@ -89,7 +92,7 @@ const DrawingBoard = () => {
     [boardPosition, contentTitle, shapes],
   );
 
-  // 보드 생성 버튼 클릭 핸들러
+  // 보드 생성 버튼 클릭 핸들러 수정
   const handleAddBoard = useCallback(() => {
     setIsBoardPlacementMode(true); // 보드 배치 모드 활성화
   }, []);
@@ -108,10 +111,10 @@ const DrawingBoard = () => {
         };
 
         setBoardPosition(adjustedPos);
-        setIsBoardPlacementMode(false);
         setDialogOpen(true);
+        setIsBoardPlacementMode(false);
       } else if (e.target === e.target.getStage()) {
-        // 기존 선택 해제 로직
+        dispatch(deselectBoard());
         const newShapes = shapes.map((s) => ({
           ...s,
           isSelected: false,
@@ -119,7 +122,7 @@ const DrawingBoard = () => {
         setShapes(newShapes);
       }
     },
-    [isBoardPlacementMode, stagePosition, stageScale, shapes],
+    [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
   );
 
   useEffect(() => {
@@ -786,6 +789,29 @@ const DrawingBoard = () => {
                       setShapes(newShapes);
                     }}
                     onDragMove={handleArrowPointDrag}
+                  />
+                );
+              } else if (shape.type === "board") {
+                // BoardWidget 렌더링 추가
+                return (
+                  <BoardWidget
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: any) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      );
+                      setShapes(newShapes);
+                    }}
+                    titleBlock={shape.titleBlock}
                   />
                 );
               }
