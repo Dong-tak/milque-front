@@ -19,6 +19,8 @@ import {
   ImageEmbedShape,
   isPDFEmbed,
   PDFEmbedShape,
+  isIframeEmbed,
+  IframeEmbedShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -28,6 +30,7 @@ import {
 import { getConnectorPoints } from "../../utils/arrowUtils";
 import ImageEmbed from "../shapes/imageEmbed";
 import PDFEmbed from "../shapes/pdfEmbed";
+import IframeEmbed from "../shapes/iframeEmbed";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -218,6 +221,21 @@ const DrawingBoard = () => {
       }
     };
     fileInput.click();
+  };
+
+  const addIframeEmbed = () => {
+    const id = `iframeEmbed-${shapes.length + 1}`;
+    setShapes([
+      ...shapes,
+      {
+        id,
+        type: "iframeEmbed",
+        x: 50,
+        y: 50,
+        src: "https://toss.tech/article/uxresearcher-meets-investor",
+        draggable: true,
+      },
+    ]);
   };
 
   // Stage click event handler
@@ -687,6 +705,27 @@ const DrawingBoard = () => {
                     }}
                   />
                 );
+              } else if (isIframeEmbed(shape)) {
+                return (
+                  <IframeEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<IframeEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
               }
               return null;
             })}
@@ -719,6 +758,7 @@ const DrawingBoard = () => {
           }
           onAddImage={addImageEmbed}
           onAddPDF={addPDFEmbed}
+          onAddIframe={addIframeEmbed}
         />
       </div>
     </div>

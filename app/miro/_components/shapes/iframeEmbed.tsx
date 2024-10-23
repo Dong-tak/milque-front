@@ -1,77 +1,60 @@
+// components/shapes/pdfEmbed.tsx
 "use client";
-
 import React, { useRef, useEffect, useState } from "react";
-import { Html } from "react-konva-utils";
-import { useCreateBlockNote } from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/mantine";
-import { PartialBlock } from "@blocknote/core";
 import { Group, Rect, Transformer } from "react-konva";
-import {
-  anchorDragBoundFunc,
-  snapOnDragEnd,
-  snapOnDragMove,
-} from "@/lib/snapping";
+import { Html } from "react-konva-utils";
+import { IframeEmbedShape } from "../../utils/types";
+import { anchorStyleFunc } from "./anchorStyle";
 
-interface TextNodeProps {
-  shapeProps: any;
-  isSelected: boolean;
+interface IframeEmbedProps {
+  shapeProps: IframeEmbedShape;
+  isSelected?: boolean;
   onSelect: () => void;
-  onChange: (newAttrs: any) => void;
-  onDragMove: (e: any) => void;
+  onChange: (newAttrs: Partial<IframeEmbedShape>) => void;
+  onDragMove?: (e: any) => void;
 }
 
-const TextNode: React.FC<TextNodeProps> = ({
+export const IframeEmbed: React.FC<IframeEmbedProps> = ({
   shapeProps,
   isSelected,
   onSelect,
   onChange,
   onDragMove,
 }) => {
-  const shapeRef = useRef<any>();
-  const trRef = useRef<any>();
-  const blockNoteRef = useRef<HTMLDivElement>(null);
+  const shapeRef = useRef<any>(null);
+  const trRef = useRef<any>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [textValue, setTextValue] = useState<string>(shapeProps.text || "");
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
-  const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
-  // 컴포넌트 내에서 마우스 시작 위치를 저장할 상태 변수 추가
+  const [rectHeight, setRectHeight] = useState(shapeProps.height || 800);
   const [dragStartPos, setDragStartPos] = useState<{
     x: number;
     y: number;
   } | null>(null);
 
   useEffect(() => {
-    if (isSelected && trRef.current) {
-      // attach transformer
+    if (isSelected && trRef.current && shapeRef.current) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }
-  }, [isSelected, isEditing, shapeProps]);
+  }, [isSelected]);
 
   useEffect(() => {
     handleResize();
   }, [rectWidth, rectHeight]);
 
-  const initialContent: PartialBlock[] | undefined = textValue
-    ? JSON.parse(textValue)
-    : undefined;
-
-  const editor = useCreateBlockNote({
-    initialContent,
-  });
+  const handleResize = () => {
+    if (iframeRef.current) {
+      setRectWidth(iframeRef.current.offsetWidth);
+      setRectHeight(iframeRef.current.offsetHeight);
+    }
+  };
 
   useEffect(() => {
     if (!isSelected) {
       setIsEditing(false);
     }
   }, [isSelected]);
-
-  const handleResize = () => {
-    if (blockNoteRef.current) {
-      setRectWidth(blockNoteRef.current.offsetWidth);
-      setRectHeight(blockNoteRef.current.offsetHeight);
-    }
-  };
 
   // 마우스 다운 이벤트 핸들러
   const handleMouseDown = (e: any) => {
@@ -106,18 +89,18 @@ const TextNode: React.FC<TextNodeProps> = ({
   return (
     <>
       <Group
-        draggable
         onClick={onSelect}
-        onDragMove={(e) => {
-          snapOnDragMove(e); // 스냅핑 로직 실행
-          if (onDragMove) {
-            onDragMove(e); // 부모로부터 전달된 onDragMove 실행 (updateArrows)
-          }
-        }}
-        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
+        onTap={onSelect}
         ref={shapeRef}
-        x={shapeProps.x}
-        y={shapeProps.y}
+        {...shapeProps}
+        draggable
+        onDragEnd={(e) => {
+          onChange({
+            ...shapeProps,
+            x: e.target.x(),
+            y: e.target.y(),
+          });
+        }}
       >
         <Rect
           width={rectWidth}
@@ -125,20 +108,28 @@ const TextNode: React.FC<TextNodeProps> = ({
           y={-30}
           fill="lightgray"
         />
-        <Html>
+        <Html
+          divProps={{
+            style: {
+              width: "500px",
+              height: "800px",
+            },
+          }}
+        >
           <div
-            ref={blockNoteRef}
-            style={{
-              width: rectWidth,
-            }}
+            className="h-full w-full"
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
           >
-            <BlockNoteView
-              editor={editor}
-              theme="light"
-              editable={isEditing}
-              onChange={handleResize}
+            <iframe
+              ref={iframeRef}
+              src={shapeProps.src}
+              tabIndex={0}
+              onLoad={(e) => e.currentTarget.contentWindow?.focus()}
+              allowFullScreen
+              width="100%"
+              height="100%"
+              style={{ pointerEvents: isEditing ? "auto" : "none" }}
             />
           </div>
         </Html>
@@ -146,14 +137,17 @@ const TextNode: React.FC<TextNodeProps> = ({
       {isSelected && (
         <Transformer
           ref={trRef}
-          boundBoxFunc={(oldBox, newBox) => newBox}
-          anchorDragBoundFunc={anchorDragBoundFunc}
+          boundBoxFunc={(oldBox, newBox) => {
+            if (newBox.width < 5 || newBox.height < 5) {
+              return oldBox;
+            }
+            return newBox;
+          }}
+          anchorStyleFunc={anchorStyleFunc}
         />
       )}
     </>
   );
 };
 
-TextNode.displayName = "TextNode";
-
-export default TextNode;
+export default IframeEmbed;
