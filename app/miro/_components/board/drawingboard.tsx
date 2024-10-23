@@ -33,6 +33,7 @@ import { getConnectorPoints } from "../../utils/arrowUtils";
 import ImageEmbed from "../shapes/imageEmbed";
 import PDFEmbed from "../shapes/pdfEmbed";
 import IframeEmbed from "../shapes/iframeEmbed";
+import { useCreateBlockNote } from "@blocknote/react";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -43,6 +44,8 @@ const DrawingBoard = () => {
   ); // 현재 그리는 도형
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
+  const boardRef = useRef<HTMLDivElement>(null);
+  const editor = useCreateBlockNote();
 
   // 스테이지 스케일 및 위치 상태
   const initialScale = 1;
@@ -98,6 +101,49 @@ const DrawingBoard = () => {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
+
+  useEffect(() => {
+    const board = boardRef.current;
+    if (board) {
+      board.addEventListener("dragover", handleDragOver);
+      board.addEventListener("drop", handleDrop);
+    }
+
+    return () => {
+      if (board) {
+        board.removeEventListener("dragover", handleDragOver);
+        board.removeEventListener("drop", handleDrop);
+      }
+    };
+  }, []);
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer && e.dataTransfer.files) {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    const fileType = file.type;
+    if (fileType.startsWith("image/")) {
+      addImageDrag(file);
+    } else if (fileType === "application/pdf") {
+      addPDFDrag(file);
+    } else if (fileType === "text/markdown" || file.name.endsWith(".md")) {
+      addMarkdownDrag(file);
+    } else {
+      alert("지원하지 않는 파일 형식입니다.");
+    }
+  };
 
   // 휠 이벤트를 통한 줌 제어
   const handleWheel = (e: any) => {
@@ -163,6 +209,29 @@ const DrawingBoard = () => {
     ]);
   };
 
+  const addImageDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `imageEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "imageEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
+  };
+
   const addImageEmbed = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -192,6 +261,29 @@ const DrawingBoard = () => {
       }
     };
     fileInput.click();
+  };
+
+  const addPDFDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `pdfEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "pdfEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
   };
 
   const addPDFEmbed = () => {
@@ -238,6 +330,28 @@ const DrawingBoard = () => {
         draggable: true,
       },
     ]);
+  };
+
+  const addMarkdownDrag = async (dragFile?: File) => {
+    if (dragFile) {
+      const markdown = await dragFile.text();
+      const blocks = await editor.tryParseMarkdownToBlocks(markdown);
+      const serializedBlocks = JSON.stringify(blocks);
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          text: serializedBlocks,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    }
   };
 
   const addMarkdown = () => {
@@ -572,7 +686,7 @@ const DrawingBoard = () => {
   };
 
   return (
-    <div>
+    <div ref={boardRef}>
       {/* 보드 */}
       <div
         onMouseDown={handleMouseDown}
