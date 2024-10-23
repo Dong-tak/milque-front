@@ -22,7 +22,6 @@ import {
   snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
-import { updateArrows } from "../../utils/updatearrow";
 import { defaultProps } from "@blocknote/core";
 
 const DrawingBoard = () => {
@@ -228,6 +227,7 @@ const DrawingBoard = () => {
         points: [startPoint.x, startPoint.y, startPoint.x, startPoint.y],
         arrowTipX: startPoint.x,
         arrowTipY: startPoint.y,
+        arrowHeads: { left: false, right: true }, // 기본값으로 단방향 화살표 설정
       };
       setNewShape(newArrow);
       setIsDrawing(true);
@@ -479,7 +479,7 @@ const DrawingBoard = () => {
           y={stagePosition.y}
           onWheel={handleWheel}
           onDragMove={() => {
-            // 스테이지 위치가 변경되면 Layer를 다시 그립니다.
+            // 스테이지 치가 변경되면 Layer를 다시 그립니다.
             const layer = stageRef.current.findOne("Layer");
             layer.batchDraw();
           }}
@@ -602,7 +602,7 @@ const DrawingBoard = () => {
             )}
           </Layer>
         </Stage>
-        {/* 툴바 컴��넌트 */}
+        {/* 툴바 컴넌트 */}
         <Toolbar
           onRectangleToolClick={handleRectangleToolClick}
           onArrowToolClick={handleArrowToolClick}

@@ -26,14 +26,25 @@ export interface TextShape extends ShapeProps {
   draggable: boolean;
 }
 
+export enum RelationshipType {
+  Unidirectional = "unidirectional", // 단방향 관계
+  Bidirectional = "bidirectional", // 양방향 관계
+  Equal = "equal", // 동등관계
+}
+
+export interface ArrowHeadState {
+  left: boolean; // 왼쪽 화살표 머리 표시 여부
+  right: boolean; // 오른쪽 화살표 머리 표시 여부
+}
+
 export interface ArrowShape extends ShapeProps {
   type: "arrow";
-  from: string; // 시작 객체 ID
-  to: string; // 끝 객체 ID
+  from: string;
+  to: string;
   points: number[];
   arrowTipX: number;
   arrowTipY: number;
-  showArrowHead?: boolean; // 추가
+  arrowHeads: ArrowHeadState; // 화살표 머리 상태 추가
 }
 
 // 타입 가드 함수
@@ -47,4 +58,17 @@ export function isArrow(shape: ShapeProps): shape is ArrowShape {
 
 export function isText(shape: ShapeProps): shape is TextShape {
   return shape.type === "textbox";
+}
+
+// 관계 타입을 결정하는 헬퍼 함수
+export function determineRelationshipType(
+  arrowHeads: ArrowHeadState,
+): RelationshipType {
+  if (arrowHeads.left && arrowHeads.right) {
+    return RelationshipType.Bidirectional;
+  } else if (!arrowHeads.left && !arrowHeads.right) {
+    return RelationshipType.Equal;
+  } else {
+    return RelationshipType.Unidirectional;
+  }
 }
