@@ -14,6 +14,7 @@ import {
 import Konva from "konva";
 import { ArrowShape } from "../../utils/types"; // ArrowShape 타입을 import
 import { KonvaEventObject } from "konva/lib/Node";
+import ArrowSettings from "./ArrowSettings"; // 새로 만들 컴포넌트
 
 // Arrow 컴포넌트의 Props 인터페이스 정의
 interface ArrowProps {
@@ -32,7 +33,7 @@ const Arrow: React.FC<ArrowProps> = ({
   onChange,
   onDragMove,
 }) => {
-  const { points, arrowTipX, arrowTipY, id } = shapeProps; // 화살표의 점들과 끝점 좌표를 추출
+  const { points, arrowTipX, arrowTipY, id, showArrowHead = true } = shapeProps; // 화살표의 점들과 끝점 좌표를 추출
   const shapeRef = useRef<Konva.Shape | null>(null);
   const arrowHeadRef = useRef<Konva.RegularPolygon | null>(null);
   const textBoxRef = useRef<Konva.Label | null>(null);
@@ -40,6 +41,7 @@ const Arrow: React.FC<ArrowProps> = ({
   const trRef = useRef<Konva.Transformer | null>(null);
   const [isTextBoxVisible, setIsTextBoxVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // 선택 상태가 변경될 때 실행되는 useEffect
   useEffect(() => {
@@ -333,6 +335,19 @@ const Arrow: React.FC<ArrowProps> = ({
     }
   }, [isSelected, isEditing]);
 
+  const handleArrowClick = () => {
+    onSelect?.();
+    setShowSettings(true);
+  };
+
+  const handleSettingsClose = () => {
+    setShowSettings(false);
+  };
+
+  const handleArrowHeadToggle = (show: boolean) => {
+    onChange({ ...shapeProps, showArrowHead: show });
+  };
+
   return (
     <>
       {/* 투명한 선택 영역 */}
@@ -347,7 +362,7 @@ const Arrow: React.FC<ArrowProps> = ({
         }}
         stroke="transparent"
         strokeWidth={20}
-        onClick={onSelect}
+        onClick={handleArrowClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onDblClick={toggleTextBox}
@@ -424,18 +439,19 @@ const Arrow: React.FC<ArrowProps> = ({
         lineJoin="round" // 선 연결 방식
       />
 
-      {/* 화살표 머리를 그리기 위한 RegularPolygon 컴포넌트 */}
-      <RegularPolygon
-        ref={arrowHeadRef}
-        sides={3} // 삼각형 (화살표 머리)
-        radius={10} // 화살표 머리 반지름
-        fill="black" // 채우기 색상
-        stroke="black" // 선 색상
-        strokeWidth={2} // 화살표 머리 두께
-        x={arrowTipX} // 머리의 X 좌표
-        y={arrowTipY} // 머리의 Y 좌표
-        rotation={(angle * 180) / Math.PI + 90} // 화살표 머리 회전 각도
-      />
+      {showArrowHead && (
+        <RegularPolygon
+          ref={arrowHeadRef}
+          sides={3}
+          radius={10}
+          fill="black"
+          stroke="black"
+          strokeWidth={2}
+          x={arrowTipX}
+          y={arrowTipY}
+          rotation={(angle * 180) / Math.PI + 90}
+        />
+      )}
 
       {/* 텍스트 박스 */}
       {isTextBoxVisible && (
@@ -526,6 +542,15 @@ const Arrow: React.FC<ArrowProps> = ({
             onDblClick={toggleTextBox}
           />
         </>
+      )}
+
+      {showSettings && (
+        <ArrowSettings
+          position={{ x: points[0], y: points[1] }}
+          showArrowHead={showArrowHead}
+          onClose={handleSettingsClose}
+          onArrowHeadToggle={handleArrowHeadToggle}
+        />
       )}
     </>
   );

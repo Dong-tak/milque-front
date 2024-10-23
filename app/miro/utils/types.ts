@@ -33,6 +33,7 @@ export interface ArrowShape extends ShapeProps {
   points: number[];
   arrowTipX: number;
   arrowTipY: number;
+  showArrowHead?: boolean; // 추가
 }
 
 // 타입 가드 함수
