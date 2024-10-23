@@ -1,7 +1,7 @@
 // utils/types.ts
 export interface ShapeProps {
   id: string;
-  type: "rectangle" | "arrow" | "textbox";
+  type: "rectangle" | "arrow" | "textbox" | "imageEmbed";
   isSelected?: boolean;
 }
 
@@ -36,6 +36,16 @@ export interface ArrowShape extends ShapeProps {
   showArrowHead?: boolean; // 추가
 }
 
+export interface ImageEmbedShape extends ShapeProps {
+  type: "imageEmbed";
+  src: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  draggable: boolean;
+}
+
 // 타입 가드 함수
 export function isRectangle(shape: ShapeProps): shape is RectangleShape {
   return shape.type === "rectangle";
@@ -47,4 +57,8 @@ export function isArrow(shape: ShapeProps): shape is ArrowShape {
 
 export function isText(shape: ShapeProps): shape is TextShape {
   return shape.type === "textbox";
+}
+
+export function isImageEmbed(shape: ShapeProps): shape is ImageEmbedShape {
+  return shape.type === "imageEmbed";
 }

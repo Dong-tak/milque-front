@@ -1,16 +1,19 @@
 // components/Toolbar.tsx
+import { ImageIcon } from "lucide-react";
 import React from "react";
 
 interface ToolbarProps {
   onRectangleToolClick: () => void;
   onArrowToolClick: () => void;
   onAddText: () => void;
+  onAddImage: () => void;
 }
 
 const Toolbar = ({
   onRectangleToolClick,
   onArrowToolClick,
   onAddText,
+  onAddImage,
 }: ToolbarProps) => {
   return (
     <div
@@ -95,6 +98,25 @@ const Toolbar = ({
           T
         </div>
         <span>텍스트</span>
+      </div>
+      <div>
+        <div
+          onClick={onAddImage}
+          style={{ cursor: "pointer", textAlign: "center" }}
+        >
+          <div
+            style={{
+              width: "30px",
+              height: "30px",
+              margin: "auto",
+              fontSize: "24px",
+              fontWeight: "bold",
+            }}
+          >
+            <ImageIcon />
+          </div>
+          <span>image</span>
+        </div>
       </div>
     </div>
   );

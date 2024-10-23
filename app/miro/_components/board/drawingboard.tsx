@@ -15,6 +15,8 @@ import {
   isRectangle,
   isArrow,
   isText,
+  isImageEmbed,
+  ImageEmbedShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -22,8 +24,7 @@ import {
   snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
-import { updateArrows } from "../../utils/updatearrow";
-import { defaultProps } from "@blocknote/core";
+import ImageEmbed from "../shapes/imageEmbed";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -152,6 +153,37 @@ const DrawingBoard = () => {
         draggable: true,
       },
     ]);
+  };
+
+  const addImageEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `imageEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "imageEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
   };
 
   // Stage click event handler
@@ -579,6 +611,27 @@ const DrawingBoard = () => {
                     onDragMove={handleArrowPointDrag}
                   />
                 );
+              } else if (isImageEmbed(shape)) {
+                return (
+                  <ImageEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<ImageEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
               }
               return null;
             })}
@@ -602,13 +655,14 @@ const DrawingBoard = () => {
             )}
           </Layer>
         </Stage>
-        {/* 툴바 컴��넌트 */}
+        {/* 툴바 컴포넌트 */}
         <Toolbar
           onRectangleToolClick={handleRectangleToolClick}
           onArrowToolClick={handleArrowToolClick}
           onAddText={() =>
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
+          onAddImage={addImageEmbed}
         />
       </div>
     </div>
