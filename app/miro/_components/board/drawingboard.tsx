@@ -1,7 +1,7 @@
 // components/DrawingBoard.tsx
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Stage, Layer, Shape } from "react-konva";
 import Rectangle from "../shapes/rectangle";
 import Arrow from "../shapes/arrow";
@@ -23,6 +23,7 @@ import {
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
 import { defaultProps } from "@blocknote/core";
+import BrainstormInput from "../brainstorm/BrainstormInput";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -453,6 +454,152 @@ const DrawingBoard = () => {
     }
   };
 
+  // 최적의 위치 찾기 함수 수정
+  const findOptimalPosition = useCallback(() => {
+    const padding = 100; // 벽면과의 최소 거리
+    const nodeSize = { width: 200, height: 100 }; // 텍스트 노드의 크기
+    const gridSize = 50; // 그리드 셀 크기
+    const stageWidth = stageSize.width / stageScale;
+    const stageHeight = stageSize.height / stageScale;
+
+    // 기존 위젯들의 위치를 피하기 위한 그리드 생성
+    const grid: boolean[][] = Array(Math.ceil(stageHeight / gridSize))
+      .fill(false)
+      .map(() => Array(Math.ceil(stageWidth / gridSize)).fill(false));
+
+    // 기존 위젯들의 영역을 그리드에 표시
+    shapes.forEach((shape) => {
+      if (isText(shape)) {
+        // 텍스트 노드의 영역을 그리드에 표시
+        const startX = Math.floor(shape.x / gridSize);
+        const startY = Math.floor(shape.y / gridSize);
+        const endX = Math.floor((shape.x + nodeSize.width) / gridSize);
+        const endY = Math.floor((shape.y + nodeSize.height) / gridSize);
+
+        // 텍스트 노드가 차지하는 모든 그리드 셀을 true로 설정
+        for (let y = startY; y <= endY; y++) {
+          for (let x = startX; x <= endX; x++) {
+            if (y >= 0 && y < grid.length && x >= 0 && x < grid[0].length) {
+              grid[y][x] = true;
+            }
+          }
+        }
+      }
+    });
+
+    // 가능한 위치들 수집
+    const possiblePositions: { x: number; y: number; distance: number }[] = [];
+
+    for (
+      let y = padding;
+      y < stageHeight - padding - nodeSize.height;
+      y += gridSize
+    ) {
+      for (
+        let x = padding;
+        x < stageWidth - padding - nodeSize.width;
+        x += gridSize
+      ) {
+        const gridX = Math.floor(x / gridSize);
+        const gridY = Math.floor(y / gridSize);
+
+        // 해당 위치에 노드를 놓을 수 있는지 확인
+        let canPlace = true;
+        const endX = Math.floor((x + nodeSize.width) / gridSize);
+        const endY = Math.floor((y + nodeSize.height) / gridSize);
+
+        // 노드가 차지할 모든 그리드 셀 확인
+        for (let checkY = gridY; checkY <= endY; checkY++) {
+          for (let checkX = gridX; checkX <= endX; checkX++) {
+            if (
+              checkY >= 0 &&
+              checkY < grid.length &&
+              checkX >= 0 &&
+              checkX < grid[0].length &&
+              grid[checkY][checkX]
+            ) {
+              canPlace = false;
+              break;
+            }
+          }
+          if (!canPlace) break;
+        }
+
+        if (canPlace) {
+          // 벽면과의 거리 계산
+          const distanceToWalls = Math.min(
+            x - padding,
+            stageWidth - padding - x - nodeSize.width,
+            y - padding,
+            stageHeight - padding - y - nodeSize.height,
+          );
+
+          // 다른 노드들과의 거리 계산
+          let minDistanceToNodes = Infinity;
+          shapes.forEach((shape) => {
+            if (isText(shape)) {
+              const dx = Math.abs(x - shape.x);
+              const dy = Math.abs(y - shape.y);
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              minDistanceToNodes = Math.min(minDistanceToNodes, distance);
+            }
+          });
+
+          possiblePositions.push({
+            x,
+            y,
+            distance: Math.min(distanceToWalls, minDistanceToNodes),
+          });
+        }
+      }
+    }
+
+    // 가능한 위치가 없으면 기본 위치 반환
+    if (possiblePositions.length === 0) {
+      return { x: stageWidth / 2, y: stageHeight / 2 };
+    }
+
+    // 벽면과 다른 노드들로부터 가장 먼 위치들 중에서 랜덤 선택
+    const maxDistance = Math.max(...possiblePositions.map((p) => p.distance));
+    const bestPositions = possiblePositions.filter(
+      (p) => p.distance >= maxDistance * 0.9,
+    );
+    const randomPosition =
+      bestPositions[Math.floor(Math.random() * bestPositions.length)];
+
+    return randomPosition;
+  }, [shapes, stageSize, stageScale]);
+
+  // 새로운 텍스트 노드 생성 함수
+  const handleCreateTextNode = useCallback(
+    (text: string) => {
+      const position = findOptimalPosition();
+
+      // 텍스트를 BlockNote 형식으로 변환
+      const initialText = JSON.stringify([
+        {
+          type: "paragraph",
+          content: text,
+        },
+      ]);
+
+      const newNode: TextShape = {
+        id: `text-${shapes.length + 1}`,
+        type: "textbox",
+        x: position.x,
+        y: position.y,
+        text: initialText, // JSON 문자열로 변환된 텍스트
+        fontSize: 16,
+        width: 200,
+        height: 100,
+        draggable: true,
+      };
+
+      setShapes((prev) => [...prev, newNode]);
+    },
+    [shapes, findOptimalPosition],
+  );
+
   return (
     <div>
       {/* 보드 */}
@@ -610,6 +757,7 @@ const DrawingBoard = () => {
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
         />
+        <BrainstormInput onCreateNode={handleCreateTextNode} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import sidebarReducer from "./features/sidebarSlice"; // sidebarSlice 가져오�
 import viewReducer from "./features/viewSlice"; // viewSlice 가져오기
 import documentsReducer from "./features/documentsSlice";
 import arrowReducer from "./features/arrowSlice"; // 새로 추가
+import brainstormReducer from "./features/brainstormSlice"; // brainstorm reducer import 추가
 
 // Redux 스토어 설정
 const store = configureStore({
@@ -14,6 +15,7 @@ const store = configureStore({
     view: viewReducer, // view 상태
     documents: documentsReducer, // documents 상태
     arrow: arrowReducer, // 새로 추가한 reducer
+    brainstorm: brainstormReducer, // brainstorm reducer 추가
   },
 });
 
