@@ -34,6 +34,7 @@ const TextNode: React.FC<TextNodeProps> = ({
   const [textValue, setTextValue] = useState<string>(shapeProps.text || "");
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
   const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
+
   // 컴포넌트 내에서 마우스 시작 위치를 저장할 상태 변수 추가
   const [dragStartPos, setDragStartPos] = useState<{
     x: number;
@@ -59,6 +60,16 @@ const TextNode: React.FC<TextNodeProps> = ({
   const editor = useCreateBlockNote({
     initialContent,
   });
+
+  if (shapeProps.type === "markdown" && shapeProps.src) {
+    //shapeProps.src 파일을 읽어서 markdownContent에 저장
+    fetch(shapeProps.src)
+      .then((response) => response.text())
+      .then((text) => editor.tryParseMarkdownToBlocks(text))
+      .then((blocks) => {
+        editor.replaceBlocks(editor.document, blocks);
+      });
+  }
 
   useEffect(() => {
     if (!isSelected) {

@@ -21,6 +21,8 @@ import {
   PDFEmbedShape,
   isIframeEmbed,
   IframeEmbedShape,
+  isMarkdown,
+  MarkdownShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -236,6 +238,38 @@ const DrawingBoard = () => {
         draggable: true,
       },
     ]);
+  };
+
+  const addMarkdown = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "text/markdown";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `markdown-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "markdown",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                fontSize: 24,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
   };
 
   // Stage click event handler
@@ -726,6 +760,31 @@ const DrawingBoard = () => {
                     }}
                   />
                 );
+              } else if (isMarkdown(shape)) {
+                return (
+                  <TextNode
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<TextShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(shape.id, node.x(), node.y());
+                    }}
+                  />
+                );
               }
               return null;
             })}
@@ -759,6 +818,7 @@ const DrawingBoard = () => {
           onAddImage={addImageEmbed}
           onAddPDF={addPDFEmbed}
           onAddIframe={addIframeEmbed}
+          onAddMarkdown={addMarkdown}
         />
       </div>
     </div>

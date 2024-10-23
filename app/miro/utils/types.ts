@@ -7,7 +7,8 @@ export interface ShapeProps {
     | "textbox"
     | "imageEmbed"
     | "pdfEmbed"
-    | "iframeEmbed";
+    | "iframeEmbed"
+    | "markdown";
   isSelected?: boolean;
 }
 
@@ -71,6 +72,16 @@ export interface IframeEmbedShape extends ShapeProps {
   draggable: boolean;
 }
 
+export interface MarkdownShape extends ShapeProps {
+  type: "markdown";
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  src: string;
+  draggable: boolean;
+}
+
 // 타입 가드 함수
 export function isRectangle(shape: ShapeProps): shape is RectangleShape {
   return shape.type === "rectangle";
@@ -94,4 +105,8 @@ export const isPDFEmbed = (shape: ShapeProps): shape is PDFEmbedShape => {
 
 export const isIframeEmbed = (shape: ShapeProps): shape is IframeEmbedShape => {
   return shape.type === "iframeEmbed";
+};
+
+export const isMarkdown = (shape: ShapeProps): shape is MarkdownShape => {
+  return shape.type === "markdown";
 };

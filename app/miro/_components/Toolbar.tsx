@@ -1,5 +1,5 @@
 // components/Toolbar.tsx
-import { FileText, ImageIcon, PanelTop } from "lucide-react";
+import { ArrowDownAZ, FileText, ImageIcon, PanelTop } from "lucide-react";
 import React from "react";
 
 interface ToolbarProps {
@@ -9,6 +9,7 @@ interface ToolbarProps {
   onAddImage: () => void;
   onAddPDF: () => void;
   onAddIframe: () => void;
+  onAddMarkdown: () => void;
 }
 
 const Toolbar = ({
@@ -18,6 +19,7 @@ const Toolbar = ({
   onAddImage,
   onAddPDF,
   onAddIframe,
+  onAddMarkdown,
 }: ToolbarProps) => {
   return (
     <div
@@ -155,6 +157,23 @@ const Toolbar = ({
           <PanelTop />
         </div>
         <span>Web</span>
+      </div>
+      <div
+        onClick={onAddMarkdown}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          <ArrowDownAZ />
+        </div>
+        <span>Mkdown</span>
       </div>
     </div>
   );

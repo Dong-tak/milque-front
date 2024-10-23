@@ -1,4 +1,4 @@
-// components/shapes/pdfEmbed.tsx
+// components/shapes/iframeEmbed.tsx
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { Group, Rect, Transformer } from "react-konva";
