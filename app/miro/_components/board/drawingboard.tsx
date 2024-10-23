@@ -17,6 +17,8 @@ import {
   isText,
   isImageEmbed,
   ImageEmbedShape,
+  isPDFEmbed,
+  PDFEmbedShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -25,6 +27,7 @@ import {
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
 import ImageEmbed from "../shapes/imageEmbed";
+import PDFEmbed from "../shapes/pdfEmbed";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -172,6 +175,37 @@ const DrawingBoard = () => {
               {
                 id,
                 type: "imageEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  const addPDFEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "application/pdf";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `pdfEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "pdfEmbed",
                 x: 50,
                 y: 50,
                 src: event.target.result as string,
@@ -632,6 +666,27 @@ const DrawingBoard = () => {
                     }}
                   />
                 );
+              } else if (isPDFEmbed(shape)) {
+                return (
+                  <PDFEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<PDFEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
               }
               return null;
             })}
@@ -663,6 +718,7 @@ const DrawingBoard = () => {
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
           onAddImage={addImageEmbed}
+          onAddPDF={addPDFEmbed}
         />
       </div>
     </div>

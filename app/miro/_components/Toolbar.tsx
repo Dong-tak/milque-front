@@ -1,5 +1,5 @@
 // components/Toolbar.tsx
-import { ImageIcon } from "lucide-react";
+import { FileText, ImageIcon } from "lucide-react";
 import React from "react";
 
 interface ToolbarProps {
@@ -7,6 +7,7 @@ interface ToolbarProps {
   onArrowToolClick: () => void;
   onAddText: () => void;
   onAddImage: () => void;
+  onAddPDF: () => void;
 }
 
 const Toolbar = ({
@@ -14,6 +15,7 @@ const Toolbar = ({
   onArrowToolClick,
   onAddText,
   onAddImage,
+  onAddPDF,
 }: ToolbarProps) => {
   return (
     <div
@@ -117,6 +119,23 @@ const Toolbar = ({
           </div>
           <span>image</span>
         </div>
+      </div>
+      <div
+        onClick={onAddPDF}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          <FileText />
+        </div>
+        <span>PDF</span>
       </div>
     </div>
   );

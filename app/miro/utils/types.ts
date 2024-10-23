@@ -1,7 +1,7 @@
 // utils/types.ts
 export interface ShapeProps {
   id: string;
-  type: "rectangle" | "arrow" | "textbox" | "imageEmbed";
+  type: "rectangle" | "arrow" | "textbox" | "imageEmbed" | "pdfEmbed";
   isSelected?: boolean;
 }
 
@@ -45,6 +45,15 @@ export interface ImageEmbedShape extends ShapeProps {
   height?: number;
   draggable: boolean;
 }
+export interface PDFEmbedShape extends ShapeProps {
+  type: "pdfEmbed";
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  src: string; // PDF 파일의 URL 또는 데이터 URL
+  draggable: boolean;
+}
 
 // 타입 가드 함수
 export function isRectangle(shape: ShapeProps): shape is RectangleShape {
@@ -62,3 +71,7 @@ export function isText(shape: ShapeProps): shape is TextShape {
 export function isImageEmbed(shape: ShapeProps): shape is ImageEmbedShape {
   return shape.type === "imageEmbed";
 }
+
+export const isPDFEmbed = (shape: ShapeProps): shape is PDFEmbedShape => {
+  return shape.type === "pdfEmbed";
+};
