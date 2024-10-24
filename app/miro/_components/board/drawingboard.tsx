@@ -42,7 +42,6 @@ const DrawingBoard = () => {
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
   const boardRef = useRef<HTMLDivElement>(null);
-  const editor = useCreateBlockNote();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // 스테이지 스케일 및 위치 상태
@@ -359,8 +358,6 @@ const DrawingBoard = () => {
   const addMarkdownDrag = async (dragFile?: File, text?: string) => {
     if (dragFile) {
       const markdown = await dragFile.text();
-      const blocks = await editor.tryParseMarkdownToBlocks(markdown);
-      const serializedBlocks = JSON.stringify(blocks);
       const id = `markdown-${shapes.length + 1}`;
       setShapes((prevShapes) => [
         ...prevShapes,
@@ -369,15 +366,13 @@ const DrawingBoard = () => {
           type: "markdown",
           x: 50,
           y: 50,
-          text: serializedBlocks,
+          mkText: markdown,
           width: 500,
           height: 800,
           draggable: true,
         },
       ]);
     } else if (text) {
-      const blocks = await editor.tryParseMarkdownToBlocks(text);
-      const serializedBlocks = JSON.stringify(blocks);
       const id = `markdown-${shapes.length + 1}`;
       setShapes((prevShapes) => [
         ...prevShapes,
@@ -386,7 +381,7 @@ const DrawingBoard = () => {
           type: "markdown",
           x: 50,
           y: 50,
-          text: serializedBlocks,
+          mkText: text,
           width: 500,
           height: 800,
           draggable: true,

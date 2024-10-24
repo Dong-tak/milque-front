@@ -78,8 +78,9 @@ export interface MarkdownShape extends ShapeProps {
   y: number;
   width?: number;
   height?: number;
-  src: string;
+  src?: string;
   draggable: boolean;
+  mkText?: string;
 }
 
 // 타입 가드 함수
