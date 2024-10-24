@@ -66,7 +66,15 @@ export default function Login() {
   const handleGoogleLogin = () => {
     const clientId =
       "811190929116-coovi0jk19fi5qdak82l4r16rsaerail.apps.googleusercontent.com";
-    const redirectUri = "http://localhost:3000/auth/google/callback/";
+    let redirectUri = `https://suitdio/auth/google/callback/`;
+    if (
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://localhost:8000/v1" ||
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://127.0.0.1:8000/v1"
+    ) {
+      redirectUri = `http://localhost:3000/auth/google/callback/`;
+    } else {
+      redirectUri = `https://suitdio/auth/google/callback/`;
+    }
     const scope = "https://www.googleapis.com/auth/userinfo.email";
     const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
 
