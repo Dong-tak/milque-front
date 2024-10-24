@@ -6,6 +6,7 @@ interface ToolbarProps {
   onArrowToolClick: () => void;
   onAddText: () => void;
   onAddBoard: () => void;
+  onAddSection: () => void;
 }
 
 const Toolbar = ({
@@ -13,6 +14,7 @@ const Toolbar = ({
   onArrowToolClick,
   onAddText,
   onAddBoard,
+  onAddSection,
 }: ToolbarProps) => {
   return (
     <div
@@ -114,6 +116,23 @@ const Toolbar = ({
           B
         </div>
         <span>보드 생성</span>
+      </div>
+      <div
+        onClick={onAddSection}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          S
+        </div>
+        <span>섹션</span>
       </div>
     </div>
   );

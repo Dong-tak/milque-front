@@ -15,6 +15,8 @@ import {
   isRectangle,
   isArrow,
   isText,
+  SectionShape,
+  isSection,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -28,16 +30,18 @@ import CreateBoardDialog from "./creatboard";
 import BoardWidget from "../shapes/boardwidget"; // BoardWidget import 추가
 import { useDispatch } from "react-redux";
 import { deselectBoard } from "@/redux/features/boardSlice";
+import Section from "../shapes/section"; // Section 컴포넌트 import 추가
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
   const stageRef = useRef<any>(null);
   const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
-  const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(
-    null,
-  ); // 현재 그리는 도형
+  const [newShape, setNewShape] = useState<
+    RectangleShape | ArrowShape | SectionShape | null
+  >(null); // 현재 그리는 도형
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
+  const [isSectionMode, setIsSectionMode] = useState(false); // 섹션 생성 모드
 
   // 스테이지 스케일 및 위치 상태
   const initialScale = 1;
@@ -59,6 +63,7 @@ const DrawingBoard = () => {
     y: number;
   } | null>(null);
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
+  const [isSectionPlacementMode, setIsSectionPlacementMode] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -95,6 +100,13 @@ const DrawingBoard = () => {
   // 보드 생성 버튼 클릭 핸들러 수정
   const handleAddBoard = useCallback(() => {
     setIsBoardPlacementMode(true); // 보드 배치 모드 활성화
+  }, []);
+
+  // 섹션 생성 버튼 클릭 핸들러 수정
+  const handleAddSection = useCallback(() => {
+    setIsSectionMode(true); // 섹션 생성 모드 활성화
+    setIsRectangleMode(false); // 다른 모드 비활성화
+    setIsArrowMode(false);
   }, []);
 
   // 스테이지 클릭 핸들러 수정
@@ -240,7 +252,7 @@ const DrawingBoard = () => {
   // 화살표 생성 모드 활성화
   const handleArrowToolClick = () => {
     setIsArrowMode(true); // 화살표 생성 모드 활성화
-    setIsRectangleMode(false); // 사각형 생성 모드 비활성화
+    setIsRectangleMode(false); // 사각형 생성 모드 ���활성화
   };
 
   const handleMouseDown = (e: any) => {
@@ -296,6 +308,20 @@ const DrawingBoard = () => {
         arrowHeads: { left: false, right: true }, // 기본값으로 단방향 화살표 설정
       };
       setNewShape(newArrow);
+      setIsDrawing(true);
+    } else if (isSectionMode && !isDrawing) {
+      const newSection: SectionShape = {
+        id: `section-${shapes.length + 1}`,
+        type: "section",
+        x,
+        y,
+        width: 0,
+        height: 0,
+        fill: "rgba(200, 200, 200, 0.2)",
+        draggable: true,
+        memberIds: [],
+      };
+      setNewShape(newSection);
       setIsDrawing(true);
     }
   };
@@ -354,6 +380,17 @@ const DrawingBoard = () => {
         arrowTipX: endPoint.x,
         arrowTipY: endPoint.y,
       });
+    } else if (isSectionMode && newShape.type === "section") {
+      const width = x - newShape.x;
+      const height = y - newShape.y;
+
+      setNewShape({
+        ...newShape,
+        width: Math.abs(width),
+        height: Math.abs(height),
+        x: width < 0 ? x : newShape.x,
+        y: height < 0 ? y : newShape.y,
+      });
     }
   };
 
@@ -410,12 +447,29 @@ const DrawingBoard = () => {
       setShapes([...shapes, finalizedRect]);
     } else if (isArrowMode && newShape.type === "arrow") {
       setShapes([...shapes, newShape]);
+    } else if (isSectionMode && newShape.type === "section") {
+      const finalizedSection: SectionShape = {
+        ...newShape,
+        memberIds: shapes
+          .filter((shape) => {
+            if (shape.id === newShape.id) return false;
+            const isInBounds =
+              shape.x >= newShape.x &&
+              shape.x + (shape.width || 0) <= newShape.x + newShape.width &&
+              shape.y >= newShape.y &&
+              shape.y + (shape.height || 0) <= newShape.y + newShape.height;
+            return isInBounds;
+          })
+          .map((shape) => shape.id),
+      };
+      setShapes([...shapes, finalizedSection]);
     }
 
     setNewShape(null);
     setIsDrawing(false);
     setIsRectangleMode(false);
     setIsArrowMode(false);
+    setIsSectionMode(false);
   };
 
   const handleArrowPointDrag = (
@@ -535,7 +589,7 @@ const DrawingBoard = () => {
     // 기존 위젯들의 영역을 그리드에 표시
     shapes.forEach((shape) => {
       if (isText(shape)) {
-        // 텍스트 노드의 영역을 그리드에 표시
+        // 텍스트 노드의 영역을 그리드에 표��
         const startX = Math.floor(shape.x / gridSize);
         const startY = Math.floor(shape.y / gridSize);
         const endX = Math.floor((shape.x + nodeSize.width) / gridSize);
@@ -717,7 +771,7 @@ const DrawingBoard = () => {
             />
           </Layer>
           <Layer>
-            {/* 도형들 렌더링 */}
+            {/* 도형�� 렌더링 */}
             {shapes.map((shape) => {
               if (isRectangle(shape)) {
                 return (
@@ -791,6 +845,29 @@ const DrawingBoard = () => {
                     onDragMove={handleArrowPointDrag}
                   />
                 );
+              } else if (isSection(shape)) {
+                return (
+                  <Section
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: any) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      );
+                      setShapes(newShapes);
+                    }}
+                    shapes={shapes}
+                    updateShapes={setShapes}
+                  />
+                );
               } else if (shape.type === "board") {
                 // BoardWidget 렌더링 추가
                 return (
@@ -831,8 +908,18 @@ const DrawingBoard = () => {
                 shapeProps={newShape}
                 isSelected={false}
                 onSelect={() => {}}
-                onChange={() => {}} // 빈 함수로 설정
-                onDragMove={() => {}} // 빈 함수로 설정
+                onChange={() => {}}
+                onDragMove={() => {}}
+              />
+            )}
+            {newShape && newShape.type === "section" && (
+              <Section
+                shapeProps={newShape}
+                isSelected={false}
+                onSelect={() => {}}
+                onChange={() => {}}
+                shapes={shapes}
+                updateShapes={setShapes}
               />
             )}
           </Layer>
@@ -845,6 +932,7 @@ const DrawingBoard = () => {
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
           onAddBoard={handleAddBoard}
+          onAddSection={handleAddSection}
         />
         <CreateBoardDialog
           contentTitle={contentTitle}

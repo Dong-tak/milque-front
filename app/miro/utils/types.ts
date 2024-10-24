@@ -1,7 +1,7 @@
 // utils/types.ts
 export interface ShapeProps {
   id: string;
-  type: "rectangle" | "arrow" | "textbox";
+  type: "rectangle" | "arrow" | "textbox" | "section";
   isSelected?: boolean;
 }
 
@@ -47,6 +47,17 @@ export interface ArrowShape extends ShapeProps {
   arrowHeads: ArrowHeadState; // 화살표 머리 상태 추가
 }
 
+export interface SectionShape extends ShapeProps {
+  type: "section";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
+  draggable: boolean;
+  memberIds: string[]; // 섹션에 포함된 객체들의 ID 배열
+}
+
 // 타입 가드 함수
 export function isRectangle(shape: ShapeProps): shape is RectangleShape {
   return shape.type === "rectangle";
@@ -58,6 +69,10 @@ export function isArrow(shape: ShapeProps): shape is ArrowShape {
 
 export function isText(shape: ShapeProps): shape is TextShape {
   return shape.type === "textbox";
+}
+
+export function isSection(shape: ShapeProps): shape is SectionShape {
+  return shape.type === "section";
 }
 
 // 관계 타입을 결정하는 헬퍼 함수
