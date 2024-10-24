@@ -1,5 +1,3 @@
-import { updateArrows } from "../app/miro/utils/updatearrow";
-
 // 스냅핑 로직 함수
 export const snap = (value: number) => {
   const remainder = value % 30;

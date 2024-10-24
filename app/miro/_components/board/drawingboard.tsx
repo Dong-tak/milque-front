@@ -8,7 +8,6 @@ import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
 import Toolbar from "../Toolbar";
 import {
-  ShapeProps,
   RectangleShape,
   TextShape,
   ArrowShape,
@@ -22,12 +21,10 @@ import {
   isIframeEmbed,
   IframeEmbedShape,
   isMarkdown,
-  MarkdownShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
   getClosestSidePoint,
-  snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
 import ImageEmbed from "../shapes/imageEmbed";
