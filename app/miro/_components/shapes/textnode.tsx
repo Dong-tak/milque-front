@@ -34,6 +34,8 @@ const TextNode: React.FC<TextNodeProps> = ({
   const [textValue, setTextValue] = useState<string>(shapeProps.text || "");
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
   const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
+  const [mkText, setMkText] = useState<PartialBlock[]>();
+
   // 컴포넌트 내에서 마우스 시작 위치를 저장할 상태 변수 추가
   const [dragStartPos, setDragStartPos] = useState<{
     x: number;
@@ -59,14 +61,27 @@ const TextNode: React.FC<TextNodeProps> = ({
   const editor = useCreateBlockNote({
     initialContent,
   });
+  useEffect(() => {
+    const loadMarkdown = async () => {
+      if (shapeProps.type === "markdown" && shapeProps.src) {
+        const response = await fetch(shapeProps.src);
+        const text = await response.text();
+        const blocks = await editor.tryParseMarkdownToBlocks(text);
+        editor.replaceBlocks(editor.document, blocks);
+      } else if (shapeProps.type === "markdown" && shapeProps.mkText) {
+        const blocks = await editor.tryParseMarkdownToBlocks(shapeProps.mkText);
+        editor.replaceBlocks(editor.document, blocks);
+      }
+    };
 
-  const handleDragEnd = (e: any) => {
-    onChange({
-      ...shapeProps,
-      x: e.target.x(),
-      y: e.target.y(),
-    });
-  };
+    loadMarkdown();
+  }, [shapeProps, editor]);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setIsEditing(false);
+    }
+  }, [isSelected]);
 
   const handleResize = () => {
     if (blockNoteRef.current) {
@@ -135,7 +150,6 @@ const TextNode: React.FC<TextNodeProps> = ({
             }}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
-            onBlur={() => setIsEditing(false)}
           >
             <BlockNoteView
               editor={editor}

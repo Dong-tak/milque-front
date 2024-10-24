@@ -2,7 +2,15 @@
 "use client";
 
 import React from "react";
-import DrawingBoard from "../_components/board/drawingboard";
+
+import dynamic from "next/dynamic";
+
+const DrawingBoard = dynamic(
+  () => import("../_components/board/drawingboard"),
+  {
+    ssr: false,
+  },
+);
 
 export default function BoardPage() {
   return (

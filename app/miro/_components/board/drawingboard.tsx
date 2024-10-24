@@ -8,22 +8,28 @@ import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
 import Toolbar from "../Toolbar";
 import {
-  ShapeProps,
   RectangleShape,
   TextShape,
   ArrowShape,
   isRectangle,
   isArrow,
   isText,
+  isImageEmbed,
+  ImageEmbedShape,
+  isPDFEmbed,
+  PDFEmbedShape,
+  isIframeEmbed,
+  IframeEmbedShape,
+  isMarkdown,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
   getClosestSidePoint,
-  snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
-import { updateArrows } from "../../utils/updatearrow";
-import { defaultProps } from "@blocknote/core";
+import ImageEmbed from "../shapes/imageEmbed";
+import PDFEmbed from "../shapes/pdfEmbed";
+import IframeEmbed from "../shapes/iframeEmbed";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -34,6 +40,8 @@ const DrawingBoard = () => {
   ); // 현재 그리는 도형
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // 스테이지 스케일 및 위치 상태
   const initialScale = 1;
@@ -89,6 +97,75 @@ const DrawingBoard = () => {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
+
+  useEffect(() => {
+    const board = boardRef.current;
+    if (board) {
+      board.addEventListener("dragover", handleDragOver);
+      board.addEventListener("drop", handleDrop);
+    }
+
+    return () => {
+      if (board) {
+        board.removeEventListener("dragover", handleDragOver);
+        board.removeEventListener("drop", handleDrop);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault();
+      const pastedText = e.clipboardData?.getData("text");
+
+      if (pastedText) {
+        const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
+        const newShape = isUrl
+          ? addIframeEmbed(pastedText)
+          : addMarkdownDrag(undefined, pastedText);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    document.addEventListener("paste", handlePaste);
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [shapes, mousePosition]);
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer && e.dataTransfer.files) {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    const fileType = file.type;
+    if (fileType.startsWith("image/")) {
+      addImageDrag(file);
+    } else if (fileType === "application/pdf") {
+      addPDFDrag(file);
+    } else if (fileType === "text/markdown" || file.name.endsWith(".md")) {
+      addMarkdownDrag(file);
+    } else {
+      alert("지원하지 않는 파일 형식입니다.");
+    }
+  };
 
   // 휠 이벤트를 통한 줌 제어
   const handleWheel = (e: any) => {
@@ -152,6 +229,196 @@ const DrawingBoard = () => {
         draggable: true,
       },
     ]);
+  };
+
+  const addImageDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `imageEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "imageEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
+  };
+
+  const addImageEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `imageEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "imageEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  const addPDFDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `pdfEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "pdfEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
+  };
+
+  const addPDFEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "application/pdf";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `pdfEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "pdfEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  const addIframeEmbed = (src: string) => {
+    const id = `iframeEmbed-${shapes.length + 1}`;
+    setShapes([
+      ...shapes,
+      {
+        id,
+        type: "iframeEmbed",
+        x: 50,
+        y: 50,
+        src,
+        draggable: true,
+      },
+    ]);
+  };
+
+  const addMarkdownDrag = async (dragFile?: File, text?: string) => {
+    if (dragFile) {
+      const markdown = await dragFile.text();
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          mkText: markdown,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    } else if (text) {
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          mkText: text,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    }
+  };
+
+  const addMarkdown = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "text/markdown";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `markdown-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "markdown",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                fontSize: 24,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
   };
 
   // Stage click event handler
@@ -454,7 +721,7 @@ const DrawingBoard = () => {
   };
 
   return (
-    <div>
+    <div ref={boardRef}>
       {/* 보드 */}
       <div
         onMouseDown={handleMouseDown}
@@ -579,6 +846,94 @@ const DrawingBoard = () => {
                     onDragMove={handleArrowPointDrag}
                   />
                 );
+              } else if (isImageEmbed(shape)) {
+                return (
+                  <ImageEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<ImageEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isPDFEmbed(shape)) {
+                return (
+                  <PDFEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<PDFEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isIframeEmbed(shape)) {
+                return (
+                  <IframeEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs: Partial<IframeEmbedShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isMarkdown(shape)) {
+                return (
+                  <TextNode
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs: Partial<TextShape>) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                      setShapes(newShapes);
+                    }}
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(shape.id, node.x(), node.y());
+                    }}
+                  />
+                );
               }
               return null;
             })}
@@ -602,13 +957,17 @@ const DrawingBoard = () => {
             )}
           </Layer>
         </Stage>
-        {/* 툴바 컴��넌트 */}
+        {/* 툴바 컴포넌트 */}
         <Toolbar
           onRectangleToolClick={handleRectangleToolClick}
           onArrowToolClick={handleArrowToolClick}
           onAddText={() =>
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
+          onAddImage={addImageEmbed}
+          onAddPDF={addPDFEmbed}
+          onAddIframe={addIframeEmbed}
+          onAddMarkdown={addMarkdown}
         />
       </div>
     </div>

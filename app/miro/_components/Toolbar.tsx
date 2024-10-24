@@ -1,16 +1,25 @@
 // components/Toolbar.tsx
+import { ArrowDownAZ, FileText, ImageIcon, PanelTop } from "lucide-react";
 import React from "react";
 
 interface ToolbarProps {
   onRectangleToolClick: () => void;
   onArrowToolClick: () => void;
   onAddText: () => void;
+  onAddImage: () => void;
+  onAddPDF: () => void;
+  onAddIframe: (src: string) => void;
+  onAddMarkdown: () => void;
 }
 
 const Toolbar = ({
   onRectangleToolClick,
   onArrowToolClick,
   onAddText,
+  onAddImage,
+  onAddPDF,
+  onAddIframe,
+  onAddMarkdown,
 }: ToolbarProps) => {
   return (
     <div
@@ -95,6 +104,76 @@ const Toolbar = ({
           T
         </div>
         <span>텍스트</span>
+      </div>
+      <div>
+        <div
+          onClick={onAddImage}
+          style={{ cursor: "pointer", textAlign: "center" }}
+        >
+          <div
+            style={{
+              width: "30px",
+              height: "30px",
+              margin: "auto",
+              fontSize: "24px",
+              fontWeight: "bold",
+            }}
+          >
+            <ImageIcon />
+          </div>
+          <span>image</span>
+        </div>
+      </div>
+      <div
+        onClick={onAddPDF}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          <FileText />
+        </div>
+        <span>PDF</span>
+      </div>
+      <div
+        onClick={() => onAddIframe("")}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          <PanelTop />
+        </div>
+        <span>Web</span>
+      </div>
+      <div
+        onClick={onAddMarkdown}
+        style={{ cursor: "pointer", textAlign: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            margin: "auto",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          <ArrowDownAZ />
+        </div>
+        <span>Mkdown</span>
       </div>
     </div>
   );
