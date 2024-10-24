@@ -77,7 +77,109 @@
     @apply bg-background text-foreground;
   }
 }
+/* Accordion 스타일 */
+.accordion {
+  margin-bottom: 3rem;
+  transition: padding-left 0.3s ease; /* padding-left 전환 애니메이션 */
+}
 
+.accordion-open {
+  padding-left: 250px; /* 사이드바 열림 상태일 때 */
+}
+
+.accordion-closed {
+  padding-left: 0; /* 사이드바 닫힘 상태일 때 */
+}
+.accordhead {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 제목을 1줄로 제한 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 텍스트가 넘칠 경우 생략 표시 */
+}
+
+.accordbody {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 설명을 4줄로 제한 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 텍스트가 넘칠 경우 생략 표시 */
+  align-self: stretch;
+}
+
+/* 미디어 쿼리: 화면 너비에 따른 사이드바 및 레이아웃 조정 */
+@media (min-width: 1100px) {
+  .dropdown {
+    display: none; /* 1100px 이상에서는 드롭다운 숨기기 */
+  }
+  .accordion {
+    padding-top: 44px; /* 사이드바 너비만큼 패딩 추가 */
+  }
+}
+
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 70px; /* 사이드바 너비 축소 */
+  }
+
+  .sidebar-item {
+    justify-content: center;
+    padding: 15px; /* 아이템 간격 조정 */
+  }
+
+  .sidebar-item .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 0; /* 아이콘 옆 간격 제거 */
+  }
+
+  .sidebar-item .badge,
+  .sidebar-item .sq-badge,
+  .direct,
+  .sidebar-item span,
+  .sidebar-label {
+    display: none; /* 텍스트 및 배지 숨기기 */
+  }
+}
+
+@media (max-width: 764px) {
+  .sidebar {
+    display: none; /* 작은 화면에서 사이드바 숨기기 */
+  }
+
+  .accordion {
+    padding-top: 48px;
+    padding-left: 0px; /* 패딩 제거 */
+  }
+
+  .detail {
+    height: 100vh; /* 세로 전체 크기 설정 */
+  }
+
+  .setting-frame {
+    margin-bottom: 2rem; /* 하단 마진 설정 */
+  }
+}
+
+@media (min-width: 764px) {
+  .top-bar,
+  .btm-bar {
+    display: none; /* 764px 이상에서는 상단, 하단 바 숨기기 */
+  }
+
+  .accordion {
+    margin-bottom: 0; /* 하단 마진 제거 */
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 764px) {
+  .accordion {
+    padding-top: 44px; /* 764px-1100px 구간에서 패딩 조정 */
+    padding-left: 70px; /* 사이드바 크기와 맞춤 */
+  }
+}
+
+/* 반응형 아이프레임 컨테이너 */
 .instagram-media {
   background: #fff;
   border: 0;
@@ -86,102 +188,15 @@
     0 0 1px 0 rgba(0, 0, 0, 0.5),
     0 1px 10px 0 rgba(0, 0, 0, 0.15);
   margin: 1px;
-  width: auto;
+  width: 99.375%;
   height: 100%;
   padding: 0;
-  width: 99.375%;
   overflow: hidden;
   position: relative;
 }
-
-.accordion {
-  margin-bottom: 3rem;
-}
-
-.accordhead {
-  display: -webkit-box;
-  -webkit-line-clamp: 1; /* 줄 수 제한: 4줄 */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.accordbody {
-  display: -webkit-box;
-  -webkit-line-clamp: 4; /* 줄 수 제한: 4줄 */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  align-self: stretch;
-}
-
-@media (min-width: 1100px) {
-  .dropdown {
-    display: none;
-  }
-}
-@media (max-width: 1100px) {
-  .sidebar {
-    width: 70px;
-  }
-
-  .sidebar-item {
-    justify-content: center;
-    padding: 15px;
-  }
-  .sidebar-item .icon {
-    width: 24px; /* size-6 */
-    height: 24px; /* size-6 */
-    margin-right: 0;
-  }
-
-  .sidebar-item .badge,
-  .sidebar-item .sq-badge,
-  .direct,
-  .sidebar-item span,
-  .sidebar-label {
-    display: none;
-  }
-}
-
-@media (max-width: 764px) {
-  .sidebar {
-    display: none;
-  }
-  .accordion {
-    padding-top: 48px;
-    padding-left: 0px;
-  }
-  .detail {
-    height: 100vh;
-  }
-  .setting-frame {
-    margin-bottom: 2rem; /* md 크기 이상에서 margin-bottom을 8px로 설정 */
-  }
-}
-
-@media (min-width: 764px) {
-  .top-bar {
-    display: none;
-  }
-  .btm-bar {
-    display: none;
-  }
-  .accordion {
-    margin-bottom: 0;
-  }
-}
-
-@media (max-width: 1100px) and (min-width: 764px) {
-  .accordion {
-    padding-top: 44px; /* Different padding-top for this range */
-    padding-left: 70px; /* Different padding-left for this range */
-  }
-}
-
 .responsiveIframeContainer {
   position: relative;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  padding-top: 56.25%; /* 16:9 비율 유지 */
   height: 0;
   overflow: hidden;
 }
@@ -194,15 +209,15 @@
   height: 100%;
 }
 
-/* Setting Page의 CSS */
+/* 세팅 페이지 스타일 */
 .setting-frame {
   display: flex;
   width: 100%;
   flex-grow: 1;
   flex-direction: column;
   overflow: auto;
-  gap: 2rem; /* This is equivalent to Tailwind's space-y-8 */
-  padding-left: 2rem; /* Equivalent to px-8 */
+  gap: 2rem; /* Tailwind의 space-y-8과 유사 */
+  padding-left: 2rem;
   padding-right: 2rem;
 }
 
@@ -212,7 +227,7 @@
   flex-grow: 1;
   flex-direction: column;
   overflow-y: visible;
-  gap: 1rem; /* This is equivalent to Tailwind's gap-4 */
+  gap: 1rem; /* Tailwind의 gap-4와 유사 */
 }
 
 .setting-header {
@@ -220,23 +235,53 @@
   width: 100%;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem; /* Equivalent to Tailwind's gap-2 */
-  border-bottom: 1px solid #e5e7eb; /* Equivalent to Tailwind's border-b */
-  padding-top: 1rem; /* Equivalent to py-4 */
+  gap: 0.5rem; /* Tailwind의 gap-2와 유사 */
+  border-bottom: 1px solid #e5e7eb; /* Tailwind의 border-b와 유사 */
+  padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
-/* 스크롤 바 커스텀 */
-/* 웹킷 브라우저 (Chrome, Safari 등)에서 스크롤바 커스터마이징 */
+/* 스크롤 바 커스텀 스타일 */
 *::-webkit-scrollbar {
-  width: 8px; /* 스크롤바의 너비 */
+  width: 8px; /* 스크롤바 너비 */
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #d1c4e9; /* 스크롤바의 색상 */
-  border-radius: 10px; /* 스크롤바 둥근 모서리 */
+  background-color: #d1c4e9; /* 스크롤바 색상 */
+  border-radius: 10px; /* 둥근 모서리 */
 }
 
 *::-webkit-scrollbar-track {
-  background-color: transparent; /* 스크롤 트랙의 배경색 제거 */
+  background-color: transparent; /* 스크롤 트랙 배경색 제거 */
+}
+
+/* 사이드바 열림/닫힘 애니메이션 */
+
+.sidebar {
+  background-color: white;
+}
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.sidebar-open {
+  animation: slideIn 0.3s forwards;
+}
+
+.sidebar-close {
+  animation: slideOut 0.3s forwards;
 }

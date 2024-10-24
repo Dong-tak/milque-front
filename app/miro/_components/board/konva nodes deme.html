@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Konva 라이브러리를 포함 -->
+    <script src="https://unpkg.com/konva@9.3.15/konva.min.js"></script>
+    <meta charset="utf-8" />
+    <title>Konva Connect Objects with Rounded Corners</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Konva 스테이지를 담을 컨테이너 -->
+    <div id="container"></div>
+    <script>
+      // 스테이지의 너비와 높이를 설정 (브라우저 창 크기로)
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      // Konva 스테이지 생성
+      var stage = new Konva.Stage({
+        container: "container", // HTML 컨테이너 ID
+        width: width,
+        height: height,
+      });
+
+      // 레이어 생성 및 스테이지에 추가
+      var layer = new Konva.Layer();
+      stage.add(layer);
+
+      // "타겟" (사각형) 목록을 생성하는 함수
+      function generateTargets() {
+        var number = 10; // 생성할 타겟의 수
+        var result = [];
+        while (result.length < number) {
+          result.push({
+            id: "target-" + result.length,
+            x: stage.width() * Math.random(), // 무작위 x 좌표
+            y: stage.height() * Math.random(), // 무작위 y 좌표
+            width: 80,
+            height: 40,
+          });
+        }
+        return result;
+      }
+
+      // 타겟 목록 생성
+      var targets = generateTargets();
+
+      // 타겟들 사이에 화살표를 생성하는 함수
+      function generateConnectors() {
+        var number = 10; // 생성할 커넥터의 수
+        var result = [];
+        while (result.length < number) {
+          var from = "target-" + Math.floor(Math.random() * targets.length);
+          var to = "target-" + Math.floor(Math.random() * targets.length);
+          if (from === to) {
+            continue; // 같은 타겟을 연결하지 않음
+          }
+          result.push({
+            id: "connector-" + result.length,
+            from: from,
+            to: to,
+          });
+        }
+        return result;
+      }
+
+      // 두 타겟 사이의 화살표 좌표를 계산하는 함수
+      function getConnectorPoints(from, to) {
+        const fromCenterX = from.x + from.width / 2;
+        const fromCenterY = from.y + from.height / 2;
+        const toCenterX = to.x + to.width / 2;
+        const toCenterY = to.y + to.height / 2;
+
+        const dx = toCenterX - fromCenterX;
+        const dy = toCenterY - fromCenterY;
+
+        let fromX, fromY, toX, toY;
+        let fromSide, toSide;
+
+        // 두 타겟의 중앙 점을 기반으로 중간 점을 계산
+        const midX = (fromCenterX + toCenterX) / 2;
+        const midY = (fromCenterY + toCenterY) / 2;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          // 수평 방향으로 더 클 때 (X축 기준)
+          fromX = dx > 0 ? from.x + from.width : from.x;
+          fromY = fromCenterY;
+          fromSide = dx > 0 ? "right" : "left";
+
+          toX = dx > 0 ? to.x : to.x + to.width;
+          toY = toCenterY;
+          toSide = dx > 0 ? "left" : "right";
+
+          // 꺾임 지점이 가운데에서 일어나게 설정
+          const bendX = midX;
+          const bendY = fromCenterY; // 수평 이동 후 수직 꺾임
+
+          return {
+            points: [fromX, fromY, bendX, fromY, bendX, toY, toX, toY],
+            fromSide: fromSide,
+            toSide: toSide,
+          };
+        } else {
+          // 수직 방향으로 더 클 때 (Y축 기준)
+          fromX = fromCenterX;
+          fromY = dy > 0 ? from.y + from.height : from.y;
+          fromSide = dy > 0 ? "bottom" : "top";
+
+          toX = toCenterX;
+          toY = dy > 0 ? to.y : to.y + to.height;
+          toSide = dy > 0 ? "top" : "bottom";
+
+          // 꺾임 지점이 가운데에서 일어나게 설정
+          const bendX = fromCenterX; // 수직 이동 후 수평 꺾임
+          const bendY = midY;
+
+          return {
+            points: [fromX, fromY, fromX, bendY, toX, bendY, toX, toY],
+            fromSide: fromSide,
+            toSide: toSide,
+          };
+        }
+      }
+
+      // 화살표 목록 생성
+      var connectors = generateConnectors();
+
+      // 캔버스의 모든 객체를 앱의 상태로부터 업데이트하는 함수
+      function updateObjects() {
+        // 모든 타겟(사각형) 업데이트
+        targets.forEach((target) => {
+          var node = layer.findOne("#" + target.id);
+          node.x(target.x);
+          node.y(target.y);
+        });
+        // 모든 커넥터(화살표) 업데이트
+        connectors.forEach((connect) => {
+          var arrow = layer.findOne("#" + connect.id);
+          var fromNode = layer.findOne("#" + connect.from);
+          var toNode = layer.findOne("#" + connect.to);
+
+          const result = getConnectorPoints(fromNode.attrs, toNode.attrs);
+          arrow.points = result.points;
+          connect.updateArrowHead(result.toSide);
+          arrow.getLayer().batchDraw();
+        });
+      }
+
+      // 앱을 위한 노드(사각형) 생성
+      targets.forEach((target) => {
+        var node = new Konva.Rect({
+          id: target.id,
+          x: target.x,
+          y: target.y,
+          width: target.width,
+          height: target.height,
+          fill: Konva.Util.getRandomColor(),
+          shadowBlur: 10,
+          draggable: true,
+        });
+        layer.add(node);
+
+        // 드래그 이벤트 핸들러 추가
+        node.on("dragmove", () => {
+          // 상태를 변경
+          target.x = node.x();
+          target.y = node.y();
+
+          // 새로운 상태로부터 노드를 업데이트
+          updateObjects();
+        });
+      });
+
+      // 화살표 생성 및 추가
+      connectors.forEach((connector) => {
+        // 화살표 본체 생성 (라운드 코너를 가진 커스텀 쉐이프)
+        var arrow = new Konva.Shape({
+          id: connector.id,
+          stroke: "black",
+          strokeWidth: 2,
+          lineJoin: "round",
+          // points 속성을 추가하여 저장
+          points: [],
+          sceneFunc: function (context, shape) {
+            var points = this.points || this.attrs.points;
+            var radius = 15; // 라운드 코너의 반지름
+
+            if (points.length < 4) {
+              return;
+            }
+
+            context.beginPath();
+            context.moveTo(points[0], points[1]);
+
+            for (var i = 2; i < points.length - 2; i += 2) {
+              var x1 = points[i - 2];
+              var y1 = points[i - 1];
+              var x2 = points[i];
+              var y2 = points[i + 1];
+              var x3 = points[i + 2];
+              var y3 = points[i + 3];
+
+              var dx1 = x2 - x1;
+              var dy1 = y2 - y1;
+              var dx2 = x3 - x2;
+              var dy2 = y3 - y2;
+
+              var angle1 = Math.atan2(dy1, dx1);
+              var angle2 = Math.atan2(dy2, dx2);
+
+              var angleDiff = angle2 - angle1;
+
+              if (angleDiff > Math.PI) {
+                angleDiff -= 2 * Math.PI;
+              } else if (angleDiff < -Math.PI) {
+                angleDiff += 2 * Math.PI;
+              }
+
+              // 각도 차이가 작으면 (직선에 가까우면) 라운드를 적용하지 않음
+              if (Math.abs(angleDiff) < 0.01) {
+                context.lineTo(x2, y2);
+                continue;
+              }
+
+              // 라운드 코너를 위한 점 계산
+              var dist = Math.min(
+                radius,
+                Math.hypot(dx1, dy1) / 2,
+                Math.hypot(dx2, dy2) / 2,
+              );
+
+              var x2a = x2 - dist * Math.cos(angle1);
+              var y2a = y2 - dist * Math.sin(angle1);
+              var x2b = x2 + dist * Math.cos(angle2);
+              var y2b = y2 + dist * Math.sin(angle2);
+
+              context.lineTo(x2a, y2a);
+              context.arcTo(x2, y2, x2b, y2b, dist);
+            }
+
+            // 마지막 선분 그리기
+            context.lineTo(
+              points[points.length - 2],
+              points[points.length - 1],
+            );
+
+            context.strokeShape(shape);
+          },
+        });
+        layer.add(arrow);
+
+        // 화살표 헤드 생성
+        var arrowHead = new Konva.RegularPolygon({
+          sides: 3,
+          radius: 10,
+          fill: "black",
+          stroke: "black",
+          strokeWidth: 2,
+        });
+        layer.add(arrowHead);
+
+        // 화살표 헤드 업데이트 함수
+        function updateArrowHead(side) {
+          var points = arrow.points || arrow.attrs.points;
+          var len = points.length;
+          var x1 = points[len - 4];
+          var y1 = points[len - 3];
+          var x2 = points[len - 2];
+          var y2 = points[len - 1];
+
+          var dx = x2 - x1;
+          var dy = y2 - y1;
+
+          var angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+          arrowHead.x(x2);
+          arrowHead.y(y2);
+          arrowHead.rotation(angle + 90);
+        }
+
+        // 커넥터 객체에 화살표 헤드 참조 추가
+        connector.arrowHead = arrowHead;
+        connector.updateArrowHead = updateArrowHead;
+      });
+
+      // 초기 객체 업데이트
+      updateObjects();
+
+      // 레이어 다시 그리기
+      layer.draw();
+    </script>
+  </body>
+</html>

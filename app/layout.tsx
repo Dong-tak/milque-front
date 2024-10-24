@@ -5,6 +5,7 @@ import OurProviders from "@/components/provider";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import ToastProvider from "@/components/alert/toast-alert";
 
 const pretnedard = localFont({
   src: "../lib/PretendardVariable.woff2",
@@ -42,7 +43,10 @@ export default async function RootLayout({
       />
       <body className={suit.className}>
         <NextIntlClientProvider messages={messages}>
-          <OurProviders>{children}</OurProviders>
+          <OurProviders>
+            <ToastProvider />
+            {children}
+          </OurProviders>
         </NextIntlClientProvider>
         <GoogleAnalytics
           gaId={process.env.NEXT_PUBLIC_GA_ID || "undefined-gaId"}

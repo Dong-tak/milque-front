@@ -18,7 +18,7 @@ export const NavButton = React.forwardRef<
       size={"nav"}
       disabled={disabled}
       className={cn(
-        "w-full border-none hover:text-accent-foreground",
+        "flex w-full justify-center border-none hover:text-accent-foreground",
         isActive && "text-accent-foreground",
         className,
       )}

@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CloudDownload, ExternalLink, Share2 } from "lucide-react";
+import { CloudDownload, ExternalLink, Menu, Share2 } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -14,8 +14,10 @@ import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 import { PostFeed } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { setGroupedPosts } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { setGroupedPosts } from "@/redux/features/postsDateSlice";
+import { RootState } from "@/redux/store";
+import { openSidebar } from "@/redux/features/sidebarSlice";
 
 interface AccordionBtnProps {
   children: React.ReactNode;
@@ -113,9 +115,13 @@ export function OurAccordion({
   };
 
   const dispatch = useDispatch();
+  const isOpen = useSelector((state: RootState) => state.sidebar.isOpen); // Redux 상태에서 isOpen 값 가져옴
 
   const groupedPosts = sortPostsByTime(groupPostsByDate(posts));
 
+  const handleSidebarToggle = () => {
+    dispatch(openSidebar()); // 사이드바 열기
+  };
   const sortedDateKeys = Object.keys(groupedPosts).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
   );
@@ -131,14 +137,19 @@ export function OurAccordion({
   };
 
   return (
-    <Accordion type="multiple" className="accordion w-full pl-[250px] pt-12">
+    <Accordion
+      type="multiple"
+      className={`accordion relative w-full ${isOpen ? "accordion-open" : "accordion-closed"}`} // isOpen에 따라 padding 전환
+    >
+      <Menu
+        className={`absolute left-4 top-3 z-50 h-6 w-6 bg-background ${isOpen ? "hidden" : ""}`}
+        onClick={handleSidebarToggle}
+      />
       {sortedDateKeys.map((dateKey) => (
-        <AccordionItem value={dateKey} key={dateKey} className="border-b">
-          <AccordionTrigger>
-            <div className="sticky top-12 flex items-center justify-between bg-background p-2 md:top-0">
-              {dateKey.replace(/-/g, ".")}
-            </div>
-          </AccordionTrigger>
+        <AccordionItem value={dateKey} key={dateKey}>
+          <div className="sticky top-12 flex items-center justify-between border-b bg-background p-2 md:top-0">
+            <AccordionTrigger>{dateKey.replace(/-/g, ".")}</AccordionTrigger>
+          </div>
           <AccordionContent>
             <div className="flex flex-col">
               {groupedPosts[dateKey].map((post) => (

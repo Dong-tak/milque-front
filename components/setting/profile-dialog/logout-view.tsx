@@ -29,13 +29,23 @@ export const LogoutDialog = ({
 }: SettingAlertDialogProps) => {
   const router = useRouter();
 
-  const handleLogout = () => {
-    // 쿠키 초기화
-    Cookies.remove("token"); // 예시: 'token' 쿠키를 제거
-    Cookies.remove("user"); // 예시: 'user' 쿠키를 제거
+  const handleLogout = async () => {
+    try {
+      // 로그아웃 API 호출
+      const response = await fetch("/api/logout", {
+        method: "GET",
+      });
+      console.log("response", response);
 
-    // 홈 화면으로 이동
-    router.push("/");
+      if (response.ok) {
+        // 홈 화면으로 이동
+        router.push("/");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("An error occurred during logout:", error);
+    }
   };
 
   return (

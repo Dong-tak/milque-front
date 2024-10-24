@@ -1,14 +1,18 @@
-import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
+// features/postsSlice.ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PostFeed } from "@/lib/types";
 
+// Posts 상태 인터페이스 정의
 interface PostsState {
   groupedPosts: Record<string, PostFeed[]>;
 }
 
+// 초기 상태 정의
 const initialState: PostsState = {
   groupedPosts: {},
 };
 
+// postsSlice 생성
 const postsSlice = createSlice({
   name: "posts",
   initialState,
@@ -19,14 +23,6 @@ const postsSlice = createSlice({
   },
 });
 
+// 액션과 리듀서 추출
 export const { setGroupedPosts } = postsSlice.actions;
-
-const store = configureStore({
-  reducer: {
-    posts: postsSlice.reducer,
-  },
-});
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export default store;
+export default postsSlice.reducer;

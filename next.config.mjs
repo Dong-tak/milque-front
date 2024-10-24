@@ -13,6 +13,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "mileque-bag.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "**.tiktokcdn.com",
       },
       {
@@ -59,5 +63,9 @@ const nextConfig = {
     ],
   },
   productionBrowserSourceMaps: false,
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    return config;
+  },
 };
 export default withNextIntl(nextConfig);

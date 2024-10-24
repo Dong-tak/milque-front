@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { OptionSidebar } from "@/components/setting/option-sidebar";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -13,6 +13,8 @@ import { DownloadView } from "@/components/setting/view-download";
 import { ScrapView } from "@/components/setting/view-scrap";
 import { GroupView } from "@/components/setting/view-group";
 import { SiteView } from "@/components/setting/view-site";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -25,12 +27,16 @@ export function OurOption({ button, user_id }: OurOptionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태 관리
   const [view, setView] = useState("profile");
+  const currentView = useSelector((state: RootState) => state.view.currentView);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); // 사이드바 토글 함수
+  // useCallback을 사용하여 toggleSidebar 함수 메모이제이션
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     toggleSidebar();
-  }, [view]); // view가 변경될 때마다 toggleSidebar 실행
+  }, [view, toggleSidebar]); // view가 변경될 때마다 toggleSidebar 실행
 
   type ViewType =
     | "profile"
@@ -100,11 +106,11 @@ export function OurOption({ button, user_id }: OurOptionProps) {
               isSidebarOpen || window.innerWidth >= 768 ? "block" : "hidden"
             } fixed right-0 top-[50px] z-40 h-full w-[250px] flex-shrink-0 border-l bg-white md:relative md:left-0 md:top-auto md:border-r`}
           >
-            <OptionSidebar setView={setView} />
+            <OptionSidebar />
           </div>
           {/* Content view*/}
           <div className="inline-flex h-full w-full flex-col items-center justify-start gap-8 pb-8 pl-4">
-            {renderContentView(view as ViewType)}
+            {renderContentView(currentView)}
           </div>
         </DialogContent>
       )}

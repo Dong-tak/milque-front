@@ -36,7 +36,7 @@ import {
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { useFormState } from "react-dom";
 import React, { useEffect, useReducer, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { completeUserProfile } from "./action"; // action.ts 파일에서 가져오기
 
 interface FormState {
@@ -136,6 +136,8 @@ export default function SetUserId() {
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [isMarketed, setIsMarketed] = useState(false);
   const router = useRouter();
+  const searchParams = useParams();
+  const token = searchParams.token as string;
 
   useEffect(() => {
     if (isAllChecked) {
@@ -165,14 +167,14 @@ export default function SetUserId() {
     //   return;
     // }
 
-    console.log(loginId, password, value, isMarketed);
+    console.log(password, value, isMarketed, token);
 
     const result = await completeUserProfile(
       router,
-      loginId,
       password,
       value,
       isMarketed,
+      token,
     );
   };
 
@@ -183,20 +185,6 @@ export default function SetUserId() {
         <CardDescription>바로 계정을 연결하세요!</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-0">
-        <div className="space-y-[6px]">
-          <Label htmlFor="loginId">아이디</Label>
-          <Input
-            name="loginId"
-            type="text"
-            placeholder="Login ID"
-            required
-            minLength={3}
-            maxLength={10}
-            value={loginId}
-            onChange={(e) => setLoginId(e.target.value)}
-            // errors={state?.fieldErrors.username}
-          />
-        </div>
         <div className="space-y-[6px]">
           <Label htmlFor="password">비밀번호</Label>
           <Input
