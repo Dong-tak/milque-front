@@ -30,7 +30,6 @@ import { getConnectorPoints } from "../../utils/arrowUtils";
 import ImageEmbed from "../shapes/imageEmbed";
 import PDFEmbed from "../shapes/pdfEmbed";
 import IframeEmbed from "../shapes/iframeEmbed";
-import { useCreateBlockNote } from "@blocknote/react";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
