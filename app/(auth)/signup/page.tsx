@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Github, Instagram } from "lucide-react";
+import { Github, Instagram, Youtube } from "lucide-react";
 import { registerUser } from "./action";
 
 interface FormState {
@@ -48,6 +48,10 @@ export default function Signup() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/google/login/`;
   };
 
   return (
@@ -95,13 +99,22 @@ export default function Signup() {
         <Separator />
       </CardContent>
       <CardContent className="space-y-2 p-0">
-        <Button variant={"background"} size={"long"} className="gap-2">
+        {/* <Button variant={"background"} size={"long"} className="gap-2">
           <Github className="h-4 w-4" />
           Github
         </Button>
         <Button variant={"background"} size={"long"} className="gap-2">
           <Instagram className="h-4 w-4" />
           Instagram
+        </Button> */}
+        <Button
+          variant={"background"}
+          size={"long"}
+          className="gap-2"
+          onClick={handleGoogleLogin}
+        >
+          <Youtube className="h-4 w-4" />
+          Google
         </Button>
       </CardContent>
     </Card>

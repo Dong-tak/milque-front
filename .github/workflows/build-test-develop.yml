@@ -3,7 +3,7 @@ name: Deploy to Develop EC2
 on:
   push:
     branches:
-      - "develop"      
+      - "develop"
 
 jobs:
   deploy:
@@ -13,7 +13,7 @@ jobs:
       # 1. Checkout latest version
       - name: Checkout source code
         uses: actions/checkout@v4.1.1
-        
+
       # 2. Cache node_modules for faster dependency installation
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -29,7 +29,7 @@ jobs:
           set -e
           echo "${{ secrets.ENV }}" > .env
           cat .env  # 빌드 타임에 확인을 위해 출력
-          
+
       # 4. Build and push Docker image with .env file included
       - name: Build and push Docker image
         run: |
@@ -78,7 +78,7 @@ jobs:
           DOCKER_ID: ${{ secrets.DOCKER_ID }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-          
+
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
@@ -91,7 +91,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":white_check_mark: *Build and Deploy Success*"
+                    "text": ":white_check_mark: *Develop Build and Deploy Success*"
                   }
                 },
                 {
@@ -118,9 +118,9 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.FRONT_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      
+
       - name: Slack Notification on Failure
-        if: failure()  
+        if: failure()
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
@@ -131,7 +131,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Build or Deploy Failure*"
+                    "text": ":x: *Develop Build and Deploy Failure*"
                   }
                 },
                 {

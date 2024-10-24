@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,37 +34,29 @@ import {
   OurCheckbox,
   OurColorCheckbox,
 } from "@/components/shadcn/our-checkbox";
-import { PASSWORD_MIN_LENGTH } from "@/lib/auth/constant";
 import { useFormState } from "react-dom";
 import React, { useEffect, useReducer, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { completeUserProfile } from "./action"; // action.ts 파일에서 가져오기
 
 interface FormState {
   fieldErrors: {
-    username: string[];
     email: string[];
-    password: string[];
-    confirm_password: string[];
+    job: string[];
   };
-  // 다른 상태 속성들...
 }
 
 const initialState: FormState = {
   fieldErrors: {
-    username: [],
     email: [],
-    password: [],
-    confirm_password: [],
+    job: [],
   },
-  // 다른 초기 상태 값들...
 };
 
 type Action = {
   type: "SET_FIELD_ERRORS";
   payload: { field: string; errors: string[] };
 };
-// 다른 액션 타입들...
 
 const formReducer = (state: FormState, action: Action): FormState => {
   switch (action.type) {
@@ -75,7 +68,6 @@ const formReducer = (state: FormState, action: Action): FormState => {
           [action.payload.field]: action.payload.errors,
         },
       };
-    // 다른 액션 처리...
     default:
       return state;
   }
@@ -124,20 +116,25 @@ const frameworks = [
   },
 ];
 
-export default function SetUserId() {
+export default function SetUserIdSocialWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SetUserIdSocialContent />
+    </Suspense>
+  );
+}
+
+function SetUserIdSocialContent() {
   const [state, dispatch] = useFormState(formReducer, initialState);
-  const [loginId, setLoginId] = useState("");
-  const [password, setPassword] = useState("");
   const [job, setJob] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [isMarketed, setIsMarketed] = useState(false);
   const router = useRouter();
-  const searchParams = useParams();
-  const token = searchParams.token as string;
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
   useEffect(() => {
     if (isAllChecked) {
@@ -156,26 +153,9 @@ export default function SetUserId() {
 
   const handleCompleteProfile = async () => {
     console.log("handleCompleteProfile");
-    // if (password !== confirmPassword) {
-    //   dispatch({
-    //     type: "SET_FIELD_ERRORS",
-    //     payload: {
-    //       field: "confirm_password",
-    //       errors: ["Passwords do not match"],
-    //     },
-    //   });
-    //   return;
-    // }
+    console.log(value, isMarketed, token);
 
-    console.log(password, value, isMarketed, token);
-
-    const result = await completeUserProfile(
-      router,
-      password,
-      value,
-      isMarketed,
-      token,
-    );
+    const result = await completeUserProfile(router, value, isMarketed, token);
   };
 
   return (
@@ -185,32 +165,6 @@ export default function SetUserId() {
         <CardDescription>바로 계정을 연결하세요!</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-0">
-        <div className="space-y-[6px]">
-          <Label htmlFor="password">비밀번호</Label>
-          <Input
-            name="password"
-            type="password"
-            placeholder="password"
-            required
-            minLength={PASSWORD_MIN_LENGTH}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            // errors={state?.fieldErrors.password}
-          />
-        </div>
-        <div className="space-y-[6px]">
-          <Label htmlFor="confirm_password">비밀번호 확인</Label>
-          <Input
-            name="confirm_password"
-            type="password"
-            placeholder="Confirm password"
-            required
-            minLength={PASSWORD_MIN_LENGTH}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            // errors={state?.fieldErrors.confirm_password}
-          />
-        </div>
         <div className="flex flex-col space-y-[6px]">
           <Label htmlFor="job">직업</Label>
           <Popover open={open} onOpenChange={setOpen}>
