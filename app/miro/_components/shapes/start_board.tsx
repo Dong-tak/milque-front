@@ -35,7 +35,7 @@ const DEFAULT_CONTENT: PartialBlock[] = [
 // 상수로 제목 영역 높이 정의
 const TITLE_HEIGHT = 70; // 제목 영역 높이를 70px로 조정
 
-interface BoardWidgetProps {
+interface StartBoardProps {
   shapeProps: any;
   isSelected: boolean;
   onSelect: () => void;
@@ -43,7 +43,7 @@ interface BoardWidgetProps {
   titleBlock: string;
 }
 
-const BoardWidget: React.FC<BoardWidgetProps> = ({
+const StartBoard: React.FC<StartBoardProps> = ({
   shapeProps,
   isSelected,
   onSelect,
@@ -320,6 +320,14 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
                 handleResize();
               }}
             />
+            <FocusControlBar
+              version="v.3.26"
+              createdDate="24.08.17"
+              createdTime="08:28"
+              showSettings={true} // 설정 버튼 보이기
+              showPause={true} // 일시정지 버튼 숨기기
+              showPlay={true} // 시작 버튼 보이기
+            />
           </div>
         </Html>
       </Group>
@@ -365,4 +373,4 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
   );
 };
 
-export default BoardWidget;
+export default StartBoard;

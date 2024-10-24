@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-
+import FocusControlBar from "./FocusControlBar";
 interface CreateBoardDialogProps {
   contentTitle: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -59,15 +59,18 @@ export default function CreateBoardDialog({
             autoFocus
           />
         </div>
-        <DialogFooter className="flex items-end justify-end gap-2">
-          <Button variant={"outline"} onClick={() => onOpenChange?.(false)}>
-            <ArrowLeft className="icon mr-2 size-4" />
-            뒤로가기
-          </Button>
-          <Button id="scrap-save-btn" type="submit" onClick={handleSaveClick}>
-            저장하기
-            <Pin className="icon ml-2 size-4" />
-          </Button>
+        <DialogFooter className="flex w-full items-end justify-end gap-2">
+          <div className="w-full p-5">
+            {/* VersionBar 컴포넌트 사용 */}
+            <FocusControlBar
+              version="v.3.26"
+              createdDate="24.08.17"
+              createdTime="08:28"
+              showSettings={true} // 설정 버튼 보이기
+              showPause={true} // 일시정지 버튼 숨기기
+              showPlay={true} // 시작 버튼 보이기
+            />
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
