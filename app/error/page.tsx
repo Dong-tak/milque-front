@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -13,12 +13,17 @@ import { Button } from "@/components/ui/button";
 
 export default function ErrorView() {
   const router = useRouter();
-  const query = new URLSearchParams(window.location.search);
-  const errorMessage =
-    query.get("message") || "알 수 없는 오류가 발생했습니다.";
+  const [errorMessage, setErrorMessage] =
+    useState("알 수 없는 오류가 발생했습니다.");
 
   useEffect(() => {
-    // 필요에 따라 추가적인 로직을 여기에 작성할 수 있습니다.
+    if (typeof window !== "undefined") {
+      const query = new URLSearchParams(window.location.search);
+      const message = query.get("message");
+      if (message) {
+        setErrorMessage(message);
+      }
+    }
   }, []);
 
   return (

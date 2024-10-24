@@ -126,6 +126,7 @@ const frameworks = [
 
 export default function SetUserId() {
   const [state, dispatch] = useFormState(formReducer, initialState);
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [job, setJob] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -135,8 +136,8 @@ export default function SetUserId() {
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [isMarketed, setIsMarketed] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams(); // useSearchParams로 변경
-  const token = searchParams.get("token"); // 쿼리 파라미터에서 token 가져오기
+  const searchParams = useParams();
+  const token = searchParams.token as string;
 
   useEffect(() => {
     if (isAllChecked) {

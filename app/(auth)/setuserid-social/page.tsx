@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -115,7 +116,15 @@ const frameworks = [
   },
 ];
 
-export default function SetUserIdSocial() {
+export default function SetUserIdSocialWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SetUserIdSocialContent />
+    </Suspense>
+  );
+}
+
+function SetUserIdSocialContent() {
   const [state, dispatch] = useFormState(formReducer, initialState);
   const [job, setJob] = useState("");
   const [open, setOpen] = React.useState(false);
