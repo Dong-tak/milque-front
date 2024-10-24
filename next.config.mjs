@@ -13,6 +13,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "mileque-bag.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "**.tiktokcdn.com",
       },
       {
