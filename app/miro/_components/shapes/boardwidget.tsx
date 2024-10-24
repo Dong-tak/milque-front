@@ -31,6 +31,9 @@ const DEFAULT_CONTENT: PartialBlock[] = [
   },
 ] as const;
 
+// 상수로 제목 영역 높이 정의
+const TITLE_HEIGHT = 70; // 제목 영역 높이를 70px로 조정
+
 interface BoardWidgetProps {
   shapeProps: any;
   isSelected: boolean;
@@ -78,6 +81,32 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
     }, [shapeProps.content]),
   });
 
+  // 제목용 BlockNote 에디터 수정
+  const titleEditor = useCreateBlockNote({
+    initialContent: [
+      {
+        id: "title",
+        type: "heading",
+        props: {
+          textColor: "default",
+          backgroundColor: "default",
+          textAlignment: "left",
+          level: 1, // heading1으로 설정
+        },
+        content: [
+          {
+            type: "text",
+            text: titleBlock,
+            styles: {
+              bold: true,
+            },
+          },
+        ],
+        children: [],
+      },
+    ],
+  });
+
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
       trRef.current.nodes([shapeRef.current]);
@@ -91,12 +120,12 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
       const newHeight = blockNoteRef.current.offsetHeight;
 
       setRectWidth(newWidth);
-      setRectHeight(newHeight + 50); // 제목 영역 높이 포함
+      setRectHeight(newHeight + TITLE_HEIGHT); // TITLE_HEIGHT 사용
 
       onChange({
         ...shapeProps,
         width: newWidth,
-        height: newHeight + 50,
+        height: newHeight + TITLE_HEIGHT,
       });
     }
   };
@@ -148,12 +177,40 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
     };
   }, [isEditing]);
 
+  // Transform 이벤트 핸들러 추가
+  const handleTransformEnd = (e: any) => {
+    const node = shapeRef.current;
+    const scaleX = node.scaleX();
+    const scaleY = node.scaleY();
+
+    // 스케일 초기화
+    node.scaleX(1);
+    node.scaleY(1);
+
+    // 새로운 크기 계산
+    const newWidth = Math.max(200, node.width() * scaleX); // 최소 너비 200px
+    const newHeight = Math.max(150, node.height() * scaleY); // 최소 높이 150px
+
+    setRectWidth(newWidth);
+    setRectHeight(newHeight);
+
+    onChange({
+      ...shapeProps,
+      x: node.x(),
+      y: node.y(),
+      width: newWidth,
+      height: newHeight,
+    });
+  };
+
   return (
     <>
       <Group
         ref={shapeRef}
         x={shapeProps.x}
         y={shapeProps.y}
+        width={rectWidth}
+        height={rectHeight}
         draggable={!isEditing}
         onClick={(e) => {
           e.cancelBubble = true;
@@ -162,6 +219,7 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
+        onTransformEnd={handleTransformEnd}
         onMouseEnter={(e) => {
           const container = e.target.getStage()?.container();
           if (container && !isEditing) {
@@ -175,10 +233,10 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
           }
         }}
       >
-        {/* 제목 영역 */}
+        {/* 제목 영역 스타일 수정 */}
         <Rect
           width={rectWidth}
-          height={50}
+          height={TITLE_HEIGHT} // TITLE_HEIGHT 사용
           fill="#F0F0F0"
           stroke="#CCCCCC"
           strokeWidth={1}
@@ -187,22 +245,34 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
           shadowOpacity={0.2}
           cornerRadius={5}
         />
-        <Text
-          text={titleBlock}
-          fontSize={24}
-          fontStyle="bold"
-          x={10}
-          y={10}
-          width={rectWidth - 20}
-          height={30}
-          fill="#333333"
-        />
+        <Html>
+          <div
+            style={{
+              position: "absolute",
+              top: "0px",
+              left: "0px",
+              width: `${rectWidth}px`,
+              height: `${TITLE_HEIGHT}px`, // TITLE_HEIGHT 사용
+              padding: "0px",
+              backgroundColor: "#F0F0F0",
+              pointerEvents: "none",
+              overflow: "hidden",
+              alignItems: "center", // 세로 중앙 정렬
+            }}
+          >
+            <BlockNoteView
+              editor={titleEditor}
+              theme="light"
+              editable={false}
+            />
+          </div>
+        </Html>
 
-        {/* 본문 영역 */}
+        {/* 본문 영역 - y 위치 조정 */}
         <Rect
           width={rectWidth}
-          height={rectHeight - 50}
-          y={50}
+          height={rectHeight - TITLE_HEIGHT}
+          y={TITLE_HEIGHT} // TITLE_HEIGHT 사용
           fill="white"
           stroke="#CCCCCC"
           strokeWidth={1}
@@ -217,16 +287,16 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
             ref={blockNoteRef}
             style={{
               position: "absolute",
-              top: "50px",
+              top: `${TITLE_HEIGHT}px`, // TITLE_HEIGHT 사용
               left: "0px",
               width: `${rectWidth}px`,
               padding: "10px",
               backgroundColor: "white",
-              pointerEvents: "auto", // 항상 이벤트 수신 가능하도록 변경
+              pointerEvents: "auto",
               zIndex: isEditing ? 1000 : 1,
-              userSelect: "text", // 텍스트 선택 항상 가능하도록 변경
-              cursor: "text", // 커서를 항상 text로 설정
-              minHeight: `${rectHeight - 50}px`,
+              userSelect: "text",
+              cursor: "text",
+              minHeight: `${rectHeight - TITLE_HEIGHT}px`, // TITLE_HEIGHT 사용
               overflow: "auto",
             }}
             onClick={handleContentClick}
@@ -239,7 +309,7 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
             <BlockNoteView
               editor={editor}
               theme="light"
-              editable={true} // 항상 편집 가능하도록 설정
+              editable={true}
               onChange={() => {
                 const content = editor.topLevelBlocks;
                 onChange({
@@ -255,10 +325,39 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
       {isSelected && (
         <Transformer
           ref={trRef}
-          boundBoxFunc={(oldBox, newBox) => newBox}
+          boundBoxFunc={(oldBox, newBox) => {
+            // 최소 크기 제한
+            if (newBox.width < 200 || newBox.height < 150) {
+              return oldBox;
+            }
+            return newBox;
+          }}
           anchorDragBoundFunc={anchorDragBoundFunc}
-          enabledAnchors={["middle-left", "middle-right"]}
+          enabledAnchors={[
+            "top-left",
+            "top-center",
+            "top-right",
+            "middle-left",
+            "middle-right",
+            "bottom-left",
+            "bottom-center",
+            "bottom-right",
+          ]}
           rotateEnabled={false}
+          flipEnabled={false}
+          onClick={(e) => (e.cancelBubble = true)}
+          onTap={(e) => (e.cancelBubble = true)}
+          anchorStyleFunc={(anchor) => ({
+            width: 10,
+            height: 10,
+            cornerRadius: 5,
+            fill: "white",
+            stroke: "#00A3FF",
+            strokeWidth: 2,
+            shadowColor: "black",
+            shadowBlur: 2,
+            shadowOpacity: 0.5,
+          })}
         />
       )}
     </>
