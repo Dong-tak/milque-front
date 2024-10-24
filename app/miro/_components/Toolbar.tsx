@@ -8,7 +8,7 @@ interface ToolbarProps {
   onAddText: () => void;
   onAddImage: () => void;
   onAddPDF: () => void;
-  onAddIframe: () => void;
+  onAddIframe: (src: string) => void;
   onAddMarkdown: () => void;
 }
 
@@ -142,7 +142,7 @@ const Toolbar = ({
         <span>PDF</span>
       </div>
       <div
-        onClick={onAddIframe}
+        onClick={() => onAddIframe("")}
         style={{ cursor: "pointer", textAlign: "center" }}
       >
         <div

@@ -46,6 +46,7 @@ const DrawingBoard = () => {
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
   const boardRef = useRef<HTMLDivElement>(null);
   const editor = useCreateBlockNote();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // 스테이지 스케일 및 위치 상태
   const initialScale = 1;
@@ -116,6 +117,32 @@ const DrawingBoard = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault();
+      const pastedText = e.clipboardData?.getData("text");
+
+      if (pastedText) {
+        const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
+        const newShape = isUrl
+          ? addIframeEmbed(pastedText)
+          : addMarkdownDrag(undefined, pastedText);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    document.addEventListener("paste", handlePaste);
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [shapes, mousePosition]);
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
@@ -317,7 +344,7 @@ const DrawingBoard = () => {
     fileInput.click();
   };
 
-  const addIframeEmbed = () => {
+  const addIframeEmbed = (src: string) => {
     const id = `iframeEmbed-${shapes.length + 1}`;
     setShapes([
       ...shapes,
@@ -326,16 +353,33 @@ const DrawingBoard = () => {
         type: "iframeEmbed",
         x: 50,
         y: 50,
-        src: "https://toss.tech/article/uxresearcher-meets-investor",
+        src,
         draggable: true,
       },
     ]);
   };
 
-  const addMarkdownDrag = async (dragFile?: File) => {
+  const addMarkdownDrag = async (dragFile?: File, text?: string) => {
     if (dragFile) {
       const markdown = await dragFile.text();
       const blocks = await editor.tryParseMarkdownToBlocks(markdown);
+      const serializedBlocks = JSON.stringify(blocks);
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          text: serializedBlocks,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    } else if (text) {
+      const blocks = await editor.tryParseMarkdownToBlocks(text);
       const serializedBlocks = JSON.stringify(blocks);
       const id = `markdown-${shapes.length + 1}`;
       setShapes((prevShapes) => [
