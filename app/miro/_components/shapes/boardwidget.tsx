@@ -1,13 +1,35 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
+import { Group, Rect, Transformer, Text } from "react-konva";
 import { Html } from "react-konva-utils";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
-import { Group, Rect, Transformer, Text } from "react-konva";
+import { PartialBlock } from "@blocknote/core";
 import {
   anchorDragBoundFunc,
   snapOnDragEnd,
   snapOnDragMove,
 } from "@/lib/snapping";
+
+// 기본 콘텐츠 구조를 수정
+const DEFAULT_CONTENT: PartialBlock[] = [
+  {
+    id: "1",
+    type: "paragraph",
+    props: {
+      textColor: "default",
+      backgroundColor: "default",
+      textAlignment: "left",
+    },
+    content: [
+      {
+        type: "text",
+        text: "내용을 입력하세요",
+        styles: {},
+      },
+    ],
+    children: [],
+  },
+] as const;
 
 interface BoardWidgetProps {
   shapeProps: any;
@@ -31,8 +53,29 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
   const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
 
+  // BlockNote 에디터 초기화 수정
   const editor = useCreateBlockNote({
-    initialContent: undefined,
+    initialContent: useMemo(() => {
+      if (!shapeProps.content) return DEFAULT_CONTENT;
+
+      try {
+        const parsedContent = JSON.parse(shapeProps.content);
+        if (!Array.isArray(parsedContent)) return DEFAULT_CONTENT;
+
+        // 각 블록이 필요한 속성 가지고 있는지 확인
+        const isValidContent = parsedContent.every(
+          (block) =>
+            block.type &&
+            typeof block.type === "string" &&
+            block.props &&
+            Array.isArray(block.content),
+        );
+
+        return isValidContent ? parsedContent : DEFAULT_CONTENT;
+      } catch {
+        return DEFAULT_CONTENT;
+      }
+    }, [shapeProps.content]),
   });
 
   useEffect(() => {
@@ -42,34 +85,68 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
     }
   }, [isSelected]);
 
-  useEffect(() => {
-    handleResize();
-  }, [rectWidth, rectHeight]);
-
   const handleResize = () => {
     if (blockNoteRef.current) {
-      setRectWidth(blockNoteRef.current.offsetWidth);
-      setRectHeight(blockNoteRef.current.offsetHeight);
+      const newWidth = blockNoteRef.current.offsetWidth;
+      const newHeight = blockNoteRef.current.offsetHeight;
+
+      setRectWidth(newWidth);
+      setRectHeight(newHeight + 50); // 제목 영역 높이 포함
+
+      onChange({
+        ...shapeProps,
+        width: newWidth,
+        height: newHeight + 50,
+      });
     }
   };
 
-  // 드래그 핸들러 추가
-  const handleDragStart = () => {
-    onSelect(); // 드래그 시작 시 선택 상태로 변경
+  const handleDragStart = (e: any) => {
+    e.cancelBubble = true;
+    onSelect();
   };
 
   const handleDragMove = (e: any) => {
-    snapOnDragMove(e); // 스냅핑 적용
+    e.cancelBubble = true;
+    if (!isEditing) {
+      snapOnDragMove(e);
+    }
   };
 
   const handleDragEnd = (e: any) => {
-    snapOnDragEnd(e, shapeProps, onChange); // 스냅핑 적용
-    onChange({
-      ...shapeProps,
-      x: e.target.x(),
-      y: e.target.y(),
-    });
+    e.cancelBubble = true;
+    if (!isEditing) {
+      snapOnDragEnd(e, shapeProps, onChange);
+      onChange({
+        ...shapeProps,
+        x: e.target.x(),
+        y: e.target.y(),
+      });
+    }
   };
+
+  const handleContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+    onSelect(); // 클릭 시 선택 상태로 변경
+  };
+
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (!blockNoteRef.current?.contains(e.target as Node)) {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      window.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      window.removeEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      window.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isEditing]);
 
   return (
     <>
@@ -77,20 +154,29 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
         ref={shapeRef}
         x={shapeProps.x}
         y={shapeProps.y}
-        draggable={true}
-        onClick={onSelect}
-        onTap={onSelect}
+        draggable={!isEditing}
+        onClick={(e) => {
+          e.cancelBubble = true;
+          onSelect();
+        }}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
-        // `onMouseDown` 핸들러 제거 또는 수정
-        // onMouseDown={(e) => {
-        //   e.cancelBubble = true; // 이벤트 버블링 방지 (제거)
-        // }}
+        onMouseEnter={(e) => {
+          const container = e.target.getStage()?.container();
+          if (container && !isEditing) {
+            container.style.cursor = "move";
+          }
+        }}
+        onMouseLeave={(e) => {
+          const container = e.target.getStage()?.container();
+          if (container) {
+            container.style.cursor = "default";
+          }
+        }}
       >
-        {/* 제목 영역 - 수정 불가 */}
+        {/* 제목 영역 */}
         <Rect
-          listening={false} // 이벤트 수신 비활성화
           width={rectWidth}
           height={50}
           fill="#F0F0F0"
@@ -102,7 +188,6 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
           cornerRadius={5}
         />
         <Text
-          listening={false} // 이벤트 수신 비활성화
           text={titleBlock}
           fontSize={24}
           fontStyle="bold"
@@ -113,11 +198,10 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
           fill="#333333"
         />
 
-        {/* 본문 영역 - 수정 가능 */}
+        {/* 본문 영역 */}
         <Rect
-          listening={false} // 이벤트 수신 비활성화
           width={rectWidth}
-          height={rectHeight}
+          height={rectHeight - 50}
           y={50}
           fill="white"
           stroke="#CCCCCC"
@@ -128,30 +212,42 @@ const BoardWidget: React.FC<BoardWidgetProps> = ({
           cornerRadius={5}
         />
 
-        {/* Html 컴포넌트 수정 */}
-        <Html
-          divProps={{
-            style: {
-              pointerEvents: isEditing ? "auto" : "none", // 편집 중일 때만 이벤트 허용
-            },
-          }}
-        >
+        <Html>
           <div
             ref={blockNoteRef}
             style={{
-              width: rectWidth,
-              marginTop: "50px",
+              position: "absolute",
+              top: "50px",
+              left: "0px",
+              width: `${rectWidth}px`,
               padding: "10px",
               backgroundColor: "white",
-              // `pointerEvents` 제거
-              // pointerEvents: isEditing ? "auto" : "none",
+              pointerEvents: "auto", // 항상 이벤트 수신 가능하도록 변경
+              zIndex: isEditing ? 1000 : 1,
+              userSelect: "text", // 텍스트 선택 항상 가능하도록 변경
+              cursor: "text", // 커서를 항상 text로 설정
+              minHeight: `${rectHeight - 50}px`,
+              overflow: "auto",
+            }}
+            onClick={handleContentClick}
+            onMouseDown={(e) => {
+              if (!isEditing) {
+                e.stopPropagation();
+              }
             }}
           >
             <BlockNoteView
               editor={editor}
               theme="light"
-              editable={isEditing}
-              onChange={handleResize}
+              editable={true} // 항상 편집 가능하도록 설정
+              onChange={() => {
+                const content = editor.topLevelBlocks;
+                onChange({
+                  ...shapeProps,
+                  content: JSON.stringify(content),
+                });
+                handleResize();
+              }}
             />
           </div>
         </Html>
