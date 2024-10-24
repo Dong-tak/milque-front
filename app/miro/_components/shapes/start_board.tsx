@@ -320,13 +320,26 @@ const StartBoard: React.FC<StartBoardProps> = ({
                 handleResize();
               }}
             />
+          </div>
+        </Html>
+        {/* FocusControlBar를 Html 컴포넌트로 감싸서 렌더링 */}
+        <Html>
+          <div
+            style={{
+              position: "absolute",
+              top: `${rectHeight - 45}px`, // 보드 아래에 위치
+              left: "0px",
+              width: `${rectWidth}px`,
+              zIndex: 1000,
+            }}
+          >
             <FocusControlBar
               version="v.3.26"
               createdDate="24.08.17"
               createdTime="08:28"
-              showSettings={true} // 설정 버튼 보이기
-              showPause={true} // 일시정지 버튼 숨기기
-              showPlay={true} // 시작 버튼 보이기
+              showSettings={true}
+              showPause={true}
+              showPlay={true}
             />
           </div>
         </Html>
