@@ -61,6 +61,7 @@ const TextNode: React.FC<TextNodeProps> = ({
   const editor = useCreateBlockNote({
     initialContent,
   });
+
   useEffect(() => {
     const loadMarkdown = async () => {
       if (shapeProps.type === "markdown" && shapeProps.src) {
@@ -75,7 +76,7 @@ const TextNode: React.FC<TextNodeProps> = ({
     };
 
     loadMarkdown();
-  }, [shapeProps, editor]);
+  }, []);
 
   useEffect(() => {
     if (!isSelected) {
@@ -148,13 +149,13 @@ const TextNode: React.FC<TextNodeProps> = ({
             style={{
               width: rectWidth,
             }}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
           >
             <BlockNoteView
               editor={editor}
               theme="light"
-              editable={isEditing}
+              // editable={isEditing}
               onChange={handleResize}
             />
           </div>

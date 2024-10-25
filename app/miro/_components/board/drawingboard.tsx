@@ -21,6 +21,8 @@ import {
   isIframeEmbed,
   IframeEmbedShape,
   isMarkdown,
+  MarkdownShape,
+  AllShapeTypes,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -52,6 +54,14 @@ const DrawingBoard = () => {
   const maxScale = 2;
   const [isPanning, setIsPanning] = useState(false); // 팬 모드 (스페이스바로 활성화)
   const [stageSize, setStageSize] = useState({ width: 800, height: 800 }); // 스테이지 크기
+
+  // 도형 변경 함수 예시
+  const handleShapeChange = (id: string, newAttrs: Partial<AllShapeTypes>) => {
+    const newShapes = shapes.map((s) =>
+      s.id === id ? { ...s, ...newAttrs } : s,
+    );
+    setShapes(newShapes);
+  };
 
   // 윈도우 크기 변경 감지 및 스테이지 크기 조정
   useEffect(() => {
@@ -806,12 +816,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<RectangleShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={(e: any) => {
                       const node = e.target;
                       updateArrows(shape.id, node.x(), node.y());
@@ -831,12 +838,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<TextShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={(e: any) => {
                       const node = e.target;
                       updateArrows(shape.id, node.x(), node.y());
@@ -856,12 +860,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<ArrowShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={handleArrowPointDrag}
                   />
                 );
@@ -871,12 +872,9 @@ const DrawingBoard = () => {
                     key={shape.id}
                     shapeProps={shape}
                     isSelected={shape.isSelected}
-                    onChange={(newAttrs: Partial<ImageEmbedShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onSelect={() => {
                       const newShapes = shapes.map((s) => ({
                         ...s,
@@ -892,12 +890,9 @@ const DrawingBoard = () => {
                     key={shape.id}
                     shapeProps={shape}
                     isSelected={shape.isSelected}
-                    onChange={(newAttrs: Partial<PDFEmbedShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onSelect={() => {
                       const newShapes = shapes.map((s) => ({
                         ...s,
@@ -913,12 +908,9 @@ const DrawingBoard = () => {
                     key={shape.id}
                     shapeProps={shape}
                     isSelected={shape.isSelected}
-                    onChange={(newAttrs: Partial<IframeEmbedShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onSelect={() => {
                       const newShapes = shapes.map((s) => ({
                         ...s,
@@ -941,12 +933,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<TextShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={(e: any) => {
                       const node = e.target;
                       updateArrows(shape.id, node.x(), node.y());

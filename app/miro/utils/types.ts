@@ -1,4 +1,16 @@
 // utils/types.ts
+
+// 모든 도형 타입을 포함하는 유니온 타입 정의
+export type AllShapeTypes =
+  | RectangleShape
+  | ArrowShape
+  | TextShape
+  | ImageEmbedShape
+  | PDFEmbedShape
+  | IframeEmbedShape
+  | MarkdownShape;
+// 새로운 타입을 추가할 때 여기에 | NewShapeType 형태로 추가
+
 export interface ShapeProps {
   id: string;
   type:
