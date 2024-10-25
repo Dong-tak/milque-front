@@ -4,14 +4,18 @@ import { useRouter } from "next/navigation";
 
 export default function GoogleCallback() {
   const router = useRouter();
-  let redirectUri = `https://suitdio/auth/google/callback/`;
+  let redirectUri = `https://suitdio.com/auth/google/callback/`;
   if (
     process.env.NEXT_PUBLIC_POST_API_URL == "http://localhost:8000/v1" ||
     process.env.NEXT_PUBLIC_POST_API_URL == "http://127.0.0.1:8000/v1"
   ) {
     redirectUri = `http://localhost:3000/auth/google/callback/`;
+  } else if (
+    process.env.NEXT_PUBLIC_POST_API_URL == "https://test.suitdio.com/v1"
+  ) {
+    redirectUri = `https://test.suitdio.com/auth/google/callback/`;
   } else {
-    redirectUri = `https://suitdio/auth/google/callback/`;
+    redirectUri = `https://suitdio.com/auth/google/callback/`;
   }
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
