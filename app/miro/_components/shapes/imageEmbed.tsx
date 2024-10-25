@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Image, Transformer } from "react-konva";
 import { ImageEmbedShape } from "../../utils/types";
+import { snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
 
 interface ImageEmbedProps {
   shapeProps: ImageEmbedShape;
@@ -50,13 +51,10 @@ const ImageEmbed: React.FC<ImageEmbedProps> = ({
         ref={shapeRef}
         {...shapeProps}
         draggable
-        onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
+        onDragMove={(e) => {
+          snapOnDragMove(e); // 스냅핑 로직 실행
         }}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();

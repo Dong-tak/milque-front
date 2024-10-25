@@ -5,6 +5,7 @@ import { Group, Rect, Transformer } from "react-konva";
 import { Html } from "react-konva-utils";
 import { IframeEmbedShape } from "../../utils/types";
 import { anchorStyleFunc } from "./anchorStyle";
+import { snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
 
 interface IframeEmbedProps {
   shapeProps: IframeEmbedShape;
@@ -92,15 +93,15 @@ export const IframeEmbed: React.FC<IframeEmbedProps> = ({
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        {...shapeProps}
+        // {...shapeProps}
         draggable
-        onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
+        onDragMove={(e) => {
+          snapOnDragMove(e); // 스냅핑 로직 실행
+          if (onDragMove) {
+            onDragMove(e); // 부모로부터 전달된 onDragMove 실행 (updateArrows)
+          }
         }}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
       >
         <Rect
           width={rectWidth}
@@ -118,18 +119,16 @@ export const IframeEmbed: React.FC<IframeEmbedProps> = ({
         >
           <div
             className="h-full w-full"
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
           >
             <iframe
               ref={iframeRef}
               src={shapeProps.src}
               tabIndex={0}
-              onLoad={(e) => e.currentTarget.contentWindow?.focus()}
               allowFullScreen
               width="100%"
               height="100%"
-              style={{ pointerEvents: isEditing ? "auto" : "none" }}
             />
           </div>
         </Html>

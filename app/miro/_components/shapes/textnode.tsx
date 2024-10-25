@@ -149,13 +149,13 @@ const TextNode: React.FC<TextNodeProps> = ({
             style={{
               width: rectWidth,
             }}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
           >
             <BlockNoteView
               editor={editor}
               theme="light"
-              editable={isEditing}
+              // editable={isEditing}
               onChange={handleResize}
             />
           </div>

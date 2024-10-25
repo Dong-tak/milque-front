@@ -6,6 +6,7 @@ import { PDFEmbedShape } from "../../utils/types";
 import * as pdfjsLib from "pdfjs-dist";
 import { anchorStyleFunc } from "./anchorStyle";
 import { pdfjs } from "react-pdf";
+import { snapOnDragEnd, snapOnDragMove } from "@/lib/snapping";
 
 // workerSrc 설정
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
@@ -85,13 +86,10 @@ export const PDFEmbed: React.FC<PDFEmbedProps> = ({
         x={shapeProps.x}
         y={shapeProps.y}
         ref={shapeRef}
-        onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
+        onDragMove={(e) => {
+          snapOnDragMove(e); // 스냅핑 로직 실행
         }}
+        onDragEnd={(e) => snapOnDragEnd(e, shapeProps, onChange)}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
