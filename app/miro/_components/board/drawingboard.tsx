@@ -32,30 +32,28 @@ import PDFEmbed from "../shapes/pdfEmbed";
 import IframeEmbed from "../shapes/iframeEmbed";
 
 const DrawingBoard = () => {
-  const [shapes, setShapes] = useState<any[]>([]);
-  const stageRef = useRef<any>(null);
-  const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
+  // 상태 관리
+  const [shapes, setShapes] = useState<any[]>([]); // 모든 도형들을 저장하는 상태
+  const stageRef = useRef<any>(null); // Konva Stage에 대한 참조
+  const [isDrawing, setIsDrawing] = useState(false); // 현재 그리기 중인지 여부
   const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(
     null,
-  ); // 현재 그리는 도형
-  const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
-  const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
-  const boardRef = useRef<HTMLDivElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  ); // 새로 그리는 도형
+  const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 그리기 모드
+  const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 그리기 모드
+  const boardRef = useRef<HTMLDivElement>(null); // 보드 컨테이너에 대한 참조
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // 마우스 위치
 
-  // 스테이지 스케일 및 위치 상태
+  // 스테이지 관련 상태
   const initialScale = 1;
-  const [stageScale, setStageScale] = useState(initialScale);
-  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+  const [stageScale, setStageScale] = useState(initialScale); // 스테이지 확대/축소 비율
+  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 }); // 스테이지 위치
   const minScale = 0.5;
   const maxScale = 2;
+  const [isPanning, setIsPanning] = useState(false); // 팬 모드 (스페이스바로 활성화)
+  const [stageSize, setStageSize] = useState({ width: 800, height: 800 }); // 스테이지 크기
 
-  // 팬닝 상태 (스페이스바를 누를 때 팬닝 가능)
-  const [isPanning, setIsPanning] = useState(false);
-
-  // 스테이지 크기 상태
-  const [stageSize, setStageSize] = useState({ width: 800, height: 800 });
-
+  // 윈도우 크기 변경 감지 및 스테이지 크기 조정
   useEffect(() => {
     // 클라이언트 사이드에서만 window 객체에 접근
     if (typeof window !== "undefined") {
@@ -79,6 +77,7 @@ const DrawingBoard = () => {
     }
   }, []);
 
+  // 키보드 이벤트 리스너 (팬 모드 활성화/비활성화)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -98,6 +97,7 @@ const DrawingBoard = () => {
     };
   }, []);
 
+  // 드래그 앤 드롭 이벤트 리스너
   useEffect(() => {
     const board = boardRef.current;
     if (board) {
@@ -113,6 +113,7 @@ const DrawingBoard = () => {
     };
   }, []);
 
+  // 클립보드 붙여넣기 및 마우스 이동 이벤트 리스너
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       e.preventDefault();
@@ -139,11 +140,13 @@ const DrawingBoard = () => {
     };
   }, [shapes, mousePosition]);
 
+  // 드래그 오버 핸들러
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
+  // 드롭 핸들러
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -154,6 +157,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // 파일 처리 함수
   const handleFile = (file: File) => {
     const fileType = file.type;
     if (fileType.startsWith("image/")) {
@@ -195,6 +199,7 @@ const DrawingBoard = () => {
   };
 
   // 도형 추가 함수들
+  // ... 텍스트 추가 로직 ...
   const addTextAtPosition = (x: number, y: number) => {
     const id = `text-${shapes.length + 1}`;
     const initialText = [
@@ -231,6 +236,7 @@ const DrawingBoard = () => {
     ]);
   };
 
+  // ... 이미지 드래그 추가 로직 ...
   const addImageDrag = (dragFile?: File) => {
     if (dragFile) {
       const reader = new FileReader();
@@ -254,6 +260,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // ... 이미지 임베드 추가 로직 ...
   const addImageEmbed = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -308,6 +315,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // ... PDF 임베드 추가 로직 ...
   const addPDFEmbed = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -339,6 +347,7 @@ const DrawingBoard = () => {
     fileInput.click();
   };
 
+  // ... iframe 임베드 추가 로직 ...
   const addIframeEmbed = (src: string) => {
     const id = `iframeEmbed-${shapes.length + 1}`;
     setShapes([
@@ -354,6 +363,7 @@ const DrawingBoard = () => {
     ]);
   };
 
+  // ... markdown 드래그 추가 로직 ...
   const addMarkdownDrag = async (dragFile?: File, text?: string) => {
     if (dragFile) {
       const markdown = await dragFile.text();
@@ -389,6 +399,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // ... markdown 파일 추가 로직 ...
   const addMarkdown = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -421,7 +432,7 @@ const DrawingBoard = () => {
     fileInput.click();
   };
 
-  // Stage click event handler
+  // Stage 클릭 이벤트 핸들러
   const handleStageClick = (e: any) => {
     // 빈 공간을 클릭하면 선택 해제
     if (e.target === e.target.getStage()) {
@@ -433,7 +444,7 @@ const DrawingBoard = () => {
     }
   };
 
-  // 사각형 생성 모드 활성화 (툴바 클릭 시 호출)
+  // 사각형 생성 모드 활성화
   const handleRectangleToolClick = () => {
     setIsRectangleMode(true); // 사각형 생성 모드 활성화
     setIsArrowMode(false); // 화살표 생성 모드 비활성화
@@ -445,6 +456,7 @@ const DrawingBoard = () => {
     setIsRectangleMode(false); // 사각형 생성 모드 비활성화
   };
 
+  // 마우스 다운 이벤트 핸들러
   const handleMouseDown = (e: any) => {
     if (isPanning) return;
 
@@ -501,6 +513,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // 마우스 이동 이벤트 핸들러
   const handleMouseMove = (e: any) => {
     if (!isDrawing || !newShape) return;
 
@@ -558,6 +571,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // 화살표 업데이트 함수
   const updateArrows = (movedShapeId: string, newX: number, newY: number) => {
     const updatedShapes = shapes.map((shape) => {
       if (isArrow(shape)) {
@@ -599,6 +613,7 @@ const DrawingBoard = () => {
     setShapes(updatedShapes);
   };
 
+  // 마우스 업 이벤트 핸들러
   const handleMouseUp = () => {
     if (!isDrawing || !newShape) return;
 
@@ -619,6 +634,7 @@ const DrawingBoard = () => {
     setIsArrowMode(false);
   };
 
+  // 화살표 포인트 드래그 핸들러
   const handleArrowPointDrag = (
     id: string,
     x: number,
@@ -678,6 +694,7 @@ const DrawingBoard = () => {
     setShapes(updatedShapes);
   };
 
+  // 그리드 그리기 함수
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
     let baseSpacing = 30; // 기본 간격
     let basePointSize = 2; // 기본 점 크기
@@ -722,7 +739,7 @@ const DrawingBoard = () => {
 
   return (
     <div ref={boardRef}>
-      {/* 보드 */}
+      {/* 보드 컨테이너 */}
       <div
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -734,6 +751,7 @@ const DrawingBoard = () => {
           overflow: "hidden",
         }}
       >
+        {/* Konva Stage */}
         <Stage
           width={stageSize.width}
           height={stageSize.height}
@@ -768,9 +786,10 @@ const DrawingBoard = () => {
               sceneFunc={(context: any, shape: any) => {
                 drawGrid(context, shape);
               }}
-              listening={false} // 그리드가 이벤트를 받지 않도록 설정
+              listening={false}
             />
           </Layer>
+          {/* 도형 레이어 */}
           <Layer>
             {/* 도형들 렌더링 */}
             {shapes.map((shape) => {

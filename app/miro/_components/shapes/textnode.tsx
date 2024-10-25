@@ -96,7 +96,7 @@ const TextNode: React.FC<TextNodeProps> = ({
     if (!isEditing) {
       e.preventDefault();
       e.stopPropagation();
-      shapeRef.current.startDrag();
+      shapeRef.current.startDrag(shapeRef.current.getPosition());
       const stage = shapeRef.current.getStage();
       const pointerPosition = stage.getPointerPosition();
       setDragStartPos(pointerPosition);
