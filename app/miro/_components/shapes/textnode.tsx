@@ -61,6 +61,7 @@ const TextNode: React.FC<TextNodeProps> = ({
   const editor = useCreateBlockNote({
     initialContent,
   });
+
   useEffect(() => {
     const loadMarkdown = async () => {
       if (shapeProps.type === "markdown" && shapeProps.src) {
@@ -75,7 +76,7 @@ const TextNode: React.FC<TextNodeProps> = ({
     };
 
     loadMarkdown();
-  }, [shapeProps, editor]);
+  }, []);
 
   useEffect(() => {
     if (!isSelected) {
