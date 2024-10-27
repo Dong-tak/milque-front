@@ -8,14 +8,13 @@ dotenv.config();
 
 export async function completeUserProfile(
   router: ReturnType<typeof useRouter>,
-  password: string,
   job: string,
   isMarketed: boolean,
   username: string,
   token: string | null,
 ) {
-  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/complete_profile/`;
-  const bodyData = { password, job, isMarketed, token };
+  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/social/signup/`;
+  const bodyData = { job, isMarketed, token };
 
   const data = await DataFetchInClient({ apiUrl, bodyData });
   console.log(data);

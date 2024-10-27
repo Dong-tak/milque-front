@@ -42,6 +42,7 @@ const Rectangle: React.FC<RectangleProps> = ({
         ref={shapeRef}
         {...shapeProps}
         draggable
+        zIndex={10}
         onClick={(e) => {
           onSelect();
           e.cancelBubble = true; // Prevent event bubbling

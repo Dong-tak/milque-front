@@ -34,6 +34,8 @@ const TextNode: React.FC<TextNodeProps> = ({
   const [textValue, setTextValue] = useState<string>(shapeProps.text || "");
   const [rectWidth, setRectWidth] = useState(shapeProps.width || 500);
   const [rectHeight, setRectHeight] = useState(shapeProps.height || 300);
+  const [mkText, setMkText] = useState<PartialBlock[]>();
+
   // 컴포넌트 내에서 마우스 시작 위치를 저장할 상태 변수 추가
   const [dragStartPos, setDragStartPos] = useState<{
     x: number;
@@ -60,13 +62,27 @@ const TextNode: React.FC<TextNodeProps> = ({
     initialContent,
   });
 
-  const handleDragEnd = (e: any) => {
-    onChange({
-      ...shapeProps,
-      x: e.target.x(),
-      y: e.target.y(),
-    });
-  };
+  useEffect(() => {
+    const loadMarkdown = async () => {
+      if (shapeProps.type === "markdown" && shapeProps.src) {
+        const response = await fetch(shapeProps.src);
+        const text = await response.text();
+        const blocks = await editor.tryParseMarkdownToBlocks(text);
+        editor.replaceBlocks(editor.document, blocks);
+      } else if (shapeProps.type === "markdown" && shapeProps.mkText) {
+        const blocks = await editor.tryParseMarkdownToBlocks(shapeProps.mkText);
+        editor.replaceBlocks(editor.document, blocks);
+      }
+    };
+
+    loadMarkdown();
+  }, []);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setIsEditing(false);
+    }
+  }, [isSelected]);
 
   const handleResize = () => {
     if (blockNoteRef.current) {
@@ -81,7 +97,7 @@ const TextNode: React.FC<TextNodeProps> = ({
     if (!isEditing) {
       e.preventDefault();
       e.stopPropagation();
-      shapeRef.current.startDrag();
+      shapeRef.current.startDrag(shapeRef.current.getPosition());
       const stage = shapeRef.current.getStage();
       const pointerPosition = stage.getPointerPosition();
       setDragStartPos(pointerPosition);
@@ -133,14 +149,13 @@ const TextNode: React.FC<TextNodeProps> = ({
             style={{
               width: rectWidth,
             }}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onBlur={() => setIsEditing(false)}
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
           >
             <BlockNoteView
               editor={editor}
               theme="light"
-              editable={isEditing}
+              // editable={isEditing}
               onChange={handleResize}
             />
           </div>

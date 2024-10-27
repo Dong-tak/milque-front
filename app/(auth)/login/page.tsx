@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Github, Instagram, ThumbsUp } from "lucide-react";
+import { Github, Instagram, ThumbsUp, Youtube } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Next.js 라우터 사용
 import { onLogIn, LoginData } from "./action"; // 수정된 onLogIn 함수 임포트
@@ -63,11 +63,33 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    const clientId =
+      "811190929116-coovi0jk19fi5qdak82l4r16rsaerail.apps.googleusercontent.com";
+    let redirectUri = `https://suitdio.com/auth/google/callback/`;
+    if (
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://localhost:8000/v1" ||
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://127.0.0.1:8000/v1"
+    ) {
+      redirectUri = `http://localhost:3000/auth/google/callback/`;
+    } else if (
+      process.env.NEXT_PUBLIC_POST_API_URL == "https://test.suitdio.com/v1"
+    ) {
+      redirectUri = `https://test.suitdio.com/auth/google/callback/`;
+    } else {
+      redirectUri = `https://suitdio.com/auth/google/callback/`;
+    }
+    const scope = "https://www.googleapis.com/auth/userinfo.email";
+    const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+
+    window.location.href = oauthUrl;
+  };
+
   return (
     <div>
       <Card className="max-h-[540px] max-w-[400px] grow items-center justify-center space-y-[16px] border-none bg-background shadow-none sm:w-auto sm:min-w-[343px]">
         <CardHeader className="p-0">
-          <CardTitle className="h-auto w-full text-center">로그인</CardTitle>
+          <CardTitle className="h-auto w-full text-center">Login</CardTitle>
           <CardDescription className="text-center">
             Enter your email below to login to your account
           </CardDescription>
@@ -76,7 +98,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-[6px]">
               <Label htmlFor="text" className="h-10">
-                아이디
+                EMAIL
               </Label>
               <Input
                 name="text"
@@ -90,7 +112,7 @@ export default function Login() {
             </div>
             <div className="space-y-[6px]">
               <Label htmlFor="password" className="h-10">
-                비밀번호
+                Password
               </Label>
               <Input
                 name="password"
@@ -117,13 +139,14 @@ export default function Login() {
           <Separator />
         </CardContent>
         <CardContent className="h-auto w-full space-y-2 p-0">
-          <Button variant={"background"} size={"long"} className="gap-2">
-            <Github className="h-4 w-4" />
-            GitHub
-          </Button>
-          <Button variant={"background"} size={"long"} className="gap-2">
-            <Instagram className="h-4 w-4" />
-            Instagram
+          <Button
+            variant={"background"}
+            size={"long"}
+            className="gap-2"
+            onClick={handleGoogleLogin}
+          >
+            <Youtube className="h-4 w-4" />
+            Google
           </Button>
         </CardContent>
         <CardContent className="flex h-auto w-full items-center justify-center py-6">

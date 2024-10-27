@@ -8,7 +8,6 @@ import Arrow from "../shapes/arrow";
 import TextNode from "../shapes/textnode";
 import Toolbar from "../Toolbar";
 import {
-  ShapeProps,
   RectangleShape,
   TextShape,
   ArrowShape,
@@ -17,13 +16,22 @@ import {
   isText,
   SectionShape,
   isSection,
+  isImageEmbed,
+  ImageEmbedShape,
+  isPDFEmbed,
+  PDFEmbedShape,
+  isIframeEmbed,
+  IframeEmbedShape,
+  isMarkdown,
+  MarkdownShape,
+  AllShapeTypes,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
   getClosestSidePoint,
-  snapDistance,
 } from "../../utils/helpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
+
 import { defaultProps } from "@blocknote/core";
 import BrainstormInput from "../brainstorm/BrainstormInput";
 import CreateBoardDialog from "./creatboard";
@@ -41,29 +49,40 @@ import {
   updateArrowEndpoints,
 } from "@/redux/features/shapesSlice";
 
-const DrawingBoard = () => {
-  const [shapes, setShapes] = useState<any[]>([]);
-  const stageRef = useRef<any>(null);
-  const [isDrawing, setIsDrawing] = useState(false); // 드로잉 상태
-  const [newShape, setNewShape] = useState<
-    RectangleShape | ArrowShape | SectionShape | null
-  >(null); // 현재 그리는 도형
-  const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 생성 모드
-  const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 생성 모드
-  const [isSectionMode, setIsSectionMode] = useState(false); // 섹션 생성 모드
+import ImageEmbed from "../shapes/imageEmbed";
+import PDFEmbed from "../shapes/pdfEmbed";
+import IframeEmbed from "../shapes/iframeEmbed";
 
-  // 스테이지 스케일 및 위치 상태
+const DrawingBoard = () => {
+  // 상태 관리
+  const [shapes, setShapes] = useState<any[]>([]); // 모든 도형들을 저장하는 상태
+  const stageRef = useRef<any>(null); // Konva Stage에 대한 참조
+  const [isDrawing, setIsDrawing] = useState(false); // 현재 그리기 중인지 여부
+  const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(
+    null,
+  ); // 새로 그리는 도형
+  const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 그리기 모드
+  const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 그리기 모드
+   const [isSectionMode, setIsSectionMode] = useState(false); // 섹션 생성 모드
+  const boardRef = useRef<HTMLDivElement>(null); // 보드 컨테이너에 대한 참조
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // 마우스 위치
+
+  // 스테이지 관련 상태
   const initialScale = 1;
-  const [stageScale, setStageScale] = useState(initialScale);
-  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+  const [stageScale, setStageScale] = useState(initialScale); // 스테이지 확대/축소 비율
+  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 }); // 스테이지 위치
   const minScale = 0.5;
   const maxScale = 2;
+  const [isPanning, setIsPanning] = useState(false); // 팬 모드 (스페이스바로 활성화)
+  const [stageSize, setStageSize] = useState({ width: 800, height: 800 }); // 스테이지 크기
 
-  // 팬닝 상태 (스페이스바를 누를 때 팬닝 가능)
-  const [isPanning, setIsPanning] = useState(false);
-
-  // 스테이지 크기 상태
-  const [stageSize, setStageSize] = useState({ width: 800, height: 800 });
+  // 도형 변경 함수 예시
+  const handleShapeChange = (id: string, newAttrs: Partial<AllShapeTypes>) => {
+    const newShapes = shapes.map((s) =>
+      s.id === id ? { ...s, ...newAttrs } : s,
+    );
+    setShapes(newShapes);
+  };
 
   const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
   const [contentTitle, setContentTitle] = useState(""); // contentTitle 상태 추가
@@ -147,6 +166,9 @@ const DrawingBoard = () => {
     [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
   );
 
+
+  // 윈도우 크기 변경 감지 및 스테이지 크기 조정
+
   useEffect(() => {
     // 클라이언트 사이드에서만 window 객체에 접근
     if (typeof window !== "undefined") {
@@ -170,6 +192,7 @@ const DrawingBoard = () => {
     }
   }, []);
 
+  // 키보드 이벤트 리스너 (팬 모드 활성화/비활성화)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -188,6 +211,80 @@ const DrawingBoard = () => {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
+
+  // 드래그 앤 드롭 이벤트 리스너
+  useEffect(() => {
+    const board = boardRef.current;
+    if (board) {
+      board.addEventListener("dragover", handleDragOver);
+      board.addEventListener("drop", handleDrop);
+    }
+
+    return () => {
+      if (board) {
+        board.removeEventListener("dragover", handleDragOver);
+        board.removeEventListener("drop", handleDrop);
+      }
+    };
+  }, []);
+
+  // 클립보드 붙여넣기 및 마우스 이동 이벤트 리스너
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault();
+      const pastedText = e.clipboardData?.getData("text");
+
+      if (pastedText) {
+        const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
+        const newShape = isUrl
+          ? addIframeEmbed(pastedText)
+          : addMarkdownDrag(undefined, pastedText);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    document.addEventListener("paste", handlePaste);
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [shapes, mousePosition]);
+
+  // 드래그 오버 핸들러
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  // 드롭 핸들러
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer && e.dataTransfer.files) {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    }
+  };
+
+  // 파일 처리 함수
+  const handleFile = (file: File) => {
+    const fileType = file.type;
+    if (fileType.startsWith("image/")) {
+      addImageDrag(file);
+    } else if (fileType === "application/pdf") {
+      addPDFDrag(file);
+    } else if (fileType === "text/markdown" || file.name.endsWith(".md")) {
+      addMarkdownDrag(file);
+    } else {
+      alert("지원하지 않는 파일 형식입니다.");
+    }
+  };
 
   // 휠 이벤트를 통한 줌 제어
   const handleWheel = (e: any) => {
@@ -217,6 +314,7 @@ const DrawingBoard = () => {
   };
 
   // 도형 추가 함수들
+  // ... 텍스트 추가 로직 ...
   const addTextAtPosition = (x: number, y: number) => {
     const id = `text-${shapes.length + 1}`;
     const initialText = [
@@ -253,7 +351,216 @@ const DrawingBoard = () => {
     ]);
   };
 
-  // 사각형 생성 모드 활성화 (툴바 클릭 시 호출)
+
+  // ... 이미지 드래그 추가 로직 ...
+  const addImageDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `imageEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "imageEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
+  };
+
+  // ... 이미지 임베드 추가 로직 ...
+  const addImageEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `imageEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "imageEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  const addPDFDrag = (dragFile?: File) => {
+    if (dragFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          const id = `pdfEmbed-${shapes.length + 1}`;
+          setShapes((prevShapes) => [
+            ...prevShapes,
+            {
+              id,
+              type: "pdfEmbed",
+              x: 50,
+              y: 50,
+              src: event.target!.result as string,
+              draggable: true,
+            },
+          ]);
+        }
+      };
+      reader.readAsDataURL(dragFile);
+    }
+  };
+
+  // ... PDF 임베드 추가 로직 ...
+  const addPDFEmbed = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "application/pdf";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `pdfEmbed-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "pdfEmbed",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  // ... iframe 임베드 추가 로직 ...
+  const addIframeEmbed = (src: string) => {
+    const id = `iframeEmbed-${shapes.length + 1}`;
+    setShapes([
+      ...shapes,
+      {
+        id,
+        type: "iframeEmbed",
+        x: 50,
+        y: 50,
+        src,
+        draggable: true,
+      },
+    ]);
+  };
+
+  // ... markdown 드래그 추가 로직 ...
+  const addMarkdownDrag = async (dragFile?: File, text?: string) => {
+    if (dragFile) {
+      const markdown = await dragFile.text();
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          mkText: markdown,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    } else if (text) {
+      const id = `markdown-${shapes.length + 1}`;
+      setShapes((prevShapes) => [
+        ...prevShapes,
+        {
+          id,
+          type: "markdown",
+          x: 50,
+          y: 50,
+          mkText: text,
+          width: 500,
+          height: 800,
+          draggable: true,
+        },
+      ]);
+    }
+  };
+
+  // ... markdown 파일 추가 로직 ...
+  const addMarkdown = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "text/markdown";
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target) {
+            const id = `markdown-${shapes.length + 1}`;
+            setShapes([
+              ...shapes,
+              {
+                id,
+                type: "markdown",
+                x: 50,
+                y: 50,
+                src: event.target.result as string,
+                fontSize: 24,
+                draggable: true,
+              },
+            ]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  // Stage 클릭 이벤트 핸들러
+  const handleStageClick = (e: any) => {
+    // 빈 공간을 클릭하면 선택 해제
+    if (e.target === e.target.getStage()) {
+      const newShapes = shapes.map((s) => ({
+        ...s,
+        isSelected: false,
+      }));
+      setShapes(newShapes);
+    }
+  };
+
+  // 사각형 생성 모드 활성화
   const handleRectangleToolClick = () => {
     setIsRectangleMode(true); // 사각형 생성 모드 활성화
     setIsArrowMode(false); // 화살표 생성 모드 비활성화
@@ -265,6 +572,7 @@ const DrawingBoard = () => {
     setIsRectangleMode(false); // 사각형 생성 모드 활성화
   };
 
+  // 마우스 다운 이벤트 핸들러
   const handleMouseDown = (e: any) => {
     if (isPanning) return;
 
@@ -336,6 +644,7 @@ const DrawingBoard = () => {
     }
   };
 
+  // 마우스 이동 이벤트 핸들러
   const handleMouseMove = (e: any) => {
     if (!isDrawing || !newShape) return;
 
@@ -463,6 +772,7 @@ const DrawingBoard = () => {
     }
   }, [lastUpdate]);
 
+  // 마우스 업 이벤트 핸들러
   const handleMouseUp = () => {
     if (!isDrawing || !newShape) return;
 
@@ -500,6 +810,7 @@ const DrawingBoard = () => {
     setIsSectionMode(false);
   };
 
+  // 화살표 포인트 드래그 핸들러
   const handleArrowPointDrag = (
     id: string,
     x: number,
@@ -547,6 +858,7 @@ const DrawingBoard = () => {
     dispatch(updateShapes(updatedShapes));
   };
 
+  // 그리드 그리기 함수
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
     let baseSpacing = 30; // 기본 간격
     let basePointSize = 2; // 기본 점 크기
@@ -749,8 +1061,8 @@ const DrawingBoard = () => {
   };
 
   return (
-    <div>
-      {/* 보드 */}
+    <div ref={boardRef}>
+      {/* 보드 컨테이너 */}
       <div
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -762,6 +1074,7 @@ const DrawingBoard = () => {
           overflow: "hidden",
         }}
       >
+        {/* Konva Stage */}
         <Stage
           width={stageSize.width}
           height={stageSize.height}
@@ -796,9 +1109,10 @@ const DrawingBoard = () => {
               sceneFunc={(context: any, shape: any) => {
                 drawGrid(context, shape);
               }}
-              listening={false} // 그리드가 이벤트를 받지 않도록 설정
+              listening={false}
             />
           </Layer>
+          {/* 도형 레이어 */}
           <Layer>
             {/* ��형 렌더링 */}
             {shapes.map((shape) => {
@@ -815,12 +1129,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<RectangleShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={(e: any) => {
                       const node = e.target;
                       updateArrows(shape.id, node.x(), node.y());
@@ -840,12 +1151,9 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<TextShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
-                      setShapes(newShapes);
-                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
                     onDragMove={(e: any) => {
                       const node = e.target;
                       updateArrows(shape.id, node.x(), node.y());
@@ -865,13 +1173,86 @@ const DrawingBoard = () => {
                       }));
                       setShapes(newShapes);
                     }}
-                    onChange={(newAttrs: Partial<ArrowShape>) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      ) as (RectangleShape | ArrowShape | TextShape)[];
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
+                    onDragMove={handleArrowPointDrag}
+                  />
+                );
+              } else if (isImageEmbed(shape)) {
+                return (
+                  <ImageEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
                       setShapes(newShapes);
                     }}
-                    onDragMove={handleArrowPointDrag}
+                  />
+                );
+              } else if (isPDFEmbed(shape)) {
+                return (
+                  <PDFEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isIframeEmbed(shape)) {
+                return (
+                  <IframeEmbed
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                  />
+                );
+              } else if (isMarkdown(shape)) {
+                return (
+                  <TextNode
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      setShapes(newShapes);
+                    }}
+                    onChange={(newAttrs) =>
+                      handleShapeChange(shape.id, newAttrs)
+                    }
+                    onDragMove={(e: any) => {
+                      const node = e.target;
+                      updateArrows(shape.id, node.x(), node.y());
+                    }}
                   />
                 );
               } else if (isSection(shape)) {
@@ -956,14 +1337,20 @@ const DrawingBoard = () => {
           </Layer>
         </Stage>
         {/* 툴바 컴넌트 */}
+
         <Toolbar
           onRectangleToolClick={handleRectangleToolClick}
           onArrowToolClick={handleArrowToolClick}
           onAddText={() =>
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
+
           onAddBoard={handleAddBoard}
           onAddSection={handleAddSection}
+        onAddImage={addImageEmbed}
+          onAddPDF={addPDFEmbed}
+          onAddIframe={addIframeEmbed}
+          onAddMarkdown={addMarkdown}
         />
         <CreateBoardDialog
           contentTitle={contentTitle}
