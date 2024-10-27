@@ -100,38 +100,50 @@ const Section: React.FC<SectionProps> = ({
     // 모든 변경사항을 한 번에 적용
     updateShapes(updatedShapes);
 
-    // 섹션 내부 객체들과 연결된 화살표들 업데이트
-    shapeProps.memberIds.forEach((memberId) => {
-      const memberShape = updatedShapes.find((s) => s.id === memberId);
-      if (memberShape) {
-        // 각 멤버 객체에 연결된 화살표들 업데이트
-        const connectedArrows = updatedShapes.filter(
-          (s) => isArrow(s) && (s.from === memberId || s.to === memberId),
-        );
+    // 섹션 내부 객체들과 연결된 모든 화살표 찾기
+    const allConnectedArrows = shapes.filter(
+      (shape) =>
+        isArrow(shape) &&
+        shapeProps.memberIds.some(
+          (memberId) => shape.from === memberId || shape.to === memberId,
+        ),
+    );
 
-        connectedArrows.forEach((arrow) => {
-          if (isArrow(arrow)) {
-            const fromShape =
-              arrow.from === memberId
-                ? memberShape
-                : updatedShapes.find((s) => s.id === arrow.from);
-            const toShape =
-              arrow.to === memberId
-                ? memberShape
-                : updatedShapes.find((s) => s.id === arrow.to);
+    // 각 화살표에 대해 업데이트 수행
+    allConnectedArrows.forEach((arrow) => {
+      if (isArrow(arrow)) {
+        const fromShape = shapes.find((s) => s.id === arrow.from);
+        const toShape = shapes.find((s) => s.id === arrow.to);
 
-            if (fromShape && toShape) {
-              dispatch(
-                updateArrowPositions({
-                  movedShapeId: memberId,
-                  newX: memberShape.x,
-                  newY: memberShape.y,
-                  shapes: updatedShapes,
-                }),
-              );
-            }
+        if (fromShape && toShape) {
+          // from이 섹션 내부 객체인 경우
+          if (shapeProps.memberIds.includes(fromShape.id)) {
+            const newX = fromShape.x + dx;
+            const newY = fromShape.y + dy;
+            dispatch(
+              updateArrowPositions({
+                movedShapeId: fromShape.id,
+                newX,
+                newY,
+                shapes: updatedShapes,
+              }),
+            );
           }
-        });
+
+          // to가 섹션 내부 객체인 경우
+          if (shapeProps.memberIds.includes(toShape.id)) {
+            const newX = toShape.x + dx;
+            const newY = toShape.y + dy;
+            dispatch(
+              updateArrowPositions({
+                movedShapeId: toShape.id,
+                newX,
+                newY,
+                shapes: updatedShapes,
+              }),
+            );
+          }
+        }
       }
     });
   };
