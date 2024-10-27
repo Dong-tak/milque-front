@@ -58,12 +58,12 @@ const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]); // 모든 도형들을 저장하는 상태
   const stageRef = useRef<any>(null); // Konva Stage에 대한 참조
   const [isDrawing, setIsDrawing] = useState(false); // 현재 그리기 중인지 여부
-  const [newShape, setNewShape] = useState<RectangleShape | ArrowShape | null>(
-    null,
-  ); // 새로 그리는 도형
+  const [newShape, setNewShape] = useState<
+    RectangleShape | ArrowShape | SectionShape | null
+  >(null); // 새로 그리는 도형
   const [isRectangleMode, setIsRectangleMode] = useState(false); // 사각형 그리기 모드
   const [isArrowMode, setIsArrowMode] = useState(false); // 화살표 그리기 모드
-   const [isSectionMode, setIsSectionMode] = useState(false); // 섹션 생성 모드
+  const [isSectionMode, setIsSectionMode] = useState(false); // 섹션 생성 모드
   const boardRef = useRef<HTMLDivElement>(null); // 보드 컨테이너에 대한 참조
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // 마우스 위치
 
@@ -77,12 +77,12 @@ const DrawingBoard = () => {
   const [stageSize, setStageSize] = useState({ width: 800, height: 800 }); // 스테이지 크기
 
   // 도형 변경 함수 예시
-  const handleShapeChange = (id: string, newAttrs: Partial<AllShapeTypes>) => {
-    const newShapes = shapes.map((s) =>
-      s.id === id ? { ...s, ...newAttrs } : s,
-    );
-    setShapes(newShapes);
-  };
+  // const handleShapeChange = (id: string, newAttrs: Partial<AllShapeTypes>) => {
+  //   const newShapes = shapes.map((s) =>
+  //     s.id === id ? { ...s, ...newAttrs } : s,
+  //   );
+  //   setShapes(newShapes);
+  // };
 
   const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
   const [contentTitle, setContentTitle] = useState(""); // contentTitle 상태 추가
@@ -165,7 +165,6 @@ const DrawingBoard = () => {
     },
     [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
   );
-
 
   // 윈도우 크기 변경 감지 및 스테이지 크기 조정
 
@@ -350,7 +349,6 @@ const DrawingBoard = () => {
       },
     ]);
   };
-
 
   // ... 이미지 드래그 추가 로직 ...
   const addImageDrag = (dragFile?: File) => {
@@ -549,16 +547,16 @@ const DrawingBoard = () => {
   };
 
   // Stage 클릭 이벤트 핸들러
-  const handleStageClick = (e: any) => {
-    // 빈 공간을 클릭하면 선택 해제
-    if (e.target === e.target.getStage()) {
-      const newShapes = shapes.map((s) => ({
-        ...s,
-        isSelected: false,
-      }));
-      setShapes(newShapes);
-    }
-  };
+  // const handleStageClick = (e: any) => {
+  //   // 빈 공간을 클릭하면 선택 해제
+  //   if (e.target === e.target.getStage()) {
+  //     const newShapes = shapes.map((s) => ({
+  //       ...s,
+  //       isSelected: false,
+  //     }));
+  //     setShapes(newShapes);
+  //   }
+  // };
 
   // 사각형 생성 모드 활성화
   const handleRectangleToolClick = () => {
@@ -1344,10 +1342,9 @@ const DrawingBoard = () => {
           onAddText={() =>
             addTextAtPosition(stageSize.width / 2, stageSize.height / 2)
           }
-
           onAddBoard={handleAddBoard}
           onAddSection={handleAddSection}
-        onAddImage={addImageEmbed}
+          onAddImage={addImageEmbed}
           onAddPDF={addPDFEmbed}
           onAddIframe={addIframeEmbed}
           onAddMarkdown={addMarkdown}
