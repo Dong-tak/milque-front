@@ -28,9 +28,18 @@ import { defaultProps } from "@blocknote/core";
 import BrainstormInput from "../brainstorm/BrainstormInput";
 import CreateBoardDialog from "./creatboard";
 import BoardWidget from "../shapes/boardwidget"; // BoardWidget import 추가
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deselectBoard } from "@/redux/features/boardSlice";
 import Section from "../shapes/section"; // Section 컴포넌트 import 추가
+import { updateArrowPositions } from "@/redux/features/arrowSlice";
+import type { RootState } from "@/redux/store";
+import {
+  setShapes,
+  addShape,
+  updateShape,
+  updateShapes,
+  updateArrowEndpoints,
+} from "@/redux/features/shapesSlice";
 
 const DrawingBoard = () => {
   const [shapes, setShapes] = useState<any[]>([]);
@@ -66,6 +75,7 @@ const DrawingBoard = () => {
   const [isSectionPlacementMode, setIsSectionPlacementMode] = useState(false);
 
   const dispatch = useDispatch();
+  const lastUpdate = useSelector((state: RootState) => state.arrow.lastUpdate);
 
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +262,7 @@ const DrawingBoard = () => {
   // 화살표 생성 모드 활성화
   const handleArrowToolClick = () => {
     setIsArrowMode(true); // 화살표 생성 모드 활성화
-    setIsRectangleMode(false); // 사각형 생성 모드 ���활성화
+    setIsRectangleMode(false); // 사각형 생성 모드 활성화
   };
 
   const handleMouseDown = (e: any) => {
@@ -394,46 +404,64 @@ const DrawingBoard = () => {
     }
   };
 
-  const updateArrows = (movedShapeId: string, newX: number, newY: number) => {
-    const updatedShapes = shapes.map((shape) => {
-      if (isArrow(shape)) {
-        if (shape.from === movedShapeId || shape.to === movedShapeId) {
-          const fromShape =
-            shape.from === movedShapeId
-              ? ({
-                  ...shapes.find((s) => s.id === shape.from),
-                  x: newX,
-                  y: newY,
-                } as RectangleShape | TextShape)
-              : (shapes.find((s) => s.id === shape.from) as
-                  | RectangleShape
-                  | TextShape);
-          const toShape =
-            shape.to === movedShapeId
-              ? ({
-                  ...shapes.find((s) => s.id === shape.to),
-                  x: newX,
-                  y: newY,
-                } as RectangleShape | TextShape)
-              : (shapes.find((s) => s.id === shape.to) as
-                  | RectangleShape
-                  | TextShape);
+  // updateArrows 함수를 Redux 액션 디스패치로 변경
+  const updateArrows = useCallback(
+    (movedShapeId: string, newX: number, newY: number) => {
+      dispatch(
+        updateArrowPositions({
+          movedShapeId,
+          newX,
+          newY,
+          shapes,
+        }),
+      );
+    },
+    [dispatch, shapes],
+  );
 
-          if (fromShape && toShape) {
-            const result = getConnectorPoints(fromShape, toShape);
-            return {
-              ...shape,
-              points: result.points,
-              arrowTipX: result.arrowTipX,
-              arrowTipY: result.arrowTipY,
-            };
+  // lastUpdate가 변경될 때마다 화살표 업데이트
+  useEffect(() => {
+    if (lastUpdate) {
+      const { movedShapeId, newX, newY, shapes: currentShapes } = lastUpdate;
+
+      const updatedShapes = currentShapes.map((shape) => {
+        if (isArrow(shape)) {
+          if (shape.from === movedShapeId || shape.to === movedShapeId) {
+            const fromShape =
+              shape.from === movedShapeId
+                ? {
+                    ...currentShapes.find((s) => s.id === shape.from),
+                    x: newX,
+                    y: newY,
+                  }
+                : currentShapes.find((s) => s.id === shape.from);
+
+            const toShape =
+              shape.to === movedShapeId
+                ? {
+                    ...currentShapes.find((s) => s.id === shape.to),
+                    x: newX,
+                    y: newY,
+                  }
+                : currentShapes.find((s) => s.id === shape.to);
+
+            if (fromShape && toShape) {
+              const result = getConnectorPoints(fromShape, toShape);
+              return {
+                ...shape,
+                points: result.points,
+                arrowTipX: result.arrowTipX,
+                arrowTipY: result.arrowTipY,
+              };
+            }
           }
         }
-      }
-      return shape;
-    });
-    setShapes(updatedShapes);
-  };
+        return shape;
+      });
+
+      setShapes(updatedShapes);
+    }
+  }, [lastUpdate]);
 
   const handleMouseUp = () => {
     if (!isDrawing || !newShape) return;
@@ -478,57 +506,45 @@ const DrawingBoard = () => {
     y: number,
     type: "from" | "to",
   ) => {
+    const currentArrow = shapes.find((s) => s.id === id && isArrow(s));
+    if (!currentArrow || !isArrow(currentArrow)) return;
+
+    const otherShapes = shapes.filter(
+      (s) =>
+        (isRectangle(s) || isText(s)) &&
+        s.id !== (type === "from" ? currentArrow.from : currentArrow.to),
+    );
+
+    const closestShape = findClosestShapeAtPoint(x, y, otherShapes);
+
+    if (closestShape) {
+      // Redux action을 사용하여 arrow endpoints 업데이트
+      dispatch(
+        updateArrowEndpoints({
+          arrowId: id,
+          type,
+          shapeId: closestShape.id,
+        }),
+      );
+    }
+
+    // 화살표 위치 업데이트
     const updatedShapes = shapes.map((shape) => {
-      if (isArrow(shape) && shape.id === id) {
-        const otherShapes = shapes.filter(
-          (s) =>
-            (isRectangle(s) || isText(s)) &&
-            s.id !== (type === "from" ? shape.from : shape.to),
-        );
-        const closestShape = findClosestShapeAtPoint(
-          x,
-          y,
-          otherShapes as (RectangleShape | TextShape)[],
-        );
-
-        if (closestShape) {
-          const closestPoint = getClosestSidePoint(closestShape, x, y);
-          x = closestPoint.x;
-          y = closestPoint.y;
-
-          if (type === "from") {
-            shape.from = closestShape.id;
-          } else {
-            shape.to = closestShape.id;
-          }
-        } else {
-          if (type === "from") {
-            shape.from = "";
-          } else {
-            shape.to = "";
-          }
-        }
-
-        const newPoints = [...shape.points];
+      if (shape.id === id && isArrow(shape)) {
+        const points = [...shape.points];
         if (type === "from") {
-          newPoints[0] = x;
-          newPoints[1] = y;
+          points[0] = x;
+          points[1] = y;
         } else {
-          newPoints[newPoints.length - 2] = x;
-          newPoints[newPoints.length - 1] = y;
+          points[points.length - 2] = x;
+          points[points.length - 1] = y;
         }
-
-        return {
-          ...shape,
-          points: newPoints,
-          arrowTipX: type === "to" ? x : shape.arrowTipX,
-          arrowTipY: type === "to" ? y : shape.arrowTipY,
-        };
+        return { ...shape, points };
       }
       return shape;
     });
 
-    setShapes(updatedShapes);
+    dispatch(updateShapes(updatedShapes));
   };
 
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
@@ -589,7 +605,7 @@ const DrawingBoard = () => {
     // 기존 위젯들의 영역을 그리드에 표시
     shapes.forEach((shape) => {
       if (isText(shape)) {
-        // 텍스트 노드의 영역을 그리드에 표��
+        // 텍스트 노드의 영역을 그리드에 표
         const startX = Math.floor(shape.x / gridSize);
         const startY = Math.floor(shape.y / gridSize);
         const endX = Math.floor((shape.x + nodeSize.width) / gridSize);
@@ -719,6 +735,19 @@ const DrawingBoard = () => {
     [shapes, findOptimalPosition],
   );
 
+  // shapes를 업데이트하는 다른 함수들도 Redux 액션을 사용하도록 수정
+  const handleShapeChange = (id: string, newAttrs: any) => {
+    dispatch(updateShape({ id, updates: newAttrs }));
+  };
+
+  const handleShapeSelect = (id: string) => {
+    const updatedShapes = shapes.map((s) => ({
+      ...s,
+      isSelected: s.id === id,
+    }));
+    dispatch(updateShapes(updatedShapes));
+  };
+
   return (
     <div>
       {/* 보드 */}
@@ -771,7 +800,7 @@ const DrawingBoard = () => {
             />
           </Layer>
           <Layer>
-            {/* 도형�� 렌더링 */}
+            {/* ��형 렌더링 */}
             {shapes.map((shape) => {
               if (isRectangle(shape)) {
                 return (
@@ -866,6 +895,7 @@ const DrawingBoard = () => {
                     }}
                     shapes={shapes}
                     updateShapes={setShapes}
+                    updateArrows={updateArrows} // updateArrows prop 전달
                   />
                 );
               } else if (shape.type === "board") {
@@ -920,6 +950,7 @@ const DrawingBoard = () => {
                 onChange={() => {}}
                 shapes={shapes}
                 updateShapes={setShapes}
+                updateArrows={updateArrows} // updateArrows prop 전달
               />
             )}
           </Layer>

@@ -7,6 +7,7 @@ import documentsReducer from "./features/documentsSlice";
 import arrowReducer from "./features/arrowSlice"; // 새로 추가
 import brainstormReducer from "./features/brainstormSlice"; // brainstorm reducer import 추가
 import boardReducer from "./features/boardSlice";
+import shapesReducer from "./features/shapesSlice";
 
 // Redux 스토어 설정
 const store = configureStore({
@@ -18,6 +19,7 @@ const store = configureStore({
     arrow: arrowReducer, // 새로 추가한 reducer
     brainstorm: brainstormReducer, // brainstorm reducer 추가
     board: boardReducer,
+    shapes: shapesReducer,
   },
 });
 

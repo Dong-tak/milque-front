@@ -7,7 +7,9 @@ import {
   snapOnDragEnd,
   snapOnDragMove,
 } from "@/lib/snapping";
-import { SectionShape } from "../../utils/types";
+import { SectionShape, isArrow } from "../../utils/types";
+import { useDispatch } from "react-redux";
+import { updateArrowPositions } from "@/redux/features/arrowSlice";
 
 interface SectionProps {
   shapeProps: SectionShape;
@@ -17,6 +19,7 @@ interface SectionProps {
   onDragMove?: (e: any) => void;
   shapes: any[];
   updateShapes: (shapes: any[]) => void;
+  updateArrows: (movedShapeId: string, newX: number, newY: number) => void;
 }
 
 const Section: React.FC<SectionProps> = ({
@@ -27,9 +30,11 @@ const Section: React.FC<SectionProps> = ({
   onDragMove,
   shapes,
   updateShapes,
+  updateArrows,
 }) => {
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
@@ -38,6 +43,7 @@ const Section: React.FC<SectionProps> = ({
     }
   }, [isSelected]);
 
+  // 섹션과 내부 객체들의 이동을 처리하는 함수
   const handleDragMove = (e: any) => {
     e.cancelBubble = true;
     snapOnDragMove(e);
@@ -46,35 +52,88 @@ const Section: React.FC<SectionProps> = ({
     const dx = node.x() - shapeProps.x;
     const dy = node.y() - shapeProps.y;
 
-    // 섹션 내부의 객체들도 함께 이동
+    // 섹션과 내부 객체들의 새 위치를 계산
     const updatedShapes = shapes.map((shape) => {
-      if (shapeProps.memberIds.includes(shape.id)) {
+      if (shape.id === shapeProps.id) {
+        // 섹션 자체의 위치 업데이트
         return {
           ...shape,
-          x: shape.x + dx,
-          y: shape.y + dy,
+          x: node.x(),
+          y: node.y(),
+        };
+      } else if (shapeProps.memberIds.includes(shape.id)) {
+        // 멤버 객체의 새 위치 계산
+        const newX = shape.x + dx;
+        const newY = shape.y + dy;
+
+        // 멤버 객체와 연결된 화살표 업데이트
+        if (isArrow(shape)) {
+          // 화살표인 경우 points 업데이트
+          const points = [...shape.points];
+          for (let i = 0; i < points.length; i += 2) {
+            points[i] += dx;
+            points[i + 1] += dy;
+          }
+          return {
+            ...shape,
+            x: newX,
+            y: newY,
+            points,
+            arrowTipX: shape.arrowTipX + dx,
+            arrowTipY: shape.arrowTipY + dy,
+          };
+        }
+
+        // 멤버 객체의 위치가 변경될 때마다 연결된 화살표 업데이트
+        updateArrows(shape.id, newX, newY);
+
+        // 일반 객체의 경우
+        return {
+          ...shape,
+          x: newX,
+          y: newY,
         };
       }
       return shape;
     });
 
-    // 섹션의 위치 업데이트
-    const updatedSection = {
-      ...shapeProps,
-      x: node.x(),
-      y: node.y(),
-    };
-
     // 모든 변경사항을 한 번에 적용
-    const finalShapes = updatedShapes.map((shape) =>
-      shape.id === shapeProps.id ? updatedSection : shape,
-    );
+    updateShapes(updatedShapes);
 
-    updateShapes(finalShapes);
+    // 섹션 내부 객체들과 연결된 화살표들 업데이트
+    shapeProps.memberIds.forEach((memberId) => {
+      const memberShape = updatedShapes.find((s) => s.id === memberId);
+      if (memberShape) {
+        // 각 멤버 객체에 연결된 화살표들 업데이트
+        const connectedArrows = updatedShapes.filter(
+          (s) => isArrow(s) && (s.from === memberId || s.to === memberId),
+        );
 
-    if (onDragMove) {
-      onDragMove(e);
-    }
+        connectedArrows.forEach((arrow) => {
+          if (isArrow(arrow)) {
+            const fromShape =
+              arrow.from === memberId
+                ? memberShape
+                : updatedShapes.find((s) => s.id === arrow.from);
+            const toShape =
+              arrow.to === memberId
+                ? memberShape
+                : updatedShapes.find((s) => s.id === arrow.to);
+
+            if (fromShape && toShape) {
+              dispatch(
+                updateArrowPositions({
+                  movedShapeId: memberId,
+                  newX: memberShape.x,
+                  newY: memberShape.y,
+                  shapes: updatedShapes,
+                }),
+              );
+            }
+          }
+        });
+      }
+    });
   };
 
   const handleDragEnd = (e: any) => {
