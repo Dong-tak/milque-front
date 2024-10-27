@@ -129,6 +129,7 @@ function SetUserIdSocialContent() {
   const [job, setJob] = useState("");
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const [username, setUsername] = useState("");
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(false);
   const [isMarketed, setIsMarketed] = useState(false);
@@ -155,7 +156,13 @@ function SetUserIdSocialContent() {
     console.log("handleCompleteProfile");
     console.log(value, isMarketed, token);
 
-    const result = await completeUserProfile(router, value, isMarketed, token);
+    const result = await completeUserProfile(
+      router,
+      value,
+      isMarketed,
+      username,
+      token,
+    );
   };
 
   return (
@@ -166,6 +173,18 @@ function SetUserIdSocialContent() {
       </CardHeader>
       <CardContent className="space-y-4 p-0">
         <div className="flex flex-col space-y-[6px]">
+          <div className="space-y-[6px]">
+            <Label htmlFor="username">사용자 이름</Label>
+            <Input
+              name="username"
+              type="text"
+              placeholder="사용자 이름을 입력하세요"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col space-y-[6px]"></div>
           <Label htmlFor="job">직업</Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>

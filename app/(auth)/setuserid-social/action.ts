@@ -10,6 +10,7 @@ export async function completeUserProfile(
   router: ReturnType<typeof useRouter>,
   job: string,
   isMarketed: boolean,
+  username: string,
   token: string | null,
 ) {
   const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/social/signup/`;

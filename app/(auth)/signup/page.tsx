@@ -51,7 +51,25 @@ export default function Signup() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/google/login/`;
+    const clientId =
+      "811190929116-coovi0jk19fi5qdak82l4r16rsaerail.apps.googleusercontent.com";
+    let redirectUri = `https://suitdio.com/auth/google/callback/`;
+    if (
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://localhost:8000/v1" ||
+      process.env.NEXT_PUBLIC_POST_API_URL == "http://127.0.0.1:8000/v1"
+    ) {
+      redirectUri = `http://localhost:3000/auth/google/callback/`;
+    } else if (
+      process.env.NEXT_PUBLIC_POST_API_URL == "https://test.suitdio.com/v1"
+    ) {
+      redirectUri = `https://test.suitdio.com/auth/google/callback/`;
+    } else {
+      redirectUri = `https://suitdio.com/auth/google/callback/`;
+    }
+    const scope = "https://www.googleapis.com/auth/userinfo.email";
+    const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+
+    window.location.href = oauthUrl;
   };
 
   return (

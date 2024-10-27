@@ -11,6 +11,7 @@ export async function completeUserProfile(
   password: string,
   job: string,
   isMarketed: boolean,
+  username: string,
   token: string | null,
 ) {
   const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/complete_profile/`;

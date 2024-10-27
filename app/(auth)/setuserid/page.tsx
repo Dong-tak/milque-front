@@ -129,6 +129,7 @@ export default function SetUserId() {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [job, setJob] = useState("");
+  const [username, setUsername] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
@@ -174,6 +175,7 @@ export default function SetUserId() {
       password,
       value,
       isMarketed,
+      username,
       token,
     );
   };
@@ -185,6 +187,19 @@ export default function SetUserId() {
         <CardDescription>바로 계정을 연결하세요!</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-0">
+        <div className="space-y-[6px]">
+          <Label htmlFor="password">username</Label>
+          <Input
+            name="password"
+            type="password"
+            placeholder="password"
+            required
+            minLength={PASSWORD_MIN_LENGTH}
+            value={password}
+            onChange={(e) => setUsername(e.target.value)}
+            // errors={state?.fieldErrors.password}
+          />
+        </div>
         <div className="space-y-[6px]">
           <Label htmlFor="password">비밀번호</Label>
           <Input
