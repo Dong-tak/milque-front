@@ -4,9 +4,10 @@ import {
   TextShape,
   ArrowShape,
   SectionShape,
+  AllShapeTypes,
 } from "@/app/miro/utils/types";
 
-type Shape = RectangleShape | TextShape | ArrowShape | SectionShape;
+type Shape = AllShapeTypes;
 
 interface ShapesState {
   shapes: Shape[];

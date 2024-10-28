@@ -55,7 +55,10 @@ import IframeEmbed from "../shapes/iframeEmbed";
 
 const DrawingBoard = () => {
   // 상태 관리
-  const [shapes, setShapes] = useState<any[]>([]); // 모든 도형들을 저장하는 상태
+  // const [shapes, setShapes] = useState<any[]>([]); // 모든 도형들을 저장하는 상태
+  // useSelector로 shapes 가져오기
+  const dispatch = useDispatch();
+  const shapes = useSelector((state: RootState) => state.shapes.shapes);
   const stageRef = useRef<any>(null); // Konva Stage에 대한 참조
   const [isDrawing, setIsDrawing] = useState(false); // 현재 그리기 중인지 여부
   const [newShape, setNewShape] = useState<
@@ -92,8 +95,6 @@ const DrawingBoard = () => {
   } | null>(null);
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
   const [isSectionPlacementMode, setIsSectionPlacementMode] = useState(false);
-
-  const dispatch = useDispatch();
   const lastUpdate = useSelector((state: RootState) => state.arrow.lastUpdate);
 
   // 입력 변경 핸들러
@@ -109,7 +110,7 @@ const DrawingBoard = () => {
 
       const newBoard = {
         id: `board-${shapes.length + 1}`,
-        type: "board",
+        type: "board" as const,
         x: boardPosition.x,
         y: boardPosition.y,
         width: 500,
@@ -118,7 +119,7 @@ const DrawingBoard = () => {
         titleBlock: contentTitle,
       };
 
-      setShapes((prev) => [...prev, newBoard]);
+      dispatch(addShape(newBoard));
       setDialogOpen(false);
       setContentTitle("");
       setBoardPosition(null);
@@ -139,32 +140,44 @@ const DrawingBoard = () => {
   }, []);
 
   // 스테이지 클릭 핸들러 수정
-  const handleStageClick = useCallback(
-    (e: any) => {
-      if (isBoardPlacementMode) {
-        const stage = e.target.getStage();
-        const pointerPos = stage.getPointerPosition();
-        if (!pointerPos) return;
+  // const handleStageClick = useCallback(
+  //   (e: any) => {
+  //     if (isBoardPlacementMode) {
+  //       const stage = e.target.getStage();
+  //       const pointerPos = stage.getPointerPosition();
+  //       if (!pointerPos) return;
 
-        const adjustedPos = {
-          x: (pointerPos.x - stagePosition.x) / stageScale,
-          y: (pointerPos.y - stagePosition.y) / stageScale,
-        };
+  //       const adjustedPos = {
+  //         x: (pointerPos.x - stagePosition.x) / stageScale,
+  //         y: (pointerPos.y - stagePosition.y) / stageScale,
+  //       };
 
-        setBoardPosition(adjustedPos);
-        setDialogOpen(true);
-        setIsBoardPlacementMode(false);
-      } else if (e.target === e.target.getStage()) {
-        dispatch(deselectBoard());
-        const newShapes = shapes.map((s) => ({
-          ...s,
-          isSelected: false,
-        }));
-        setShapes(newShapes);
-      }
-    },
-    [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
-  );
+  //       setBoardPosition(adjustedPos);
+  //       setDialogOpen(true);
+  //       setIsBoardPlacementMode(false);
+  //     } else if (e.target === e.target.getStage()) {
+  //       dispatch(deselectBoard());
+  //       const newShapes = shapes.map((s) => ({
+  //         ...s,
+  //         isSelected: false,
+  //       }));
+  //       setShapes(newShapes);
+  //     }
+  //   },
+  //   [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
+  // );
+
+  // Stage 클릭 이벤트 핸들러
+  const handleStageClick = (e: any) => {
+    // 빈 공간을 클릭하면 선택 해제
+    if (e.target === e.target.getStage()) {
+      const newShapes = shapes.map((s) => ({
+        ...s,
+        isSelected: false,
+      }));
+      dispatch(updateShapes(newShapes));
+    }
+  };
 
   // 윈도우 크기 변경 감지 및 스테이지 크기 조정
 
@@ -336,18 +349,29 @@ const DrawingBoard = () => {
         content: "",
       },
     ];
-    setShapes([
-      ...shapes,
-      {
+    // setShapes([
+    //   ...shapes,
+    //   {
+    //     id,
+    //     type: "textbox",
+    //     x: x,
+    //     y: y,
+    //     text: JSON.stringify(initialText),
+    //     fontSize: 24,
+    //     draggable: true,
+    //   },
+    // ]);
+    dispatch(
+      addShape({
         id,
-        type: "textbox",
+        type: "text",
         x: x,
         y: y,
         text: JSON.stringify(initialText),
         fontSize: 24,
         draggable: true,
-      },
-    ]);
+      }),
+    );
   };
 
   // ... 이미지 드래그 추가 로직 ...
@@ -357,17 +381,27 @@ const DrawingBoard = () => {
       reader.onload = (event) => {
         if (event.target) {
           const id = `imageEmbed-${shapes.length + 1}`;
-          setShapes((prevShapes) => [
-            ...prevShapes,
-            {
+          // setShapes((prevShapes) => [
+          //   ...prevShapes,
+          //   {
+          //     id,
+          //     type: "imageEmbed",
+          //     x: 50,
+          //     y: 50,
+          //     src: event.target!.result as string,
+          //     draggable: true,
+          //   },
+          // ]);
+          dispatch(
+            addShape({
               id,
               type: "imageEmbed",
               x: 50,
               y: 50,
               src: event.target!.result as string,
               draggable: true,
-            },
-          ]);
+            }),
+          );
         }
       };
       reader.readAsDataURL(dragFile);
@@ -387,17 +421,27 @@ const DrawingBoard = () => {
         reader.onload = (event) => {
           if (event.target) {
             const id = `imageEmbed-${shapes.length + 1}`;
-            setShapes([
-              ...shapes,
-              {
+            // setShapes([
+            //   ...shapes,
+            //   {
+            //     id,
+            //     type: "imageEmbed",
+            //     x: 50,
+            //     y: 50,
+            //     src: event.target.result as string,
+            //     draggable: true,
+            //   },
+            // ]);
+            dispatch(
+              addShape({
                 id,
                 type: "imageEmbed",
                 x: 50,
                 y: 50,
-                src: event.target.result as string,
+                src: event.target!.result as string,
                 draggable: true,
-              },
-            ]);
+              }),
+            );
           }
         };
         reader.readAsDataURL(file);
@@ -412,17 +456,27 @@ const DrawingBoard = () => {
       reader.onload = (event) => {
         if (event.target) {
           const id = `pdfEmbed-${shapes.length + 1}`;
-          setShapes((prevShapes) => [
-            ...prevShapes,
-            {
+          // setShapes((prevShapes) => [
+          //   ...prevShapes,
+          //   {
+          //     id,
+          //     type: "pdfEmbed",
+          //     x: 50,
+          //     y: 50,
+          //     src: event.target!.result as string,
+          //     draggable: true,
+          //   },
+          // ]);
+          dispatch(
+            addShape({
               id,
               type: "pdfEmbed",
               x: 50,
               y: 50,
               src: event.target!.result as string,
               draggable: true,
-            },
-          ]);
+            }),
+          );
         }
       };
       reader.readAsDataURL(dragFile);
@@ -442,17 +496,27 @@ const DrawingBoard = () => {
         reader.onload = (event) => {
           if (event.target) {
             const id = `pdfEmbed-${shapes.length + 1}`;
-            setShapes([
-              ...shapes,
-              {
+            // setShapes([
+            //   ...shapes,
+            //   {
+            //     id,
+            //     type: "pdfEmbed",
+            //     x: 50,
+            //     y: 50,
+            //     src: event.target.result as string,
+            //     draggable: true,
+            //   },
+            // ]);
+            dispatch(
+              addShape({
                 id,
                 type: "pdfEmbed",
                 x: 50,
                 y: 50,
-                src: event.target.result as string,
+                src: event.target!.result as string,
                 draggable: true,
-              },
-            ]);
+              }),
+            );
           }
         };
         reader.readAsDataURL(file);
@@ -464,17 +528,27 @@ const DrawingBoard = () => {
   // ... iframe 임베드 추가 로직 ...
   const addIframeEmbed = (src: string) => {
     const id = `iframeEmbed-${shapes.length + 1}`;
-    setShapes([
-      ...shapes,
-      {
+    // setShapes([
+    //   ...shapes,
+    //   {
+    //     id,
+    //     type: "iframeEmbed",
+    //     x: 50,
+    //     y: 50,
+    //     src,
+    //     draggable: true,
+    //   },
+    // ]);
+    dispatch(
+      addShape({
         id,
         type: "iframeEmbed",
         x: 50,
         y: 50,
         src,
         draggable: true,
-      },
-    ]);
+      }),
+    );
   };
 
   // ... markdown 드래그 추가 로직 ...
@@ -482,9 +556,21 @@ const DrawingBoard = () => {
     if (dragFile) {
       const markdown = await dragFile.text();
       const id = `markdown-${shapes.length + 1}`;
-      setShapes((prevShapes) => [
-        ...prevShapes,
-        {
+      // setShapes((prevShapes) => [
+      //   ...prevShapes,
+      //   {
+      //     id,
+      //     type: "markdown",
+      //     x: 50,
+      //     y: 50,
+      //     mkText: markdown,
+      //     width: 500,
+      //     height: 800,
+      //     draggable: true,
+      //   },
+      // ]);
+      dispatch(
+        addShape({
           id,
           type: "markdown",
           x: 50,
@@ -493,13 +579,25 @@ const DrawingBoard = () => {
           width: 500,
           height: 800,
           draggable: true,
-        },
-      ]);
+        }),
+      );
     } else if (text) {
       const id = `markdown-${shapes.length + 1}`;
-      setShapes((prevShapes) => [
-        ...prevShapes,
-        {
+      // setShapes((prevShapes) => [
+      //   ...prevShapes,
+      //   {
+      //     id,
+      //     type: "markdown",
+      //     x: 50,
+      //     y: 50,
+      //     mkText: text,
+      //     width: 500,
+      //     height: 800,
+      //     draggable: true,
+      //   },
+      // ]);
+      dispatch(
+        addShape({
           id,
           type: "markdown",
           x: 50,
@@ -508,8 +606,8 @@ const DrawingBoard = () => {
           width: 500,
           height: 800,
           draggable: true,
-        },
-      ]);
+        }),
+      );
     }
   };
 
@@ -526,18 +624,27 @@ const DrawingBoard = () => {
         reader.onload = (event) => {
           if (event.target) {
             const id = `markdown-${shapes.length + 1}`;
-            setShapes([
-              ...shapes,
-              {
+            // setShapes([
+            //   ...shapes,
+            //   {
+            //     id,
+            //     type: "markdown",
+            //     x: 50,
+            //     y: 50,
+            //     src: event.target.result as string,
+            //     draggable: true,
+            //   },
+            // ]);
+            dispatch(
+              addShape({
                 id,
                 type: "markdown",
                 x: 50,
                 y: 50,
-                src: event.target.result as string,
-                fontSize: 24,
+                src: event.target!.result as string,
                 draggable: true,
-              },
-            ]);
+              }),
+            );
           }
         };
         reader.readAsDataURL(file);
@@ -545,18 +652,6 @@ const DrawingBoard = () => {
     };
     fileInput.click();
   };
-
-  // Stage 클릭 이벤트 핸들러
-  // const handleStageClick = (e: any) => {
-  //   // 빈 공간을 클릭하면 선택 해제
-  //   if (e.target === e.target.getStage()) {
-  //     const newShapes = shapes.map((s) => ({
-  //       ...s,
-  //       isSelected: false,
-  //     }));
-  //     setShapes(newShapes);
-  //   }
-  // };
 
   // 사각형 생성 모드 활성화
   const handleRectangleToolClick = () => {
@@ -1030,7 +1125,7 @@ const DrawingBoard = () => {
 
       const newNode: TextShape = {
         id: `text-${shapes.length + 1}`,
-        type: "textbox",
+        type: "text",
         x: position.x,
         y: position.y,
         text: initialText, // JSON 문자열로 변환된 텍스트
@@ -1040,7 +1135,7 @@ const DrawingBoard = () => {
         draggable: true,
       };
 
-      setShapes((prev) => [...prev, newNode]);
+      dispatch(addShape(newNode));
     },
     [shapes, findOptimalPosition],
   );
@@ -1125,7 +1220,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1147,7 +1242,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1169,7 +1264,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1191,7 +1286,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                   />
                 );
@@ -1209,7 +1304,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                   />
                 );
@@ -1227,7 +1322,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                   />
                 );
@@ -1242,7 +1337,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1264,42 +1359,42 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     onChange={(newAttrs: any) => {
                       const newShapes = shapes.map((s) =>
                         s.id === shape.id ? { ...s, ...newAttrs } : s,
                       );
-                      setShapes(newShapes);
+                      dispatch(updateShapes(newShapes));
                     }}
                     shapes={shapes}
                     updateShapes={setShapes}
                     updateArrows={updateArrows} // updateArrows prop 전달
                   />
                 );
-              } else if (shape.type === "board") {
-                // BoardWidget 렌더링 추가
-                return (
-                  <BoardWidget
-                    key={shape.id}
-                    shapeProps={shape}
-                    isSelected={shape.isSelected ?? false}
-                    onSelect={() => {
-                      const newShapes = shapes.map((s) => ({
-                        ...s,
-                        isSelected: s.id === shape.id,
-                      }));
-                      setShapes(newShapes);
-                    }}
-                    onChange={(newAttrs: any) => {
-                      const newShapes = shapes.map((s) =>
-                        s.id === shape.id ? { ...s, ...newAttrs } : s,
-                      );
-                      setShapes(newShapes);
-                    }}
-                    titleBlock={shape.titleBlock}
-                  />
-                );
+                // } else if (shape.type === "board") {
+                //   // BoardWidget 렌더링 추가
+                //   return (
+                //     <BoardWidget
+                //       key={shape.id}
+                //       shapeProps={shape}
+                //       isSelected={shape.isSelected ?? false}
+                //       onSelect={() => {
+                //         const newShapes = shapes.map((s) => ({
+                //           ...s,
+                //           isSelected: s.id === shape.id,
+                //         }));
+                //         setShapes(newShapes);
+                //       }}
+                //       onChange={(newAttrs: any) => {
+                //         const newShapes = shapes.map((s) =>
+                //           s.id === shape.id ? { ...s, ...newAttrs } : s,
+                //         );
+                //         setShapes(newShapes);
+                //       }}
+                //       titleBlock={shape.titleBlock}
+                //     />
+                //   );
               }
               return null;
             })}

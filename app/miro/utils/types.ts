@@ -8,7 +8,10 @@ export type AllShapeTypes =
   | ImageEmbedShape
   | PDFEmbedShape
   | IframeEmbedShape
-  | MarkdownShape;
+  | MarkdownShape
+  | SectionShape
+  | BoardShape;
+
 // 새로운 타입을 추가할 때 여기에 | NewShapeType 형태로 추가
 
 export interface ShapeProps {
@@ -17,12 +20,13 @@ export interface ShapeProps {
   type:
     | "rectangle"
     | "arrow"
-    | "textbox"
+    | "text"
     | "imageEmbed"
     | "pdfEmbed"
     | "iframeEmbed"
     | "markdown"
-| "section";
+    | "section"
+    | "board";
 
   isSelected?: boolean;
 }
@@ -38,13 +42,13 @@ export interface RectangleShape extends ShapeProps {
 }
 
 export interface TextShape extends ShapeProps {
-  type: "textbox";
+  type: "text";
   x: number; // 추가
   y: number; // 추가
   text: string;
   fontSize: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   draggable: boolean;
 }
 
@@ -120,6 +124,16 @@ export interface MarkdownShape extends ShapeProps {
   mkText?: string;
 }
 
+export interface BoardShape extends ShapeProps {
+  type: "board";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  titleBlock: string;
+  draggable: boolean;
+}
+
 // 타입 가드 함수
 export function isRectangle(shape: ShapeProps): shape is RectangleShape {
   return shape.type === "rectangle";
@@ -130,7 +144,7 @@ export function isArrow(shape: ShapeProps): shape is ArrowShape {
 }
 
 export function isText(shape: ShapeProps): shape is TextShape {
-  return shape.type === "textbox";
+  return shape.type === "text";
 }
 
 export function isSection(shape: ShapeProps): shape is SectionShape {
@@ -166,3 +180,6 @@ export const isMarkdown = (shape: ShapeProps): shape is MarkdownShape => {
   return shape.type === "markdown";
 };
 
+export const isBoard = (shape: ShapeProps): shape is BoardShape => {
+  return shape.type === "board";
+};
