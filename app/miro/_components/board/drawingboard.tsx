@@ -45,7 +45,6 @@ import {
   setShapes,
   addShape,
   updateShape,
-  updateShapes,
   updateArrowEndpoints,
 } from "@/redux/features/shapesSlice";
 
@@ -175,7 +174,7 @@ const DrawingBoard = () => {
         ...s,
         isSelected: false,
       }));
-      dispatch(updateShapes(newShapes));
+      dispatch(setShapes(newShapes));
     }
   };
 
@@ -948,7 +947,7 @@ const DrawingBoard = () => {
       return shape;
     });
 
-    dispatch(updateShapes(updatedShapes));
+    dispatch(setShapes(updatedShapes));
   };
 
   // 그리드 그리기 함수
@@ -1150,7 +1149,7 @@ const DrawingBoard = () => {
       ...s,
       isSelected: s.id === id,
     }));
-    dispatch(updateShapes(updatedShapes));
+    dispatch(setShapes(updatedShapes));
   };
 
   return (
@@ -1220,7 +1219,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1242,7 +1241,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1264,7 +1263,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1286,7 +1285,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                   />
                 );
@@ -1304,7 +1303,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                   />
                 );
@@ -1322,7 +1321,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                   />
                 );
@@ -1337,7 +1336,7 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     onChange={(newAttrs) =>
                       handleShapeChange(shape.id, newAttrs)
@@ -1359,13 +1358,13 @@ const DrawingBoard = () => {
                         ...s,
                         isSelected: s.id === shape.id,
                       }));
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     onChange={(newAttrs: any) => {
                       const newShapes = shapes.map((s) =>
                         s.id === shape.id ? { ...s, ...newAttrs } : s,
                       );
-                      dispatch(updateShapes(newShapes));
+                      dispatch(setShapes(newShapes));
                     }}
                     shapes={shapes}
                     updateShapes={setShapes}

@@ -37,9 +37,6 @@ const shapesSlice = createSlice({
         Object.assign(shape, updates);
       }
     },
-    updateShapes: (state, action: PayloadAction<Shape[]>) => {
-      state.shapes = action.payload;
-    },
     updateArrowEndpoints: (
       state,
       action: PayloadAction<{
@@ -61,11 +58,6 @@ const shapesSlice = createSlice({
   },
 });
 
-export const {
-  setShapes,
-  addShape,
-  updateShape,
-  updateShapes,
-  updateArrowEndpoints,
-} = shapesSlice.actions;
+export const { setShapes, addShape, updateShape, updateArrowEndpoints } =
+  shapesSlice.actions;
 export default shapesSlice.reducer;
