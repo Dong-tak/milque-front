@@ -67,6 +67,8 @@ export interface ArrowShape extends ShapeProps {
   type: "arrow";
   from: string;
   to: string;
+  x?: number;
+  y?: number;
   points: number[];
   arrowTipX: number;
   arrowTipY: number;
@@ -125,6 +127,7 @@ export interface MarkdownShape extends ShapeProps {
 }
 
 export interface BoardShape extends ShapeProps {
+  id: string;
   type: "board";
   x: number;
   y: number;

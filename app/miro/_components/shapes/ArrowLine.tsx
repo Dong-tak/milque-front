@@ -165,7 +165,7 @@ const ArrowLine: React.FC<ArrowLineProps> = ({
             }
 
             // 꺾임이 거의 없으면 직선으로 연결
-            if (Math.abs(angleDiff) < 0.01) {
+            if (Math.abs(angleDiff) < 0.05) {
               context.lineTo(x2, y2);
               continue;
             }

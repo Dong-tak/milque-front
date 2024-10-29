@@ -14,6 +14,7 @@ import {
   isRectangle,
   isArrow,
   isText,
+  isBoard,
   SectionShape,
   isSection,
   isImageEmbed,
@@ -25,6 +26,7 @@ import {
   isMarkdown,
   MarkdownShape,
   AllShapeTypes,
+  BoardShape,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
@@ -138,45 +140,33 @@ const DrawingBoard = () => {
     setIsArrowMode(false);
   }, []);
 
-  // 스테이지 클릭 핸들러 수정
-  // const handleStageClick = useCallback(
-  //   (e: any) => {
-  //     if (isBoardPlacementMode) {
-  //       const stage = e.target.getStage();
-  //       const pointerPos = stage.getPointerPosition();
-  //       if (!pointerPos) return;
+  //스테이지 클릭 핸들러 수정
+  const handleStageClick = useCallback(
+    (e: any) => {
+      if (isBoardPlacementMode) {
+        const stage = e.target.getStage();
+        const pointerPos = stage.getPointerPosition();
+        if (!pointerPos) return;
 
-  //       const adjustedPos = {
-  //         x: (pointerPos.x - stagePosition.x) / stageScale,
-  //         y: (pointerPos.y - stagePosition.y) / stageScale,
-  //       };
+        const adjustedPos = {
+          x: (pointerPos.x - stagePosition.x) / stageScale,
+          y: (pointerPos.y - stagePosition.y) / stageScale,
+        };
 
-  //       setBoardPosition(adjustedPos);
-  //       setDialogOpen(true);
-  //       setIsBoardPlacementMode(false);
-  //     } else if (e.target === e.target.getStage()) {
-  //       dispatch(deselectBoard());
-  //       const newShapes = shapes.map((s) => ({
-  //         ...s,
-  //         isSelected: false,
-  //       }));
-  //       setShapes(newShapes);
-  //     }
-  //   },
-  //   [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
-  // );
-
-  // Stage 클릭 이벤트 핸들러
-  const handleStageClick = (e: any) => {
-    // 빈 공간을 클릭하면 선택 해제
-    if (e.target === e.target.getStage()) {
-      const newShapes = shapes.map((s) => ({
-        ...s,
-        isSelected: false,
-      }));
-      dispatch(setShapes(newShapes));
-    }
-  };
+        setBoardPosition(adjustedPos);
+        setDialogOpen(true);
+        setIsBoardPlacementMode(false);
+      } else if (e.target === e.target.getStage()) {
+        dispatch(deselectBoard());
+        const newShapes = shapes.map((s) => ({
+          ...s,
+          isSelected: false, // 빈공간 선택하면 선택해제
+        }));
+        dispatch(setShapes(newShapes));
+      }
+    },
+    [isBoardPlacementMode, stagePosition, stageScale, dispatch, shapes],
+  );
 
   // 윈도우 크기 변경 감지 및 스테이지 크기 조정
 
@@ -766,10 +756,16 @@ const DrawingBoard = () => {
       const endShape = findClosestShapeAtPoint(
         x,
         y,
-        shapes.filter((s) => isRectangle(s) || isText(s)) as (
-          | RectangleShape
-          | TextShape
-        )[],
+        shapes.filter(
+          (s): s is RectangleShape | TextShape | BoardShape | SectionShape =>
+            isRectangle(s) ||
+            isText(s) ||
+            isBoard(s) ||
+            isSection(s) ||
+            isPDFEmbed(s) ||
+            isIframeEmbed(s) ||
+            isMarkdown(s),
+        ),
       );
 
       let endPoint = { x, y };
@@ -860,9 +856,9 @@ const DrawingBoard = () => {
         return shape;
       });
 
-      setShapes(updatedShapes);
+      dispatch(setShapes(updatedShapes));
     }
-  }, [lastUpdate]);
+  }, [lastUpdate, dispatch]);
 
   // 마우스 업 이벤트 핸들러
   const handleMouseUp = () => {
@@ -874,25 +870,37 @@ const DrawingBoard = () => {
         fill: "blue",
         draggable: true,
       };
-      setShapes([...shapes, finalizedRect]);
+      dispatch(addShape(finalizedRect));
     } else if (isArrowMode && newShape.type === "arrow") {
-      setShapes([...shapes, newShape]);
+      dispatch(addShape(newShape));
     } else if (isSectionMode && newShape.type === "section") {
       const finalizedSection: SectionShape = {
         ...newShape,
         memberIds: shapes
           .filter((shape) => {
             if (shape.id === newShape.id) return false;
+
+            // width와 height가 있고, 값이 undefined가 아닌 경우만 필터링
+            if (
+              !("x" in shape) ||
+              !("width" in shape) ||
+              !("height" in shape) ||
+              shape.width === undefined ||
+              shape.height === undefined
+            ) {
+              return false;
+            }
+
             const isInBounds =
               shape.x >= newShape.x &&
-              shape.x + (shape.width || 0) <= newShape.x + newShape.width &&
+              shape.x + shape.width <= newShape.x + newShape.width &&
               shape.y >= newShape.y &&
-              shape.y + (shape.height || 0) <= newShape.y + newShape.height;
+              shape.y + shape.height <= newShape.y + newShape.height;
             return isInBounds;
           })
           .map((shape) => shape.id),
       };
-      setShapes([...shapes, finalizedSection]);
+      dispatch(addShape(finalizedSection));
     }
 
     setNewShape(null);
@@ -902,7 +910,7 @@ const DrawingBoard = () => {
     setIsSectionMode(false);
   };
 
-  // 화살표 포인트 드래그 핸들러
+  // 화살표 (빨간원) 점(from, to) 드래그 함수
   const handleArrowPointDrag = (
     id: string,
     x: number,
@@ -914,14 +922,50 @@ const DrawingBoard = () => {
 
     const otherShapes = shapes.filter(
       (s) =>
-        (isRectangle(s) || isText(s)) &&
+        (isRectangle(s) || isText(s) || isBoard(s) || isSection(s)) &&
         s.id !== (type === "from" ? currentArrow.from : currentArrow.to),
     );
 
-    const closestShape = findClosestShapeAtPoint(x, y, otherShapes);
+    const closestShape = findClosestShapeAtPoint(
+      x,
+      y,
+      otherShapes.filter(
+        (s): s is RectangleShape | TextShape | BoardShape | SectionShape =>
+          isRectangle(s) || isText(s) || isBoard(s) || isSection(s),
+      ),
+    );
+
+    // 가장 가까운 지점 계산
+    let finalPoint = { x, y };
+    if (closestShape) {
+      finalPoint = getClosestSidePoint(closestShape, x, y);
+    }
+
+    // points와 arrowTip 업데이트
+    const updatedShapes = shapes.map((shape) => {
+      if (shape.id === id && isArrow(shape)) {
+        const points = [...shape.points];
+        if (type === "from") {
+          points[0] = finalPoint.x;
+          points[1] = finalPoint.y;
+        } else {
+          points[points.length - 2] = finalPoint.x;
+          points[points.length - 1] = finalPoint.y;
+          return {
+            ...shape,
+            points,
+            arrowTipX: finalPoint.x,
+            arrowTipY: finalPoint.y,
+          };
+        }
+        return { ...shape, points };
+      }
+      return shape;
+    });
+
+    dispatch(setShapes(updatedShapes));
 
     if (closestShape) {
-      // Redux action을 사용하여 arrow endpoints 업데이트
       dispatch(
         updateArrowEndpoints({
           arrowId: id,
@@ -930,26 +974,7 @@ const DrawingBoard = () => {
         }),
       );
     }
-
-    // 화살표 위치 업데이트
-    const updatedShapes = shapes.map((shape) => {
-      if (shape.id === id && isArrow(shape)) {
-        const points = [...shape.points];
-        if (type === "from") {
-          points[0] = x;
-          points[1] = y;
-        } else {
-          points[points.length - 2] = x;
-          points[points.length - 1] = y;
-        }
-        return { ...shape, points };
-      }
-      return shape;
-    });
-
-    dispatch(setShapes(updatedShapes));
   };
-
   // 그리드 그리기 함수
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
     let baseSpacing = 30; // 기본 간격
@@ -1371,29 +1396,29 @@ const DrawingBoard = () => {
                     updateArrows={updateArrows} // updateArrows prop 전달
                   />
                 );
-                // } else if (shape.type === "board") {
-                //   // BoardWidget 렌더링 추가
-                //   return (
-                //     <BoardWidget
-                //       key={shape.id}
-                //       shapeProps={shape}
-                //       isSelected={shape.isSelected ?? false}
-                //       onSelect={() => {
-                //         const newShapes = shapes.map((s) => ({
-                //           ...s,
-                //           isSelected: s.id === shape.id,
-                //         }));
-                //         setShapes(newShapes);
-                //       }}
-                //       onChange={(newAttrs: any) => {
-                //         const newShapes = shapes.map((s) =>
-                //           s.id === shape.id ? { ...s, ...newAttrs } : s,
-                //         );
-                //         setShapes(newShapes);
-                //       }}
-                //       titleBlock={shape.titleBlock}
-                //     />
-                //   );
+              } else if (shape.type === "board") {
+                // BoardWidget 렌더링 추가
+                return (
+                  <BoardWidget
+                    key={shape.id}
+                    shapeProps={shape}
+                    isSelected={shape.isSelected ?? false}
+                    onSelect={() => {
+                      const newShapes = shapes.map((s) => ({
+                        ...s,
+                        isSelected: s.id === shape.id,
+                      }));
+                      dispatch(setShapes(newShapes));
+                    }}
+                    onChange={(newAttrs: any) => {
+                      const newShapes = shapes.map((s) =>
+                        s.id === shape.id ? { ...s, ...newAttrs } : s,
+                      );
+                      dispatch(setShapes(newShapes));
+                    }}
+                    titleBlock={shape.titleBlock}
+                  />
+                );
               }
               return null;
             })}

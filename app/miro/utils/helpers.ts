@@ -1,10 +1,18 @@
 // utils/helpers.ts
-import { RectangleShape, TextShape, isRectangle } from "./types";
+import {
+  RectangleShape,
+  TextShape,
+  SectionShape,
+  BoardShape,
+  isRectangle,
+} from "./types";
 
 export const snapDistance = 10;
 
 // 도형의 각 면의 중앙 좌표 반환
-export const getShapeSideCenters = (shape: RectangleShape | TextShape) => {
+export const getShapeSideCenters = (
+  shape: RectangleShape | TextShape | SectionShape | BoardShape,
+) => {
   const shapeX = shape.x;
   const shapeY = shape.y;
   const shapeWidth = isRectangle(shape) ? shape.width : 100;
@@ -24,9 +32,14 @@ export const getShapeSideCenters = (shape: RectangleShape | TextShape) => {
 export const findClosestShapeAtPoint = (
   x: number,
   y: number,
-  shapes: (RectangleShape | TextShape)[],
-): RectangleShape | TextShape | null => {
-  let closestShape: RectangleShape | TextShape | null = null;
+  shapes: (RectangleShape | TextShape | SectionShape | BoardShape)[],
+): RectangleShape | TextShape | SectionShape | BoardShape | null => {
+  let closestShape:
+    | RectangleShape
+    | TextShape
+    | SectionShape
+    | BoardShape
+    | null = null;
   shapes.forEach((shape) => {
     const shapeX = shape.x;
     const shapeY = shape.y;
@@ -47,7 +60,7 @@ export const findClosestShapeAtPoint = (
 
 // 도형의 가장 가까운 면의 중앙 점 계산
 export const getClosestSidePoint = (
-  shape: RectangleShape | TextShape,
+  shape: RectangleShape | TextShape | SectionShape | BoardShape,
   x: number,
   y: number,
 ) => {
