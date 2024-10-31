@@ -12,6 +12,7 @@ interface ToolbarProps {
   onAddPDF: () => void;
   onAddIframe: (src: string) => void;
   onAddMarkdown: () => void;
+  onMindMapView: () => void;
 }
 
 const Toolbar = ({
@@ -25,6 +26,7 @@ const Toolbar = ({
   onAddPDF,
   onAddIframe,
   onAddMarkdown,
+  onMindMapView,
 }: ToolbarProps) => {
   return (
     <div
@@ -159,7 +161,6 @@ const Toolbar = ({
             fontWeight: "bold",
           }}
         >
-
           <PanelTop />
         </div>
         <span>Web</span>
@@ -177,7 +178,6 @@ const Toolbar = ({
             fontWeight: "bold",
           }}
         >
-
           <ArrowDownAZ />
         </div>
         <span>Mkdown</span>
@@ -215,6 +215,15 @@ const Toolbar = ({
           S
         </div>
         <span>섹션</span>
+      </div>
+      <div
+        onClick={onMindMapView}
+        style={{ cursor: "pointer", textAlign: "center" }}
+        className="toolbar-item"
+        title="마인드맵으로 변환"
+      >
+        <div className="toolbar-icon">🌳</div>
+        <span>Mind Map</span>
       </div>
     </div>
   );

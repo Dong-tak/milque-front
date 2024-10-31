@@ -53,6 +53,7 @@ import {
 import ImageEmbed from "../shapes/imageEmbed";
 import PDFEmbed from "../shapes/pdfEmbed";
 import IframeEmbed from "../shapes/iframeEmbed";
+import { calculateMindMapLayout } from "../../utils/mindMapLayout";
 
 const DrawingBoard = () => {
   // 상태 관리
@@ -514,7 +515,7 @@ const DrawingBoard = () => {
     fileInput.click();
   };
 
-  // ... iframe 임베드 추가 로직 ...
+  // ... iframe 임베�� 추가 로직 ...
   const addIframeEmbed = (src: string) => {
     const id = `iframeEmbed-${shapes.length + 1}`;
     // setShapes([
@@ -816,7 +817,7 @@ const DrawingBoard = () => {
     [dispatch, shapes],
   );
 
-  // lastUpdate가 변경될 때마다 화살표 업데이트
+  // lastUpdate 변경될 때마다 화살표 업데이트
   useEffect(() => {
     if (lastUpdate) {
       const { movedShapeId, newX, newY, shapes: currentShapes } = lastUpdate;
@@ -1177,6 +1178,26 @@ const DrawingBoard = () => {
     dispatch(setShapes(updatedShapes));
   };
 
+  const [isMindMapView, setIsMindMapView] = useState(false);
+
+  // 마인드맵 변환 핸들러
+  const handleMindMapView = useCallback(() => {
+    const selectedShape = shapes.find((shape) => shape.isSelected);
+    if (!selectedShape) {
+      alert("마인드맵의 루트로 사용할 객체를 선택해주세요.");
+      return;
+    }
+
+    if (!isMindMapView) {
+      const { updatedShapes } = calculateMindMapLayout(
+        shapes,
+        selectedShape.id,
+      );
+      dispatch(setShapes(updatedShapes));
+    }
+    setIsMindMapView(!isMindMapView);
+  }, [shapes, isMindMapView, dispatch]);
+
   return (
     <div ref={boardRef}>
       {/* 보드 컨테이너 */}
@@ -1231,7 +1252,7 @@ const DrawingBoard = () => {
           </Layer>
           {/* 도형 레이어 */}
           <Layer>
-            {/* ��형 렌더링 */}
+            {/* 형 렌더링 */}
             {shapes.map((shape) => {
               if (isRectangle(shape)) {
                 return (
@@ -1467,6 +1488,7 @@ const DrawingBoard = () => {
           onAddPDF={addPDFEmbed}
           onAddIframe={addIframeEmbed}
           onAddMarkdown={addMarkdown}
+          onMindMapView={handleMindMapView}
         />
         <CreateBoardDialog
           contentTitle={contentTitle}
