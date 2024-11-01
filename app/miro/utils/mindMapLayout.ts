@@ -1,9 +1,10 @@
+// 필요한 함수와 타입 임포트
 import { AllShapeTypes, isArrow, MindMapNode, FamilyBox } from "./types";
 import { getConnectorPoints } from "./arrowUtils";
 import {
   createMindMapGroup,
   setCurrentMindMapGroup,
-  calculateAvailablePositions,
+  MindMapGroup,
 } from "./mindMapGroupUtils";
 
 // 레이아웃 간격 상수 정의
@@ -11,67 +12,7 @@ const GEN_GAP = 48; // 세대 간 간격
 const SIB_GAP = 24; // 형제 노드 간 간격
 const NAV_GAP = 36; // 네비게이션 간격
 
-/**
- * Utility 함수: 배열에서 최대 값을 반환
- */
-const getMax = (values: number[]): number => Math.max(...values);
-
-/**
- * Utility 함수: 총 높이를 계산 (각 노드의 높이와 간격을 합산)
- */
-const calculateTotalHeight = (
-  dimensions: { height: number }[],
-  gap: number,
-): number =>
-  dimensions.reduce(
-    (sum, dim, index) => sum + dim.height + (index > 0 ? gap : 0),
-    0,
-  );
-
-/**
- * FamilyBox의 크기를 재귀적으로 계산하는 함수
- * @param nodeId - 현재 노드의 ID
- * @param nodes - 모든 노드의 맵
- * @param familyBoxes - FamilyBox 정보를 저장하는 맵
- * @returns FamilyBox의 너비와 높이
- */
-const calculateFamilyBoxDimensions = (
-  nodeId: string,
-  nodes: Map<string, MindMapNode>,
-  familyBoxes: Map<string, FamilyBox>,
-): { width: number; height: number } => {
-  const node = nodes.get(nodeId);
-  if (!node) return { width: 0, height: 0 };
-
-  if (node.children.length === 0) {
-    return { width: node.width, height: node.height };
-  }
-
-  // 자식 노드들의 FamilyBox 크기 계산
-  const childrenDimensions = node.children.map((childId) =>
-    calculateFamilyBoxDimensions(childId, nodes, familyBoxes),
-  );
-
-  // 다음 세대의 최대 너비 계산
-  const nextGenWidth = getMax(childrenDimensions.map((d) => d.width));
-
-  // 전체 너비: 다음 세대의 너비 + 세대 간 간격
-  const totalWidth = nextGenWidth + GEN_GAP;
-
-  // 전체 높이: 자식 노드들의 높이 합 + 형제 간 간격
-  const totalHeight = calculateTotalHeight(childrenDimensions, SIB_GAP);
-
-  return { width: totalWidth, height: totalHeight };
-};
-
-/**
- * 계층 구조를 구성하는 함수
- * @param nodeId - 현재 노드의 ID
- * @param nodes - 모든 노드의 맵
- * @param relationshipMap - 부모-자식 관계 맵
- * @param visited - 방문한 노드의 집합
- * @param level - 현재 노드의 레벨
- */
+// 계층 구조를 구성하는 함수 (변경 없음)
 const buildHierarchy = (
   nodeId: string,
   nodes: Map<string, MindMapNode>,
@@ -87,119 +28,115 @@ const buildHierarchy = (
 
   node.level = level;
 
-  // 현재 노드에서 시작하는 모든 화살표를 찾아 자식 노드 설정
   const childrenSet = relationshipMap.get(nodeId) || new Set<string>();
-  // Set을 string[] 타입으로 명시적 변환
   const childrenIds: string[] = Array.from(childrenSet).map((id) => String(id));
   node.children = childrenIds;
 
-  // 각 자식 노드에 대해 재귀적으로 처리
   childrenIds.forEach((childId) => {
     const childNode = nodes.get(childId);
     if (childNode) {
-      childNode.parentId = nodeId; // 부모-자식 관계 설정
+      childNode.parentId = nodeId;
       buildHierarchy(childId, nodes, relationshipMap, visited, level + 1);
     }
   });
 };
 
-/**
- * 노드의 위치를 계산하는 함수
- * @param nodeId - 현재 노드의 ID
- * @param parentX - 부모 노드의 X 좌표
- * @param parentY - 부모 노드의 Y 좌표
- * @param parentDimensions - 부모 노드의 너비와 높이
- * @param nodesMap - 모든 노드의 맵
- * @param familyBoxesMap - FamilyBox 정보를 저장하는 맵
- */
-const calculateNodePositions = (
-  nodeId: string,
-  parentX: number,
-  parentY: number,
-  parentDimensions: { width: number; height: number },
-  nodesMap: Map<string, MindMapNode>,
-  familyBoxesMap: Map<string, FamilyBox>,
-): void => {
-  const node = nodesMap.get(nodeId);
-  if (!node) return;
+// 레벨별로 노드를 그룹화하는 함수
+const groupNodesByLevelAndParent = (
+  nodes: Map<string, MindMapNode>,
+): Map<number, Map<string, MindMapNode[]>> => {
+  const levels = new Map<number, Map<string, MindMapNode[]>>();
 
-  const childDimensions = calculateFamilyBoxDimensions(
-    nodeId,
-    nodesMap,
-    familyBoxesMap,
-  );
+  nodes.forEach((node) => {
+    const level = node.level!;
+    const parentId = node.parentId || "root";
 
-  // 부모 노드의 중심점 계산
-  const parentCenterY = parentY + parentDimensions.height / 2;
+    if (!levels.has(level)) {
+      levels.set(level, new Map<string, MindMapNode[]>());
+    }
 
-  // FamilyBox의 Y 좌표를 부모의 중심점을 기준으로 계산
-  const familyBoxY = parentCenterY - childDimensions.height / 2;
+    const levelMap = levels.get(level)!;
 
-  // 자식 노드들의 시작 Y 좌표 계산
-  let currentY = familyBoxY;
-  const totalChildrenHeight = node.children.reduce((sum, childId) => {
-    const childNode = nodesMap.get(childId);
-    if (!childNode) return sum;
-    return sum + childNode.height + (sum > 0 ? SIB_GAP : 0);
-  }, 0);
+    if (!levelMap.has(parentId)) {
+      levelMap.set(parentId, []);
+    }
 
-  // 자식 노드들의 시작 Y 좌표를 FamilyBox의 중심을 기준으로 조정
-  const startY =
-    familyBoxY + (childDimensions.height - totalChildrenHeight) / 2;
-  currentY = startY;
-
-  node.children.forEach((childId, index) => {
-    const childNode = nodesMap.get(childId);
-    if (!childNode) return;
-
-    const childBox = calculateFamilyBoxDimensions(
-      childId,
-      nodesMap,
-      familyBoxesMap,
-    );
-
-    // X 좌표: 부모 노드의 오른쪽에 배치
-    const x = parentX + parentDimensions.width + GEN_GAP;
-
-    // Y 좌표: 이전 노드들의 높이와 간격을 고려하여 계산
-    childNode.x = x;
-    childNode.y = currentY;
-
-    // 재귀적으로 자식 노드들의 위치 계산
-    calculateNodePositions(
-      childId,
-      x,
-      currentY,
-      { width: childNode.width, height: childNode.height },
-      nodesMap,
-      familyBoxesMap,
-    );
-
-    // 다음 노드의 Y 위치 업데이트
-    currentY += childNode.height + SIB_GAP;
+    levelMap.get(parentId)!.push(node);
   });
 
-  // FamilyBox 정보 저장
-  familyBoxesMap.set(nodeId, {
-    id: nodeId,
-    type: "familyBox",
-    nodeId: nodeId,
-    x: parentX,
-    y: familyBoxY,
-    width: childDimensions.width,
-    height: childDimensions.height,
-    childBoxes: node.children
-      .map((childId) => familyBoxesMap.get(childId)!)
-      .filter(Boolean),
+  return levels;
+};
+
+// 노드 위치를 레벨별로 계산하는 함수
+const calculatePositionsByLevel = (
+  levels: Map<number, Map<string, MindMapNode[]>>,
+  nodes: Map<string, MindMapNode>,
+  rootId: string,
+) => {
+  // 루트 노드의 X 좌표 설정
+  const rootNode = nodes.get(rootId)!;
+  rootNode.x = rootNode.x || 0;
+
+  // 레벨별로 순회
+  const sortedLevels = Array.from(levels.keys()).sort((a, b) => a - b);
+
+  // 이전 레벨의 총 높이와 Y 시작 위치를 추적
+  let previousLevelTotalHeight = rootNode.height;
+  let previousLevelStartY = rootNode.y || 0;
+
+  sortedLevels.forEach((level) => {
+    if (level === 0) return; // 루트 노드는 이미 위치가 설정됨
+
+    const levelMap = levels.get(level)!;
+    const parentIds = Array.from(levelMap.keys());
+
+    // 각 그룹(같은 부모를 가진 노드들)의 높이를 계산
+    const groupHeights: number[] = parentIds.map((parentId) => {
+      const groupNodes = levelMap.get(parentId)!;
+      return groupNodes.reduce(
+        (sum, node, index) => sum + node.height + (index > 0 ? SIB_GAP : 0),
+        0,
+      );
+    });
+
+    // 현재 레벨의 총 높이 계산 (그룹 높이 합 + 그룹 간 NAV_GAP)
+    const totalHeight = groupHeights.reduce(
+      (sum, height, index) => sum + height + (index > 0 ? NAV_GAP : 0),
+      0,
+    );
+
+    // 현재 레벨의 Y 시작 위치 계산
+    const startY =
+      previousLevelStartY + (previousLevelTotalHeight - totalHeight) / 2;
+
+    let currentY = startY;
+
+    // 각 그룹에 대해 노드 위치 계산
+    parentIds.forEach((parentId, groupIndex) => {
+      const groupNodes = levelMap.get(parentId)!;
+
+      groupNodes.forEach((node, nodeIndex) => {
+        // X 좌표 계산 (루트 노드의 X 좌표 + 레벨 * (노드 너비 + GEN_GAP))
+        node.x = (rootNode.x || 0) + level * (rootNode.width + GEN_GAP);
+
+        // Y 좌표 설정
+        node.y = currentY;
+
+        // 다음 노드의 Y 위치 업데이트
+        currentY += node.height + SIB_GAP;
+      });
+
+      // 그룹 간 NAV_GAP 적용
+      currentY += NAV_GAP - SIB_GAP;
+    });
+
+    // 다음 레벨을 위해 값 업데이트
+    previousLevelTotalHeight = totalHeight;
+    previousLevelStartY = startY;
   });
 };
 
-/**
- * 화살표의 위치를 업데이트하는 함수
- * @param arrow - 업데이트할 화살표
- * @param nodes - 모든 노드의 맵
- * @returns 업데이트된 화살표
- */
+// 화살표의 위치를 업데이트하는 함수 (변경 없음)
 const updateArrowPosition = (
   arrow: AllShapeTypes,
   nodes: Map<string, MindMapNode>,
@@ -246,16 +183,15 @@ const updateArrowPosition = (
   };
 };
 
-/**
- * 마인드맵 레이아웃을 계산하는 함수
- * @param shapes - 모든 도형 (노드 및 화살표)
- * @param rootId - 루트 노드의 ID
- * @returns 계산된 노드 위치, familyBoxes, 업데이트된 도형들
- */
+// 마인드맵 레이아웃을 계산하는 함수
 export const calculateMindMapLayout = (
   shapes: AllShapeTypes[],
   rootId: string,
-) => {
+): {
+  nodes: Map<string, MindMapNode>;
+  updatedShapes: AllShapeTypes[];
+  mindMapGroup: MindMapGroup;
+} => {
   const nodes = new Map<string, MindMapNode>();
   const familyBoxes = new Map<string, FamilyBox>();
   const relationshipMap = new Map<string, Set<string>>();
@@ -289,28 +225,13 @@ export const calculateMindMapLayout = (
   // 2. 계층 구조 구성
   buildHierarchy(rootId, nodes, relationshipMap, new Set());
 
-  // 3. 마인드맵 그룹 생성 및 설정
-  const mindMapGroup = createMindMapGroup(rootId, nodes);
-  setCurrentMindMapGroup(mindMapGroup);
+  // 3. 레벨별로 노드를 그룹화
+  const levels = groupNodesByLevelAndParent(nodes);
 
-  // 레이아웃 계산
-  calculateFamilyBoxDimensions(rootId, nodes, familyBoxes);
-  calculateNodePositions(
-    rootId,
-    nodes.get(rootId)!.x,
-    nodes.get(rootId)!.y,
-    { width: nodes.get(rootId)!.width, height: nodes.get(rootId)!.height },
-    nodes,
-    familyBoxes,
-  );
+  // 4. 노드 위치를 레벨별로 계산
+  calculatePositionsByLevel(levels, nodes, rootId);
 
-  // 가능한 위치 계산
-  mindMapGroup.availablePositions = calculateAvailablePositions(
-    nodes,
-    familyBoxes,
-  );
-
-  // 6. 화살표 업데이트
+  // 5. 화살표 업데이트
   shapes.forEach((shape) => {
     if (isArrow(shape)) {
       const updatedArrow = updateArrowPosition(shape, nodes);
@@ -318,7 +239,11 @@ export const calculateMindMapLayout = (
     }
   });
 
-  // 7. 최종 도형 업데이트
+  // 마인드맵 그룹 생성 및 설정
+  const mindMapGroup = createMindMapGroup(rootId, nodes);
+  setCurrentMindMapGroup(mindMapGroup);
+
+  // 6. 최종 도형 업데이트
   const updatedShapes = shapes.map((shape) => {
     if (isArrow(shape)) {
       return updatedArrows.get(shape.id) || shape;
@@ -336,7 +261,6 @@ export const calculateMindMapLayout = (
 
   return {
     nodes,
-    familyBoxes,
     updatedShapes,
     mindMapGroup,
   };
