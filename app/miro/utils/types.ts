@@ -10,7 +10,9 @@ export type AllShapeTypes =
   | IframeEmbedShape
   | MarkdownShape
   | SectionShape
-  | BoardShape;
+  | BoardShape
+  | MindMapNode
+  | FamilyBox;
 
 // 새로운 타입을 추가할 때 여기에 | NewShapeType 형태로 추가
 
@@ -26,7 +28,9 @@ export interface ShapeProps {
     | "iframeEmbed"
     | "markdown"
     | "section"
-    | "board";
+    | "board"
+    | "mindNode"
+    | "familyBox";
 
   isSelected?: boolean;
 }
@@ -135,6 +139,35 @@ export interface BoardShape extends ShapeProps {
   height: number;
   titleBlock: string;
   draggable: boolean;
+}
+
+// MindMapNode 인터페이스는 각 노드의 속성을 정의합니다.
+export interface MindMapNode {
+  id: string;
+  type: "mindNode";
+  children: string[];
+  level: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  isLeft?: boolean;
+  parentId?: string;
+  isSelected?: boolean;
+}
+
+// FamilyBox 인터페이스는 노드와 그 자식 노드들을 포함하는 박스를 정의합니다.
+// 이는 레이아웃 계산 시 각 노드의 위치와 크기를 관리하는 데 사용됩니다.
+export interface FamilyBox {
+  id: string;
+  type: "familyBox";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  nodeId: string;
+  childBoxes: FamilyBox[];
+  isSelected?: boolean;
 }
 
 // 타입 가드 함수
