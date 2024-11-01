@@ -8,7 +8,7 @@ import {
   isRectangle,
   isText,
 } from "./types"; // RectangleShape과 TextShape 타입을 import
-import { getShapeSideCenters } from "./helpers"; // 도형의 측면 중앙 좌표를 가져오는 헬퍼 함수 import
+import { getShapeSideCenters } from "./arrowhelpers"; // 도형의 측면 중앙 좌표를 가져오는 헬퍼 함수 import
 
 // /**
 //  * 두 도형 사이의 화살표 좌표를 계산하는 함수

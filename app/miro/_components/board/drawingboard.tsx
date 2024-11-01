@@ -27,11 +27,12 @@ import {
   MarkdownShape,
   AllShapeTypes,
   BoardShape,
+  MindMapNode,
 } from "../../utils/types";
 import {
   findClosestShapeAtPoint,
   getClosestSidePoint,
-} from "../../utils/helpers";
+} from "../../utils/arrowhelpers";
 import { getConnectorPoints } from "../../utils/arrowUtils";
 
 import { defaultProps } from "@blocknote/core";
@@ -54,6 +55,13 @@ import ImageEmbed from "../shapes/imageEmbed";
 import PDFEmbed from "../shapes/pdfEmbed";
 import IframeEmbed from "../shapes/iframeEmbed";
 import { calculateMindMapLayout } from "../../utils/mindMapLayout";
+import {
+  swapNodePositions,
+  changeNodeLevel,
+  isNodeInCurrentGroup,
+  getCurrentMindMapGroup,
+} from "../../utils/mindMapGroupUtils";
+import { useMindMap } from "../../hooks/useMindMap";
 
 const DrawingBoard = () => {
   // 상태 관리
@@ -230,7 +238,7 @@ const DrawingBoard = () => {
     };
   }, []);
 
-  // 클립보드 붙여넣기 및 마우스 이동 이벤트 리스너
+  // 클립보드 붙여넣기 및 마우스 이동 이트 리스너
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       e.preventDefault();
@@ -515,7 +523,7 @@ const DrawingBoard = () => {
     fileInput.click();
   };
 
-  // ... iframe 임베�� 추가 로직 ...
+  // ... iframe 임베 추가 로직 ...
   const addIframeEmbed = (src: string) => {
     const id = `iframeEmbed-${shapes.length + 1}`;
     // setShapes([
@@ -978,7 +986,7 @@ const DrawingBoard = () => {
   };
   // 그리드 그리기 함수
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
-    let baseSpacing = 30; // 기본 간격
+    let baseSpacing = 30; // 기��� 간격
     let basePointSize = 2; // 기본 점 크기
 
     const stage = shape.getStage();
@@ -1119,7 +1127,7 @@ const DrawingBoard = () => {
       }
     }
 
-    // 가능한 위치가 없으면 기본 위치 반환
+    // 가한 위치가 없으면 기본 위치 반환
     if (possiblePositions.length === 0) {
       return { x: stageWidth / 2, y: stageHeight / 2 };
     }
@@ -1178,25 +1186,13 @@ const DrawingBoard = () => {
     dispatch(setShapes(updatedShapes));
   };
 
-  const [isMindMapView, setIsMindMapView] = useState(false);
-
-  // 마인드맵 변환 핸들러
-  const handleMindMapView = useCallback(() => {
-    const selectedShape = shapes.find((shape) => shape.isSelected);
-    if (!selectedShape) {
-      alert("마인드맵의 루트로 사용할 객체를 선택해주세요.");
-      return;
-    }
-
-    if (!isMindMapView) {
-      const { updatedShapes } = calculateMindMapLayout(
-        shapes,
-        selectedShape.id,
-      );
-      dispatch(setShapes(updatedShapes));
-    }
-    setIsMindMapView(!isMindMapView);
-  }, [shapes, isMindMapView, dispatch]);
+  const {
+    isMindMapView,
+    handleMindMapView,
+    handleMindMapNodeDragStart,
+    handleMindMapNodeDragMove,
+    handleMindMapNodeDragEnd,
+  } = useMindMap(shapes);
 
   return (
     <div ref={boardRef}>
