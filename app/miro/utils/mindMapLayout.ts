@@ -22,7 +22,22 @@ function calculateFamilyBox(
   nodes: Map<string, MindMapNode>,
   level: number,
   levelFamilyBoxes: Map<number, FamilyBox[]>,
+  visited: Set<string> = new Set(),
 ): FamilyBox {
+  if (visited.has(nodeId)) {
+    return {
+      id: nodeId,
+      type: "familyBox" as const,
+      nodeId,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      childBoxes: [],
+    };
+  }
+  visited.add(nodeId);
+
   const node = nodes.get(nodeId);
   if (!node) {
     return {
@@ -58,9 +73,9 @@ function calculateFamilyBox(
     return familyBox;
   }
 
-  // 자식 노드들의 FamilyBox 계산
+  // 자식 노드들의 FamilyBox 계산 (visited Set 전달)
   const childFamilyBoxes = node.children.map((childId) =>
-    calculateFamilyBox(childId, nodes, level + 1, levelFamilyBoxes),
+    calculateFamilyBox(childId, nodes, level + 1, levelFamilyBoxes, visited),
   );
 
   // 자식 노드들의 총 높이 계산 (SIB_GAP 포함)

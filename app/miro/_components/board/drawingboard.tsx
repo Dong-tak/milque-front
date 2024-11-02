@@ -986,7 +986,7 @@ const DrawingBoard = () => {
   };
   // 그리드 그리기 함수
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
-    let baseSpacing = 30; // 기��� 간격
+    let baseSpacing = 30; // 기본 간격
     let basePointSize = 2; // 기본 점 크기
 
     const stage = shape.getStage();
