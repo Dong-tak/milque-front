@@ -62,6 +62,7 @@ import {
   getCurrentMindMapGroup,
 } from "../../utils/mindMapGroupUtils";
 import { useMindMap } from "../../hooks/useMindMap";
+import { MindMapNodeManager } from "../../utils/mindMapNodeManager";
 
 const DrawingBoard = () => {
   // 상태 관리
@@ -984,7 +985,7 @@ const DrawingBoard = () => {
       );
     }
   };
-  // 그리드 그리기 함수
+  // 그리드 그리기 함��
   const drawGrid = (context: CanvasRenderingContext2D, shape: any) => {
     let baseSpacing = 30; // 기본 간격
     let basePointSize = 2; // 기본 점 크기
@@ -1193,6 +1194,11 @@ const DrawingBoard = () => {
     handleMindMapNodeDragMove,
     handleMindMapNodeDragEnd,
   } = useMindMap(shapes);
+
+  // 선택된 노드 관련 상태 추가
+  const selectedNode = shapes.find((shape) => shape.isSelected);
+  const isSelectedNodeRoot =
+    selectedNode?.id === getCurrentMindMapGroup()?.rootId;
 
   return (
     <div ref={boardRef}>
@@ -1485,6 +1491,31 @@ const DrawingBoard = () => {
           onAddIframe={addIframeEmbed}
           onAddMarkdown={addMarkdown}
           onMindMapView={handleMindMapView}
+          onAddSiblingNode={() => {
+            if (selectedNode) {
+              const result = MindMapNodeManager.addSiblingNode(
+                selectedNode.id,
+                shapes,
+                getCurrentMindMapGroup()?.rootId || "",
+              );
+              if (result) {
+                dispatch(setShapes(result.updatedShapes));
+              }
+            }
+          }}
+          onAddChildNode={() => {
+            if (selectedNode) {
+              const result = MindMapNodeManager.addChildNode(
+                selectedNode.id,
+                shapes,
+                getCurrentMindMapGroup()?.rootId || "",
+              );
+              dispatch(setShapes(result.updatedShapes));
+            }
+          }}
+          isMindMapView={isMindMapView}
+          hasSelectedNode={!!selectedNode}
+          isSelectedNodeRoot={!!isSelectedNodeRoot}
         />
         <CreateBoardDialog
           contentTitle={contentTitle}

@@ -1,5 +1,12 @@
 // components/Toolbar.tsx
-import { ArrowDownAZ, FileText, ImageIcon, PanelTop } from "lucide-react";
+import {
+  ArrowDownAZ,
+  FileText,
+  ImageIcon,
+  PanelTop,
+  PlusCircle,
+  GitFork,
+} from "lucide-react";
 import React from "react";
 
 interface ToolbarProps {
@@ -13,6 +20,11 @@ interface ToolbarProps {
   onAddIframe: (src: string) => void;
   onAddMarkdown: () => void;
   onMindMapView: () => void;
+  onAddSiblingNode: () => void;
+  onAddChildNode: () => void;
+  isMindMapView: boolean;
+  hasSelectedNode: boolean;
+  isSelectedNodeRoot: boolean;
 }
 
 const Toolbar = ({
@@ -27,6 +39,11 @@ const Toolbar = ({
   onAddIframe,
   onAddMarkdown,
   onMindMapView,
+  onAddSiblingNode,
+  onAddChildNode,
+  isMindMapView,
+  hasSelectedNode,
+  isSelectedNodeRoot,
 }: ToolbarProps) => {
   return (
     <div
@@ -225,6 +242,48 @@ const Toolbar = ({
         <div className="toolbar-icon">🌳</div>
         <span>Mind Map</span>
       </div>
+      {isMindMapView && hasSelectedNode && (
+        <>
+          {!isSelectedNodeRoot && (
+            <div
+              onClick={onAddSiblingNode}
+              style={{ cursor: "pointer", textAlign: "center" }}
+              title="형제 노드 추가"
+            >
+              <div
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  margin: "auto",
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                }}
+              >
+                <GitFork />
+              </div>
+              <span>형제 노드</span>
+            </div>
+          )}
+          <div
+            onClick={onAddChildNode}
+            style={{ cursor: "pointer", textAlign: "center" }}
+            title="자식 노드 추가"
+          >
+            <div
+              style={{
+                width: "30px",
+                height: "30px",
+                margin: "auto",
+                fontSize: "24px",
+                fontWeight: "bold",
+              }}
+            >
+              <PlusCircle />
+            </div>
+            <span>자식 노드</span>
+          </div>
+        </>
+      )}
     </div>
   );
 };
