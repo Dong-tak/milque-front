@@ -154,7 +154,6 @@ export interface MindMapNode {
   isLeft?: boolean;
   parentId?: string;
   isSelected?: boolean;
-  text?: string;
 }
 
 // FamilyBox 인터페이스는 노드와 그 자식 노드들을 포함하는 박스를 정의합니다.
@@ -169,19 +168,6 @@ export interface FamilyBox {
   nodeId: string;
   childBoxes: FamilyBox[];
   isSelected?: boolean;
-}
-
-// 관계 타입을 결정하는 헬퍼 함수
-export function determineRelationshipType(
-  arrowHeads: ArrowHeadState,
-): RelationshipType {
-  if (arrowHeads.left && arrowHeads.right) {
-    return RelationshipType.Bidirectional;
-  } else if (!arrowHeads.left && !arrowHeads.right) {
-    return RelationshipType.Equal;
-  } else {
-    return RelationshipType.Unidirectional;
-  }
 }
 
 // 타입 가드 함수
@@ -199,6 +185,19 @@ export function isText(shape: ShapeProps): shape is TextShape {
 
 export function isSection(shape: ShapeProps): shape is SectionShape {
   return shape.type === "section";
+}
+
+// 관계 타입을 결정하는 헬퍼 함수
+export function determineRelationshipType(
+  arrowHeads: ArrowHeadState,
+): RelationshipType {
+  if (arrowHeads.left && arrowHeads.right) {
+    return RelationshipType.Bidirectional;
+  } else if (!arrowHeads.left && !arrowHeads.right) {
+    return RelationshipType.Equal;
+  } else {
+    return RelationshipType.Unidirectional;
+  }
 }
 
 export function isImageEmbed(shape: ShapeProps): shape is ImageEmbedShape {
