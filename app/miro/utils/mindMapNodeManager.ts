@@ -23,54 +23,43 @@ export class MindMapNodeManager {
     shapes: AllShapeTypes[],
     rootId: string,
   ): NodeAdditionResult | null {
-    console.log("addSiblingNode called with:", { selectedNodeId, rootId });
+    if (selectedNodeId === rootId) return null;
 
-    if (selectedNodeId === rootId) {
-      console.log(
-        "Selected node is the root node. Cannot add sibling to root.",
-      );
-      return null;
-    }
-
-    // 선택된 노드와 부모 노드 찾기
+    // 선택된 노드 찾기
     const selectedNode = shapes.find((shape) => shape.id === selectedNodeId);
-    console.log("Selected node found:", selectedNode);
+    console.log("Selected node:", selectedNode);
 
-    const parentNode = shapes.find(
-      (shape) =>
-        shape.type === "mindNode" &&
-        (shape as MindMapNode).children?.includes(selectedNodeId),
-    ) as MindMapNode | undefined;
-    console.log("Parent node found:", parentNode);
+    // 부모 노드 찾기 (루트 노드를 기본 부모로 설정)
+    let parentNode = shapes.find((shape) => shape.id === rootId);
 
-    if (!selectedNode || !parentNode || !("children" in parentNode)) {
-      console.log(
-        "선택된 노드나 부모 노드가 없거나, 부모 노드에 children 속성이 없습니다.",
-      );
-      return null;
+    // 다른 부모 노드가 있는지 확인
+    const otherParent = shapes.find((shape) => {
+      if ("children" in shape) {
+        return (shape as MindMapNode).children?.includes(selectedNodeId);
+      }
+      return false;
+    });
+
+    // 다른 부모가 있으면 해당 노드를 부모로 설정
+    if (otherParent) {
+      parentNode = otherParent;
     }
 
-    // 부모의 children 배열에서 선택된 노드의 인덱스 찾기
-    const siblingIndex = parentNode.children.indexOf(selectedNodeId);
-    console.log("Sibling index:", siblingIndex);
+    console.log("Parent node:", parentNode);
 
-    if (siblingIndex === -1) {
-      console.log("Selected node is not a child of the parent node.");
-      return null;
-    }
+    if (!selectedNode || !parentNode) return null;
 
     // 좌표 값 확인 및 기본값 설정
     const nodeX = typeof selectedNode.x === "number" ? selectedNode.x : 0;
     const nodeY = typeof selectedNode.y === "number" ? selectedNode.y : 0;
-    console.log(`Selected node coordinates: x=${nodeX}, y=${nodeY}`);
 
-    // 형제 노드 생성
+    // 새로운 텍스트 노드 생성
     const newNodeId = `text-${uuidv4()}`;
     const newNode: TextShape = {
       id: newNodeId,
       type: "text",
-      x: nodeX + 50, // 이제 nodeX는 확실히 number 타입
-      y: nodeY + 50, // 이제 nodeY는 확실히 number 타입
+      x: nodeX + 50,
+      y: nodeY + 50,
       text: JSON.stringify([
         { type: "paragraph", content: "새로운 형제 노드" },
       ]),
@@ -80,26 +69,30 @@ export class MindMapNodeManager {
       draggable: true,
       isSelected: false,
     };
-    console.log("New sibling node created:", newNode);
 
     // 부모 노드의 children 배열 업데이트
     const updatedShapes = shapes.map((shape) => {
-      if (shape.id === parentNode.id && shape.type === "mindNode") {
-        const mindMapNode = shape as MindMapNode;
-        const newChildren = [...mindMapNode.children];
-        // 선택된 노드 바로 다음 위치에 새 노드 추가
-        newChildren.splice(siblingIndex + 1, 0, newNodeId);
-        console.log("Updated children after adding sibling:", newChildren);
-        return {
-          ...mindMapNode,
-          children: newChildren,
+      if (shape.id === parentNode!.id) {
+        // 부모 노드를 MindMapNode로 변환
+        const mindMapNode: MindMapNode = {
+          ...shape,
+          type: "mindNode",
+          x: typeof shape.x === "number" ? shape.x : 0,
+          y: typeof shape.y === "number" ? shape.y : 0,
+          children:
+            "children" in shape
+              ? [...(shape as MindMapNode).children, newNodeId]
+              : [selectedNodeId, newNodeId],
+          width: 200,
+          height: 100,
+          level: 0,
         };
+        return mindMapNode;
       }
       return shape;
-    });
-    console.log("Shapes after updating parent node's children:", updatedShapes);
+    }) as AllShapeTypes[];
 
-    // 새로운 화살표 생성 (부모 노드와 연결)
+    // 새로운 화살표 생성
     const newArrow: ArrowShape = {
       id: `arrow-${uuidv4()}`,
       type: "arrow",
@@ -110,18 +103,15 @@ export class MindMapNodeManager {
       arrowTipY: 0,
       arrowHeads: { left: false, right: true },
     };
-    console.log("New arrow created:", newArrow);
 
     // 새 노드와 화살표 추가
     const shapesWithNewNodes = [...updatedShapes, newNode, newArrow];
-    console.log("Shapes with new node and arrow added:", shapesWithNewNodes);
 
     // 마인드맵 레이아웃 재계산
     const { updatedShapes: finalShapes } = calculateMindMapLayout(
       shapesWithNewNodes,
       rootId,
     );
-    console.log("Final shapes after layout recalculation:", finalShapes);
 
     return {
       updatedShapes: finalShapes,
