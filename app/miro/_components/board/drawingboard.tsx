@@ -1493,6 +1493,7 @@ const DrawingBoard = () => {
           onMindMapView={handleMindMapView}
           onAddSiblingNode={() => {
             if (selectedNode) {
+              console.log("selectedNode", selectedNode);
               const result = MindMapNodeManager.addSiblingNode(
                 selectedNode.id,
                 shapes,

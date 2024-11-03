@@ -1,5 +1,11 @@
 import React from "react";
-import { NodeAddButtonsProps } from "../../utils/mindMapNodeManager";
+
+interface NodeAddButtonsProps {
+  nodeId: string;
+  isRoot: boolean;
+  onAddSibling: () => void;
+  onAddChild: () => void;
+}
 
 const NodeAddButtons: React.FC<NodeAddButtonsProps> = ({
   nodeId,
