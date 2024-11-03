@@ -13,9 +13,11 @@ import {
 } from "./mindMapGroupUtils";
 
 // 레이아웃 간격 상수
-const GEN_GAP = 48; // 세대 간 간격 (부모-자식 노드 간 X축 간격)
-const SIB_GAP = 24; // 형제 노드 간 간격 (같은 부모를 가진 노드 간 Y축 간격)
-const NAV_GAP = 36; // 네비게이션 간격 (다른 부모를 가진 같은 레벨 노드 그룹 간 Y축 간격)
+export const LAYOUT_CONSTANTS = {
+  GEN_GAP: 48, // 세대 간 간격
+  SIB_GAP: 24, // 형제 노드 간 간격
+  NAV_GAP: 36, // 네비게이션 간격
+};
 
 function calculateFamilyBox(
   nodeId: string,
@@ -81,7 +83,7 @@ function calculateFamilyBox(
   // 자식 노드들의 총 높이 계산 (SIB_GAP 포함)
   const totalChildrenHeight = childFamilyBoxes.reduce((sum, box, index) => {
     // 형제 노드들 사이에는 SIB_GAP 적용
-    const gap = index > 0 ? SIB_GAP : 0;
+    const gap = index > 0 ? LAYOUT_CONSTANTS.SIB_GAP : 0;
     return sum + box.height + gap;
   }, 0);
 
@@ -90,7 +92,7 @@ function calculateFamilyBox(
 
   // FamilyBox의 너비 계산
   const nextGenMaxWidth = Math.max(...childFamilyBoxes.map((box) => box.width));
-  const totalWidth = node.width + GEN_GAP + nextGenMaxWidth;
+  const totalWidth = node.width + LAYOUT_CONSTANTS.GEN_GAP + nextGenMaxWidth;
 
   const familyBox: FamilyBox = {
     id: nodeId,
@@ -128,7 +130,7 @@ function calculateNodePositions(
   if (node.children.length === 0) return;
 
   // 자식 노드들의 X 좌표 계산 (GEN_GAP 적용)
-  const childX = x + node.width + GEN_GAP;
+  const childX = x + node.width + LAYOUT_CONSTANTS.GEN_GAP;
 
   // 자식 노드들의 시작 Y 좌표 계산
   let currentY = y - (familyBox.height - node.height) / 2;
@@ -141,7 +143,7 @@ function calculateNodePositions(
 
     // 형제 노드들 사이에는 SIB_GAP 적용
     if (index > 0) {
-      currentY += SIB_GAP;
+      currentY += LAYOUT_CONSTANTS.SIB_GAP;
     }
 
     calculateNodePositions(childId, childX, currentY, nodes, childBox);
@@ -159,7 +161,7 @@ function applyNavGapFromPosition(
     let currentY = startY;
     familyBoxes.forEach((familyBox, index) => {
       if (index > 0) {
-        currentY += NAV_GAP;
+        currentY += LAYOUT_CONSTANTS.NAV_GAP;
       }
       const node = nodes.get(familyBox.nodeId);
       if (node) {

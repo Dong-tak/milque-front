@@ -13,6 +13,7 @@ export interface MindMapGroup {
     }
   >;
   availablePositions: Map<string, { x: number; y: number }[]>;
+  levelOrderMap: Map<number, string[]>;
 }
 
 let currentMindMapGroup: MindMapGroup | null = null;
@@ -26,6 +27,7 @@ export function createMindMapGroup(
     nodeIds: new Set([rootId]),
     nodeRelations: new Map(),
     availablePositions: new Map(),
+    levelOrderMap: new Map(),
   };
 
   // 하위 노드들을 재귀적으로 수집하고 관계 정보 저장
@@ -184,7 +186,7 @@ export function changeNodeLevel(
 
   // 새로운 부모와 연결
   node.parentId = newParentId;
-  node.level = newParent.level + 1;
+  node.level = (newParent.level ?? 0) + 1;
   if (!newParent.children.includes(nodeId)) {
     newParent.children.push(nodeId);
   }
@@ -192,7 +194,7 @@ export function changeNodeLevel(
   // 관계 정보 업데이트
   const relation = currentMindMapGroup.nodeRelations.get(nodeId);
   if (relation) {
-    relation.level = newParent.level + 1;
+    relation.level = (newParent.level ?? 0) + 1;
     relation.parentId = newParentId;
 
     // 새로운 형제들 찾기
@@ -201,7 +203,8 @@ export function changeNodeLevel(
     // 새로운 이웃들 찾기
     relation.neighbors = Array.from(nodes.values())
       .filter(
-        (n) => n.level === newParent.level + 1 && n.parentId !== newParentId,
+        (n) =>
+          n.level === (newParent.level ?? 0) + 1 && n.parentId !== newParentId,
       )
       .map((n) => n.id);
   }
