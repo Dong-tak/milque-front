@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🔖 마일퀘 (MileQue)
 
-## Getting Started
+마케터의 반복적인 리서치·레퍼런스 수집 업무를 간편한 스크랩과 자동 아카이빙으로 덜어주는 유틸리티 서비스입니다.
 
-First, run the development server:
+> 이 저장소는 원본 조직 저장소(`Suitdio/milque-front`)에 대한 접근 권한이 없어, 포트폴리오 공개 목적으로 동일한 커밋 히스토리를 개인 계정에 재배포한 것입니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 서비스 소개
+
+마케터는 콘텐츠 생성부터 SEO까지 이미 기술이 가장 빠르게 도입된 업무를 하고 있지만, 정작 실무에서는 홈페이지·SNS·파일·AI 대화 등 여러 곳에 흩어진 레퍼런스·트렌드·인사이트를 일일이 수집하고 정리하는 반복 비용에 시달립니다. 마일퀘는 이 수집·정리·공유 과정을 최대한 간편하게 만드는 것을 목표로 합니다.
+
+- 초기엔 지식노동자 전반을 위한 개인지식관리(PKM) 서비스 "데일퀘(DailQue)"로 시작해, 웹툰 작가 타겟 "라일퀘(WrilQue)"를 거쳐 마케터 타겟 "마일퀘(MileQue)"로 최종 피벗했습니다.
+- 익산시 위드로컬 패키지 청년창업 지원사업의 지원을 받아 개발되었습니다(2024.09.20~11.04).
+
+## 주요 기능
+
+전 서비스 화면을 `MIQ-010`~`MIQ-431` 고유번호 체계로 명세화해 개발했습니다.
+
+- **인증**: 로그인(SignIn) · 회원가입(SignUp) · 이메일인증(Verify) · 추가정보입력(ExtraInfo), 구글 소셜 로그인
+- **스크랩**: 내스크랩/홈(MyScrap), 친구스크랩(FriendScrap), 그룹스크랩(GroupScrap) — 날짜별 아코디언으로 스크랩 목록 제공
+- **스크랩 상세**: 좌측에 원본 콘텐츠(유튜브·인스타그램·틱톡·홈페이지 등) 임베딩, 우측에 코멘트 스레드
+- **설정**: 프로필 · 디테일(첫 화면/테마/언어) · 알림 · 소셜계정연동 · 스크랩관리 · 사이트관리 · 다운로드관리 · 친구관리 · 그룹관리 (9종)
+- **크롬 익스텐션 연동**: 웹페이지의 원하는 영역만 선택해 단축키 한 번으로 스크랩하고 즉시 계정에 반영
+- **반응형 레이아웃**: 모바일(하단 네비게이션바) · 태블릿(얇은 사이드바) · 데스크톱(넓은 사이드바) 3단계 대응
+
+## 기술 스택
+
+- **프론트엔드**: Next.js 14, TypeScript, Redux Toolkit, Tailwind CSS, Radix UI / shadcn
+- **백엔드**: Django 5.1, PostgreSQL 16.3, AWS EC2 (별도 담당자 구현)
+- **크롬 익스텐션 / 디자인 시스템(Figma)**: 별도 담당자 구현
+
+## 데이터 구조
+
+```
+logins_user (계정)
+ ├─ feed_post (스크랩)
+ │   ├─ feed_content (임베딩 콘텐츠: URL, 미디어 타입, 썸네일 등)
+ │   └─ feed_comment (코멘트)
+ ├─ feed_teammember → feed_team (그룹 스크랩 공유 범위)
+ ├─ feed_friendship (친구 스크랩 공유 범위)
+ ├─ logins_social (소셜 로그인 연동)
+ ├─ logins_emailverification (이메일 인증)
+ └─ logins_sharedlink (외부 공유 링크, 만료/권한 설정)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 담당 범위
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+이 저장소 기준으로 기획(화면별 요구사항정의서 작성)과 프론트엔드 UI 구현을 담당했습니다. 백엔드, 크롬 익스텐션, 디자인 시스템은 별도 담당자가 구현했습니다.
